@@ -18,7 +18,7 @@ public class UserService {
         Optional<User> found = userRepository.findById(userId);
 
         if (found.isPresent()) {
-            throw new ApiRequestException(ApiException.DUPLICATED_USER);
+            throw new ApiRequestException(ApiException.REGEXP_PASSWORD);
         }
     }
 }
