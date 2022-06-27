@@ -49,6 +49,10 @@ public class User extends BaseEntity {
     @NotNull
     private LocalDateTime lastEntered;
 
+    @OneToMany(mappedBy = "user")
+    @JsonManagedReference(value = "user-fk")
+    private List<GoalItem> goalItems;
+
     @Builder
     public User(Long id, String username, String password, String nickname, String email, String profileImg, String introDesc, String provider, UserRoleEnum role, LocalDateTime lastEntered) {
         this.id = id;
