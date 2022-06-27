@@ -1,4 +1,4 @@
-package com.hanghae0705.sbmoney.Exception;
+package com.hanghae0705.sbmoney.exception;
 
 public interface BaseExceptionType {
     int getErrorCode();

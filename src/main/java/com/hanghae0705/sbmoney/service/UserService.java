@@ -1,7 +1,7 @@
 package com.hanghae0705.sbmoney.service;
 
-import com.hanghae0705.sbmoney.Exception.ApiException;
-import com.hanghae0705.sbmoney.Exception.ApiRequestException;
+import com.hanghae0705.sbmoney.exception.ApiException;
+import com.hanghae0705.sbmoney.exception.ApiRequestException;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
