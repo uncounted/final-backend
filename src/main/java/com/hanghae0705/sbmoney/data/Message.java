@@ -1,22 +1,2 @@
-package com.hanghae0705.sbmoney.data;
-
-import lombok.Data;
-
-@Data
-public class Message {
-
-    private boolean result;
-    private String respMsg;
-    private Object data;
-
-    public Message(boolean result, String respMsg, Object data) {
-        this.result = result;
-        this.respMsg = respMsg;
-        this.data = data;
-    }
-
-    public Message(boolean result, String respMsg) {
-        this.result = result;
-        this.respMsg = respMsg;
-    }
+package com.hanghae0705.sbmoney.data;public class Message {
 }
