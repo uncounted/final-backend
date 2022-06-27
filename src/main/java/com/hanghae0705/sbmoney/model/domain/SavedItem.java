@@ -49,12 +49,22 @@ public class SavedItem extends BaseEntity {
         this.price = price;
     }
 
+    public void update(int price){
+        this.price = price;
+    }
+
 
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Request {
         private Long itemId;
+        private int price;
+    }
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Update {
         private int price;
     }
 
