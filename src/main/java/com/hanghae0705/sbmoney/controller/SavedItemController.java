@@ -37,4 +37,11 @@ public class SavedItemController {
         Message message = savedItemService.updateSavedItem(itemId, price);
         return ResponseEntity.ok(message);
     }
+
+    @DeleteMapping("/api/savedItem/{itemId}")
+    private ResponseEntity<Message> deleteSavedItem(@PathVariable Long itemId){
+        savedItemRepository.deleteById(itemId);
+        Message message = new Message(true, "아끼기 품목 삭제에 성공했습니다.");
+        return ResponseEntity.ok(message);
+    }
 }
