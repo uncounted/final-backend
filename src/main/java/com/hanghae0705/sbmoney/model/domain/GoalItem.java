@@ -78,5 +78,38 @@ public class GoalItem extends BaseEntity {
         private int price;
     }
 
+    @Getter
+    @RequiredArgsConstructor
+    public static class Response {
+        private Long categoryId;
+        private String categoryName;
+        private Long itemId;
+        private String itemName;
+        private int goalItemCount;
+        private int price;
+        private int totalPrice;
+        private boolean checkReached;
+        private double goalPercent;
+        private int savedItemCount;
+        private LocalDateTime createdAt;
+        private LocalDateTime reachedAt;
+
+        public Response(GoalItem goalItem){
+            this.categoryId = goalItem.getItem().getCategory().getId();
+            this.categoryName = goalItem.getItem().getCategory().getName();
+            this.itemId = goalItem.getItem().getId();
+            this.itemName = goalItem.getItem().getName();
+            this.goalItemCount = goalItem.getCount();
+            this.price = goalItem.getTotal() / goalItem.getCount();
+            this.totalPrice = goalItem.getTotal();
+            this.checkReached = goalItem.isCheckReached();
+            this.goalPercent = goalItem.getGoalPercent();
+            this.savedItemCount = goalItem.getSavedItems().size();
+            this.createdAt = goalItem.getCreatedDate();
+            this.reachedAt = goalItem.getReachedAt();
+
+        }
+    }
+
 
 }

@@ -1,9 +1,11 @@
 package com.hanghae0705.sbmoney.service;
 
 import com.hanghae0705.sbmoney.data.Message;
+import com.hanghae0705.sbmoney.model.domain.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.SavedItem;
 import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.repository.GoalItemRepositroy;
 import com.hanghae0705.sbmoney.repository.ItemRepository;
 import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;
@@ -20,6 +22,9 @@ public class SavedItemService {
     private final ItemRepository itemRepository;
     private final SavedItemRepository savedItemRepository;
     private final UserRepository userRepository;
+    private final GoalItemRepositroy goalItemRepositroy;
+
+    @Transactional
     public Message postSavedItem(SavedItem.Request savedItemRequest){
         //추후 Authentication 으로 유저 정보 받아오기
         User user = userRepository.findById(1L).orElseThrow(
@@ -28,8 +33,25 @@ public class SavedItemService {
         Item item = itemRepository.findById(savedItemRequest.getItemId()).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 물건입니다.")
         );
+
         int price = (savedItemRequest.getPrice() == 0) ? item.getDefaultPrice() : savedItemRequest.getPrice();
-        savedItemRepository.save(new SavedItem(item, price, user));
+        if(savedItemRequest.getGoalItemId() == null){
+            savedItemRepository.save(new SavedItem(item, price, user));
+        } else {
+            GoalItem goalItem = goalItemRepositroy.findById(savedItemRequest.getGoalItemId()).orElseThrow(
+                    () -> new IllegalArgumentException("존재하지 않은 목표입니다.")
+            );
+            int savedItemTotal = 0;
+            for(SavedItem savedItem : goalItem.getSavedItems()){
+                savedItemTotal += savedItem.getPrice();
+            }
+            if(savedItemTotal + price > goalItem.getTotal()){
+                goalItem.setCheckReached(true);
+                savedItemRepository.save(new SavedItem(item, price, user));
+            }
+            savedItemRepository.save(new SavedItem(item, price, user, goalItem));
+        }
+
         return new Message(true, "아끼기 품목 등록에 성공했습니다.");
     }
 
