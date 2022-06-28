@@ -6,6 +6,7 @@ import com.hanghae0705.sbmoney.model.domain.baseEntity.UserRoleEnum;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -22,7 +23,7 @@ public class User extends BaseEntity {
     private Long id;
 
     @NotNull
-    private String username;
+    private String userid;
 
     @NotNull
     private String password;
@@ -54,9 +55,9 @@ public class User extends BaseEntity {
     private List<GoalItem> goalItems;
 
     @Builder
-    public User(Long id, String username, String password, String nickname, String email, String profileImg, String introDesc, String provider, UserRoleEnum role, LocalDateTime lastEntered) {
+    public User(Long id, String userid, String password, String nickname, String email, String profileImg, String introDesc, String provider, UserRoleEnum role, LocalDateTime lastEntered) {
         this.id = id;
-        this.username = username;
+        this.userid = userid;
         this.password = password;
         this.nickname = nickname;
         this.email = email;
@@ -85,5 +86,15 @@ public class User extends BaseEntity {
 
     public void changeLastEntered(LocalDateTime lastEntered){
         this.lastEntered = lastEntered;
+    }
+
+    @Setter
+    @Getter
+    public static class Request {
+        private String userid;
+        private String password;
+        private String passwordCheck;
+        private String nickname;
+        private String email;
     }
 }
