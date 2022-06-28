@@ -40,6 +40,7 @@ public class Board extends BaseEntity {
 //    private Like like;
 
 
+
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor

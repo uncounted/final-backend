@@ -24,5 +24,10 @@ public class BoardService {
         return new Message(true,"게시판을 조회하였습니다.",responseList);
     }
 
+    public Message postBoard(Board.Request request){
+        
+
+    }
+
 
 }
