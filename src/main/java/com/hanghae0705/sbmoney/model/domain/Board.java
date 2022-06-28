@@ -26,19 +26,23 @@ public class Board extends BaseEntity {
     @NotNull
     private String contents;
 
-    private String image;
+//    private String image;
 
 
     @OneToOne
     @JoinColumn(name="GOAL_ITEM")
     private GoalItem goalItem;
 
-    @NotNull
-    private Long viewCount;
+
 
 //    @NotNull
 //    private Like like;
 
+    public Board(Request request,GoalItem goalItem,User user){
+        this.goalItem = goalItem;
+        this.contents = request.contents;
+        this.user = user;
+    }
 
 
     @Getter
@@ -75,14 +79,14 @@ public class Board extends BaseEntity {
 
         public Response(Board board){
             this.boardId = board.getId();
-            this.UserId = board.user.getUsername();
-            this.nickname = board.user.getNickname();
-            this.profileImg = board.user.getProfileImg();
+//            this.UserId = board.user.getUsername();
+//            this.nickname = board.user.getNickname();
+//            this.profileImg = board.user.getProfileImg();
             this.contents = board.contents;
-            this.categoryId = board.goalItem.item.getCategory().getId();
-            this.categoryName = board.goalItem.item.getCategory().getName();
-            this.goalItemId = board.goalItem.id;
-            this.goalItemName = board.goalItem.item.getName();
+//            this.categoryId = board.goalItem.item.getCategory().getId();
+//            this.categoryName = board.goalItem.item.getCategory().getName();
+//            this.goalItemId = board.goalItem.id;
+//            this.goalItemName = board.goalItem.item.getName();
 //            this.likeCount =
             this.createdAt = board.getCreatedDate();
             this.modifiedAt = board.getModifiedDate();
