@@ -16,6 +16,7 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class GoalItem extends BaseEntity {
+    @Column(name = "GOAL_ITEM")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     Long id;
