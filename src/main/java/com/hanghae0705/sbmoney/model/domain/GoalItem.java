@@ -12,6 +12,7 @@ import java.util.List;
 @Entity
 @Getter
 public class GoalItem extends BaseEntity {
+    @Column(name = "GOAL_ITEM")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     Long id;
