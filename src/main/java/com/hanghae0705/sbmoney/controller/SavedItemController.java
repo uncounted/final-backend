@@ -6,10 +6,7 @@ import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.service.SavedItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -32,6 +29,12 @@ public class SavedItemController {
 //        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.geyPrincipal()
 //        User user = userDetails.getUser();
         Message message = savedItemService.postSavedItem(savedItemRequest);
+        return ResponseEntity.ok(message);
+    }
+
+    @PutMapping("/api/savedItem/{itemId}")
+    private ResponseEntity<Message> updateSavedItem(@PathVariable Long itemId, @RequestBody SavedItem.Update price){
+        Message message = savedItemService.updateSavedItem(itemId, price);
         return ResponseEntity.ok(message);
     }
 }

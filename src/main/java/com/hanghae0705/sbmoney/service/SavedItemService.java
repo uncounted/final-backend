@@ -9,6 +9,8 @@ import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,5 +48,14 @@ public class SavedItemService {
         }
 
         return new Message(true, "아끼기 품목 조회에 성공했습니다.", savedItemResponseList);
+    }
+
+    @Transactional
+    public Message updateSavedItem(Long itemId, SavedItem.Update price){
+        SavedItem savedItem = savedItemRepository.findById(itemId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 아끼기 항목입니다.")
+        );
+        savedItem.update(price.getPrice());
+        return new Message(true, "수정에 성공했습니다.");
     }
 }
