@@ -42,12 +42,14 @@ public class SavedItem extends BaseEntity {
         this.price = price;
         this.user = user;
     }
-    
-    //User 객체를 받을 때 추후 삭제
-    public SavedItem(Item item, int price){
+
+    public SavedItem(Item item, int price, User user, GoalItem goalItem){
         this.item = item;
         this.price = price;
+        this.user = user;
+        this.goalItem = goalItem;
     }
+
 
     public void update(int price){
         this.price = price;
@@ -63,6 +65,7 @@ public class SavedItem extends BaseEntity {
     @NoArgsConstructor
     public static class Request {
         private Long itemId;
+        private Long goalItemId;
         private int price;
     }
     @Getter

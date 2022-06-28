@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,6 +23,17 @@ public class GoalItemService {
     private final SavedItemRepository savedItemRepository;
     private final UserRepository userRepository;
     private final GoalItemRepositroy goalItemRepositroy;
+
+    @Transactional
+    public Message getGoalItemList(){
+        List<GoalItem> goalItemList = goalItemRepositroy.findAll();
+        List<GoalItem.Response> goalItemResponseList = new ArrayList<>();
+        for(GoalItem goalItem : goalItemList){
+            GoalItem.Response goalItemResponse = new GoalItem.Response(goalItem);
+            goalItemResponseList.add(goalItemResponse);
+        }
+        return new Message(true, "목표 항목을 조회하였습니다.", goalItemResponseList);
+    }
 
     @Transactional
     public Message postGoalItem(GoalItem.Request goalItemRequest){
@@ -58,6 +70,18 @@ public class GoalItemService {
         goalItem.setGoalPercent((double)Math.round(goalPercent*100)/100);
 
         return new Message(true, "목표 항목을 등록하였습니다.", goalItem);
+    }
+
+    @Transactional
+    public Message deleteGoalItem(Long goalItemId){
+        List<SavedItem> savedItemList = savedItemRepository.findAll();
+        for(SavedItem savedItem : savedItemList){
+            if(savedItem.getGoalItem().getId() == goalItemId){
+                savedItem.setGoalItem(null);
+            }
+        }
+        goalItemRepositroy.deleteById(goalItemId);
+        return new Message(true, "목표 항목을 삭제하였습니다.");
     }
 
 

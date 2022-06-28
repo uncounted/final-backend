@@ -12,7 +12,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class GoalItemController {
     private final GoalItemService goalItemService;
-    private final GoalItemRepositroy goalItemRepository;
+
+    @GetMapping("/api/goalItem")
+    public ResponseEntity<Message> getGoalItemList(){
+        Message message = goalItemService.getGoalItemList();
+        return ResponseEntity.ok(message);
+    }
 
     @PostMapping("/api/goalItem")
     public ResponseEntity<Message> postGoalItem(@RequestBody GoalItem.Request goalItemRequest){
@@ -21,6 +26,12 @@ public class GoalItemController {
 //        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.geyPrincipal()
 //        User user = userDetails.getUser();
         Message message = goalItemService.postGoalItem(goalItemRequest);
+        return ResponseEntity.ok(message);
+    }
+
+    @DeleteMapping("/api/goalItem/{goalItemId}")
+    public ResponseEntity<Message> deleteGoalItem(@PathVariable Long goalItemId){
+        Message message = goalItemService.deleteGoalItem(goalItemId);
         return ResponseEntity.ok(message);
     }
 }
