@@ -53,6 +53,10 @@ public class SavedItem extends BaseEntity {
         this.price = price;
     }
 
+    public void setGoalItem(GoalItem goalItem){
+        this.goalItem = goalItem;
+    }
+
 
     @Getter
     @AllArgsConstructor
