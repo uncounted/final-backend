@@ -30,7 +30,7 @@ public class Board extends BaseEntity {
 
 
     @OneToOne
-    @JoinColumn(name="GOAL_ITEM")
+    @JoinColumn(name="GOAL_ITEM_ID")
     private GoalItem goalItem;
 
 

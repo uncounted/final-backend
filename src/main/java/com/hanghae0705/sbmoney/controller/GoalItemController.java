@@ -1,8 +1,7 @@
 package com.hanghae0705.sbmoney.controller;
 
-import com.hanghae0705.sbmoney.data.Message;
+import com.hanghae0705.sbmoney.model.dto.Message;
 import com.hanghae0705.sbmoney.model.domain.GoalItem;
-import com.hanghae0705.sbmoney.repository.GoalItemRepositroy;
 import com.hanghae0705.sbmoney.service.GoalItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +25,12 @@ public class GoalItemController {
 //        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.geyPrincipal()
 //        User user = userDetails.getUser();
         Message message = goalItemService.postGoalItem(goalItemRequest);
+        return ResponseEntity.ok(message);
+    }
+
+    @PutMapping("/api/goalItem/{goalItemId}")
+    public ResponseEntity<Message> updateGoalItem(@PathVariable Long goalItemId, @RequestBody GoalItem.Request goalItemRequest){
+        Message message = goalItemService.updateGoalItem(goalItemId, goalItemRequest);
         return ResponseEntity.ok(message);
     }
 

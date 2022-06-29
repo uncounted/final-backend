@@ -1,6 +1,6 @@
 package com.hanghae0705.sbmoney.service;
 
-import com.hanghae0705.sbmoney.data.Message;
+import com.hanghae0705.sbmoney.model.dto.Message;
 import com.hanghae0705.sbmoney.model.domain.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.SavedItem;
@@ -9,10 +9,12 @@ import com.hanghae0705.sbmoney.repository.GoalItemRepositroy;
 import com.hanghae0705.sbmoney.repository.ItemRepository;
 import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;
+import com.hanghae0705.sbmoney.util.MathFloor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,21 +37,33 @@ public class SavedItemService {
         );
 
         int price = (savedItemRequest.getPrice() == 0) ? item.getDefaultPrice() : savedItemRequest.getPrice();
+
+        //GoalItem이 등록되지 않았을 때
         if(savedItemRequest.getGoalItemId() == null){
             savedItemRepository.save(new SavedItem(item, price, user));
-        } else {
+        } else { //GoalItem이 등록되었을 때
             GoalItem goalItem = goalItemRepositroy.findById(savedItemRequest.getGoalItemId()).orElseThrow(
                     () -> new IllegalArgumentException("존재하지 않은 목표입니다.")
             );
+
             int savedItemTotal = 0;
+
             for(SavedItem savedItem : goalItem.getSavedItems()){
                 savedItemTotal += savedItem.getPrice();
             }
-            if(savedItemTotal + price > goalItem.getTotal()){
-                goalItem.setCheckReached(true);
+            int updatePrice = savedItemTotal + price;
+
+
+            if(updatePrice > goalItem.getTotal()){ // GoalItem이 목표 금액을 달성했을 때
+                LocalDateTime reachedAt = LocalDateTime.now();
+                goalItem.setCheckReached(true, 100.0, reachedAt);
                 savedItemRepository.save(new SavedItem(item, price, user));
+            } else{ // GoalItem이 목표 금액을 달성하지 못했을 때
+                double decimal = ((double)updatePrice / goalItem.getTotal());
+                double updateGoalPercent = MathFloor.PercentTenths(decimal);
+                savedItemRepository.save(new SavedItem(item, price, user, goalItem));
+                goalItem.setGoalPercent(updateGoalPercent);
             }
-            savedItemRepository.save(new SavedItem(item, price, user, goalItem));
         }
 
         return new Message(true, "아끼기 품목 등록에 성공했습니다.");
@@ -68,7 +82,6 @@ public class SavedItemService {
             SavedItem.Response savedItemResponse = new SavedItem.Response(categoryId, categoryName, itemId, itemName, price);
             savedItemResponseList.add(savedItemResponse);
         }
-
         return new Message(true, "아끼기 품목 조회에 성공했습니다.", savedItemResponseList);
     }
 

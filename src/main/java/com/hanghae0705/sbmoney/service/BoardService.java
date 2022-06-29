@@ -1,6 +1,6 @@
 package com.hanghae0705.sbmoney.service;
 
-import com.hanghae0705.sbmoney.data.Message;
+import com.hanghae0705.sbmoney.model.dto.Message;
 import com.hanghae0705.sbmoney.model.domain.Board;
 import com.hanghae0705.sbmoney.model.domain.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.User;

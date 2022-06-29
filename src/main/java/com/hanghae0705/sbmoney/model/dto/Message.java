@@ -1,4 +1,4 @@
-package com.hanghae0705.sbmoney.data;
+package com.hanghae0705.sbmoney.model.dto;
 
 import lombok.Data;
 

@@ -1,6 +1,6 @@
 package com.hanghae0705.sbmoney.controller;
 
-import com.hanghae0705.sbmoney.data.Message;
+import com.hanghae0705.sbmoney.model.dto.Message;
 import com.hanghae0705.sbmoney.model.domain.Board;
 import com.hanghae0705.sbmoney.service.BoardService;
 import lombok.RequiredArgsConstructor;
