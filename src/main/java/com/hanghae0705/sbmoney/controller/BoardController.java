@@ -25,10 +25,13 @@ public class BoardController {
         Message message = boardService.postBoard(request);
         return ResponseEntity.ok(message);
     }
-//    @PutMapping("/api/board/{boardId}")
-//    public ResponseEntity<Message> putBoard(@RequestBody Board.Update request,@PathVariable Long boardId){
-//
-//    }
+
+    @PutMapping("/api/board/{boardId}")
+   public ResponseEntity<Message> putBoard(@RequestBody Board.Update request,@PathVariable Long boardId){
+        Message message = boardService.putBoard(request,boardId);
+        return ResponseEntity.ok(message);
+    }
+
 //    @DeleteMapping("/api/board/{boardId}")
 //    public ResponseEntity<Message> deleteBoard(@PathVariable Long boardId){
 //
