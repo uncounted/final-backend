@@ -1,15 +1,20 @@
-package com.hanghae0705.sbmoney.security.jwt;
+package com.hanghae0705.sbmoney.model.dto;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public class JwtTokenDto {
+@Getter
+@NoArgsConstructor
+@Builder
+public class TokenDto {
     private String grantType;
     private String accessToken;
     private String refreshToken;
     private Long accessTokenExpiresIn;
 
     @Builder
-    public JwtTokenDto(String grantType, String accessToken, String refreshToken, Long accessTokenExpiresIn) {
+    public TokenDto(String grantType, String accessToken, String refreshToken, Long accessTokenExpiresIn) {
         this.grantType = grantType;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;

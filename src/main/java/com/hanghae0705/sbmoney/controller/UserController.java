@@ -2,7 +2,8 @@ package com.hanghae0705.sbmoney.controller;
 
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.model.dto.RespDto;
-import com.hanghae0705.sbmoney.security.jwt.JwtTokenDto;
+import com.hanghae0705.sbmoney.model.dto.TokenDto;
+import com.hanghae0705.sbmoney.model.dto.TokenRequestDto;
 import com.hanghae0705.sbmoney.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +18,10 @@ public class UserController {
     private final UserService userService;
 
 
-    @PostMapping("/api/user/login")
-    public JwtTokenDto login(@RequestBody User.RequestLogin requestLogin) throws UserException {
-        return userService.login(requestLogin));
-    }
+//    @PostMapping("/api/user/login")
+//    public JwtTokenDto login(@RequestBody User.RequestLogin requestLogin) throws UserException {
+//        return userService.login(requestLogin));
+//    }
 
     //로그인된 유저의 데이터를 반환
     @GetMapping("/api/user/myInfo")
@@ -36,5 +37,15 @@ public class UserController {
                 .result(true)
                 .respMsg("회원가입에 성공했습니다.")
                 .build();
+    }
+
+    @PostMapping("/login")
+    public TokenDto login(@RequestBody User.RequestLogin memberRequestDto) {
+        return userService.login(memberRequestDto);
+    }
+
+    @PostMapping("/reissue")
+    public TokenDto reissue(@RequestBody TokenRequestDto tokenRequestDto) {
+        return userService.reissue(tokenRequestDto);
     }
 }

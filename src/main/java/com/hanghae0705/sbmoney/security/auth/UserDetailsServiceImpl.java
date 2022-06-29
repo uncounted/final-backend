@@ -1,7 +1,6 @@
 package com.hanghae0705.sbmoney.security.auth;
 
 import com.hanghae0705.sbmoney.exception.ApiException;
-import com.hanghae0705.sbmoney.exception.ApiExceptionHandler;
 import com.hanghae0705.sbmoney.exception.ApiRequestException;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.repository.UserRepository;
@@ -20,7 +19,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     //userid로 유저 반환
     @Override
     public UserDetails loadUserByUsername(String userid) throws UsernameNotFoundException {
-        User user = userRepository.findByUserid(userid)
+        User user = userRepository.findByUsername(userid)
                 .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_USER));
         return new UserDetailsImpl(user);
     }

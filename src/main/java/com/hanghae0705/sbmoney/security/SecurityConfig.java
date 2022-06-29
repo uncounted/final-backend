@@ -1,7 +1,9 @@
 package com.hanghae0705.sbmoney.security;
 
-import com.hanghae0705.sbmoney.security.filter.JwtAuthFilter;
-import com.hanghae0705.sbmoney.security.jwt.HeaderTokenExtractor;
+import com.hanghae0705.sbmoney.security.handler.JwtAccessDeniedHandler;
+import com.hanghae0705.sbmoney.security.handler.JwtAuthenticationEntryPoint;
+import com.hanghae0705.sbmoney.security.jwt.JwtSecurityConfig;
+import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,64 +27,34 @@ import java.util.List;
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true) //@Secured 어노테이션 활성화 - admin 만 접근 제한할 수 있음
 @RequiredArgsConstructor
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final JwtAuthProvider jwtAuthProvider;
-    private final HeaderTokenExtractor headerTokenExtractor;
+public class SecurityConfig {
+
+    private final TokenProvider tokenProvider;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+
 
     @Bean
     public BCryptPasswordEncoder  encodePassword(){
         return new BCryptPasswordEncoder();
     }
 
-    public void configure(AuthenticationManagerBuilder auth){
-        auth.authenticationProvider(jwtAuthProvider);
-    }
-
     protected void configure(HttpSecurity http) throws Exception{
         http.cors().configurationSource(corsConfigurationSource());
-        http.csrf().disable();
-
-        http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        http.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
-
-        http.authorizeRequests()
-                .anyRequest()
-                .permitAll()
+        http.csrf().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
                 .and()
-                .logout()
-                .logoutUrl("/user/logout")
-                .permitAll();
-    }
-
-    private JwtAuthFilter jwtFilter() throws Exception {
-        List<String> skipPathList = new ArrayList<>();
-
-        // 회원 관리 API 허용
-        skipPathList.add("GET,/api/user/login");
-        skipPathList.add("POST,/api/user/register");
-
-        skipPathList.add("GET,/");
-
-        FilterSkipMatcher matcher = new FilterSkipMatcher(
-                skipPathList,
-                "/**"
-        );
-
-        JwtAuthFilter filter = new JwtAuthFilter(
-                matcher,
-                headerTokenExtractor
-        );
-        filter.setAuthenticationManager(authenticationManagerBean());
-
-        return filter;
-    }
-
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .antMatchers("/api/user/**")
+                .permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .apply(new JwtSecurityConfig(tokenProvider));
     }
 
     @Bean
