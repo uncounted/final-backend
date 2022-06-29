@@ -1,4 +1,4 @@
-package com.sparta.springcore.security.jwt;
+package com.hanghae0705.sbmoney.security.jwt;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 

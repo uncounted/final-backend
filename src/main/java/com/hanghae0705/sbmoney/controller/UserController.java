@@ -2,8 +2,11 @@ package com.hanghae0705.sbmoney.controller;
 
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.model.dto.RespDto;
+import com.hanghae0705.sbmoney.security.jwt.JwtTokenDto;
 import com.hanghae0705.sbmoney.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,6 +16,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
 
+
+    @PostMapping("/api/user/login")
+    public JwtTokenDto login(@RequestBody User.RequestLogin requestLogin) throws UserException {
+        return userService.login(requestLogin));
+    }
+
+    //로그인된 유저의 데이터를 반환
+    @GetMapping("/api/user/myInfo")
+    public User.Response getMyInfo(){
+        return userService.getMyInfo();
+    }
+
+    //회원가입
     @PostMapping("/api/user/register")
     public RespDto registerUser(@RequestBody User.Request requestDto){
         userService.saveUser(requestDto);

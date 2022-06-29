@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -23,7 +24,7 @@ public class User extends BaseEntity {
     private Long id;
 
     @NotNull
-    private String userid;
+    private String username;
 
     @NotNull
     private String password;
@@ -54,10 +55,16 @@ public class User extends BaseEntity {
     @JsonManagedReference(value = "user-fk")
     private List<GoalItem> goalItems;
 
+    public User(String username, String password, UserRoleEnum role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
+
     @Builder
-    public User(Long id, String userid, String password, String nickname, String email, String profileImg, String introDesc, String provider, UserRoleEnum role, LocalDateTime lastEntered) {
+    public User(Long id, String username, String password, String nickname, String email, String profileImg, String introDesc, String provider, UserRoleEnum role, LocalDateTime lastEntered) {
         this.id = id;
-        this.userid = userid;
+        this.username = username;
         this.password = password;
         this.nickname = nickname;
         this.email = email;
@@ -90,11 +97,48 @@ public class User extends BaseEntity {
 
     @Setter
     @Getter
+    @NoArgsConstructor
+    public static class RequestLogin {
+        private String userid;
+        private String password;
+
+        public UsernamePasswordAuthenticationToken toAuthentication(){
+            return new UsernamePasswordAuthenticationToken(userid, password);
+        }
+    }
+
+    @Setter
+    @Getter
+    @NoArgsConstructor
     public static class Request {
         private String userid;
         private String password;
         private String passwordCheck;
         private String nickname;
         private String email;
+    }
+
+    @Setter
+    @Getter
+    @NoArgsConstructor
+    public static class Response {
+        private String userid;
+        private String nickname;
+        private String email;
+
+        public static Response of(User user){
+            return Response.builder()
+                    .userid(user.getUsername())
+                    .nickname(user.getNickname())
+                    .email(user.getEmail())
+                    .build();
+        }
+
+        @Builder
+        public Response(String userid, String nickname, String email) {
+            this.userid = userid;
+            this.nickname = nickname;
+            this.email = email;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.hanghae0705.sbmoney.security;
+package com.hanghae0705.sbmoney.security.filter;
 
 import com.hanghae0705.sbmoney.security.jwt.HeaderTokenExtractor;
 import com.hanghae0705.sbmoney.security.jwt.JwtPreProcessingToken;
