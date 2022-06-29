@@ -27,13 +27,14 @@ public class BoardController {
     }
 
     @PutMapping("/api/board/{boardId}")
-   public ResponseEntity<Message> putBoard(@RequestBody Board.Update request,@PathVariable Long boardId){
+    public ResponseEntity<Message> putBoard(@RequestBody Board.Update request,@PathVariable Long boardId){
         Message message = boardService.putBoard(request,boardId);
         return ResponseEntity.ok(message);
     }
 
-//    @DeleteMapping("/api/board/{boardId}")
-//    public ResponseEntity<Message> deleteBoard(@PathVariable Long boardId){
-//
-//    }
+    @DeleteMapping("/api/board/{boardId}")
+    public ResponseEntity<Message> deleteBoard(@PathVariable Long boardId){
+        Message message = boardService.deleteBoard(boardId);
+        return ResponseEntity.ok(message); 
+    }
 }

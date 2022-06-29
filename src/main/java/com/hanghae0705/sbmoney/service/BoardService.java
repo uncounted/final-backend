@@ -47,5 +47,12 @@ public class BoardService {
 
     }
 
+    @Transactional
+    public Message deleteBoard(Long boardId) {
+        Board board = boardRepository.findAllById(boardId);
+        boardRepository.delete(board);
+        return new Message(true, "게시글을 삭제하였습니다");
+    }
+
 
 }
