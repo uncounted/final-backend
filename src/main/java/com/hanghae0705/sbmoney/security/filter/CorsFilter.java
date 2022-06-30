@@ -1,4 +1,4 @@
-package com.marketkutty.marketkutty.filter;
+package com.hanghae0705.sbmoney.security.filter;
 
 import org.springframework.context.annotation.Configuration;
 
@@ -19,7 +19,7 @@ public class CorsFilter implements Filter {
 
         if(origin.startsWith("http://localhost:3000")
                 || origin.startsWith("http://localhost:8090")
-                || origin.startsWith("http://suhyun.site.s3-website.ap-northeast-2.amazonaws.com")){
+                || origin.startsWith("http://sparta-ej.shop")){
             response.setHeader("Access-Control-Allow-Origin", origin); //허용대상 도메인
         }
 
