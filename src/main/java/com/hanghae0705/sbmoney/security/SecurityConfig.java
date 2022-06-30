@@ -40,18 +40,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .accessDeniedHandler(jwtAccessDeniedHandler)
+
+                //h2 대시보드 허용
                 .and()
                 .headers()
                 .frameOptions()
                 .sameOrigin()
+
+                //세션 사용 금지
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+                //접근권한 제어
                 .and()
                 .authorizeRequests()
-                .anyRequest().permitAll()
-                //.antMatchers("/api/user/**").permitAll()
-                //.anyRequest().authenticated()
+                .antMatchers(AUTH_WHITELIST).permitAll()
+                .anyRequest().authenticated()
+
+                //토큰 프로바이더 사용
                 .and()
                 .apply(new JwtSecurityConfig(tokenProvider));
     }
@@ -68,4 +75,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+    private static final String[] AUTH_WHITELIST = {
+            "/",
+            "/h2-console/**",
+            "/api/user/**",
+            "/test"
+    };
 }
