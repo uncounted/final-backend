@@ -43,9 +43,6 @@ public class Board extends BaseEntity {
         this.contents = request.contents;
         this.user = user;
     }
-    public void updateBoard(Board.Update update){
-        this.contents = update.contents;
-    }
 
 
     @Getter
@@ -62,8 +59,6 @@ public class Board extends BaseEntity {
     @NoArgsConstructor
     public static class Update{
         private String contents;
-
-
     }
 
     @Getter
