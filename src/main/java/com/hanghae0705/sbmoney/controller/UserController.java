@@ -39,7 +39,7 @@ public class UserController {
     }
 
     // 닉네임 중복검사
-    @PostMapping("/api/user/register/checkEmail")
+    @PostMapping("/api/user/register/checkNickname")
     public RespDto checkNickname(@RequestBody User.RequestCheckNickname requestCheckNickname){
         return userService.checkNickname(requestCheckNickname.getNickname());
     }
