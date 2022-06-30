@@ -1,6 +1,8 @@
 package com.hanghae0705.sbmoney.model.domain;
 
 import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
+import com.hanghae0705.sbmoney.service.BoardService;
+import com.hanghae0705.sbmoney.service.LikeService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +15,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class Board extends BaseEntity {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,17 +37,27 @@ public class Board extends BaseEntity {
     private GoalItem goalItem;
 
 
+    @NotNull
+    private Long likeCount;
 
-//    @NotNull
-//    private Like like;
+    @NotNull
+    private boolean checkLike;
 
     public Board(Request request,GoalItem goalItem,User user){
         this.goalItem = goalItem;
         this.contents = request.contents;
         this.user = user;
+        this.likeCount = (long) 0;
+        this.checkLike = false;
     }
     public void updateBoard(Board.Update update){
         this.contents = update.contents;
+    }
+
+    public void likeBoard(boolean like, Long likeCount){
+
+        this.checkLike = like;
+        this.likeCount = likeCount;
     }
 
 
@@ -81,6 +94,8 @@ public class Board extends BaseEntity {
 //        private Long likeCount;
         private LocalDateTime createdAt;
         private LocalDateTime modifiedAt;
+        private Long likeCount;
+        private boolean checkLike;
 
         public Response(Board board){
             this.boardId = board.getId();
@@ -95,7 +110,8 @@ public class Board extends BaseEntity {
 //            this.likeCount =
             this.createdAt = board.getCreatedDate();
             this.modifiedAt = board.getModifiedDate();
-
+            this.likeCount = board.likeCount;
+            this.checkLike = board.checkLike;
         }
     }
 }
