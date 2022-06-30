@@ -1,5 +1,6 @@
 package com.hanghae0705.sbmoney.controller;
 
+import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.model.dto.RespDto;
 import com.hanghae0705.sbmoney.model.dto.TokenDto;
@@ -52,7 +53,7 @@ public class UserController {
 
     // 로그인된 유저의 데이터를 반환
     @GetMapping("/api/user/myInfo")
-    public User.Response getMyInfo(){
+    public Message getMyInfo(){
         return userService.getMyInfo();
     }
 
