@@ -8,12 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -101,11 +99,12 @@ public class User extends BaseEntity {
     @Getter
     @NoArgsConstructor
     public static class RequestLogin {
-        private String userid;
+        private String username;
         private String password;
 
+
         public UsernamePasswordAuthenticationToken toAuthentication(){
-            return new UsernamePasswordAuthenticationToken(userid, password);
+            return new UsernamePasswordAuthenticationToken(username, password);
         }
     }
 
@@ -113,7 +112,7 @@ public class User extends BaseEntity {
     @Getter
     @NoArgsConstructor
     public static class Request {
-        private String userid;
+        private String username;
         private String password;
         private String passwordCheck;
         private String nickname;
@@ -124,21 +123,21 @@ public class User extends BaseEntity {
     @Getter
     @NoArgsConstructor
     public static class Response {
-        private String userid;
+        private String username;
         private String nickname;
         private String email;
 
         public static Response of(User user){
             return Response.builder()
-                    .userid(user.getUsername())
+                    .username(user.getUsername())
                     .nickname(user.getNickname())
                     .email(user.getEmail())
                     .build();
         }
 
         @Builder
-        public Response(String userid, String nickname, String email) {
-            this.userid = userid;
+        public Response(String username, String nickname, String email) {
+            this.username = username;
             this.nickname = nickname;
             this.email = email;
         }

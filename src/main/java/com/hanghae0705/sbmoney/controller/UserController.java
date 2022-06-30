@@ -6,7 +6,6 @@ import com.hanghae0705.sbmoney.model.dto.TokenDto;
 import com.hanghae0705.sbmoney.model.dto.TokenRequestDto;
 import com.hanghae0705.sbmoney.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,12 +38,12 @@ public class UserController {
                 .build();
     }
 
-    @PostMapping("/login")
+    @PostMapping("/api/user/login")
     public TokenDto login(@RequestBody User.RequestLogin memberRequestDto) {
         return userService.login(memberRequestDto);
     }
 
-    @PostMapping("/reissue")
+    @PostMapping("/api/user/reissue")
     public TokenDto reissue(@RequestBody TokenRequestDto tokenRequestDto) {
         return userService.reissue(tokenRequestDto);
     }

@@ -1,7 +1,6 @@
 package com.hanghae0705.sbmoney.security.auth;
 
 import com.hanghae0705.sbmoney.model.domain.User;
-import com.hanghae0705.sbmoney.model.domain.baseEntity.UserRoleEnum;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +25,7 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole().getAuthority());
+        //SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole().toString());
         Collection<GrantedAuthority> collect = new ArrayList<>();
         collect.add(simpleGrantedAuthority);
         return collect;

@@ -1,6 +1,9 @@
 package com.hanghae0705.sbmoney.model.domain.baseEntity;
 
 public enum UserRoleEnum {
+
+//    ROLE_USER,
+//    ROLE_ADMIN;
     USER(Authority.USER),
     ADMIN(Authority.ADMIN);
 

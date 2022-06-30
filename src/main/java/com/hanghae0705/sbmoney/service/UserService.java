@@ -33,10 +33,12 @@ public class UserService {
 
 
     public void saveUser(User.Request requestDto){
+
+
         userRepository.save(User.builder()
                         .id(null)
-                        .username(requestDto.getUserid())
-                        .password(requestDto.getPassword())
+                        .username(requestDto.getUsername())
+                        .password(passwordEncoder.encode(requestDto.getPassword()))
                         .nickname(requestDto.getNickname())
                         .email(requestDto.getEmail())
                         .introDesc("한다면 해")
@@ -47,8 +49,8 @@ public class UserService {
                 .build());
     }
 
-    public void checkUser(String userId){
-        Optional<User> found = userRepository.findByUsername(userId);
+    public void checkUser(String username){
+        Optional<User> found = userRepository.findByUsername(username);
 
         if (found.isPresent()) {
             throw new ApiRequestException(ApiException.DUPLICATED_USER);
