@@ -3,10 +3,7 @@ package com.hanghae0705.sbmoney.model.domain;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.UserRoleEnum;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import javax.persistence.*;
@@ -98,10 +95,20 @@ public class User extends BaseEntity {
     @Setter
     @Getter
     @NoArgsConstructor
+    public static class RequestRegister {
+        private String username;
+        private String password;
+        private String passwordCheck;
+        private String nickname;
+        private String email;
+    }
+
+    @Setter
+    @Getter
+    @NoArgsConstructor
     public static class RequestLogin {
         private String username;
         private String password;
-
 
         public UsernamePasswordAuthenticationToken toAuthentication(){
             return new UsernamePasswordAuthenticationToken(username, password);
@@ -110,13 +117,26 @@ public class User extends BaseEntity {
 
     @Setter
     @Getter
-    @NoArgsConstructor
-    public static class Request {
+    @AllArgsConstructor
+    @Builder
+    public static class RequestCheckUsername {
         private String username;
-        private String password;
-        private String passwordCheck;
-        private String nickname;
+    }
+
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class RequestCheckEmail {
         private String email;
+    }
+
+    @Setter
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    public static class RequestCheckNickname {
+        private String nickname;
     }
 
     @Setter
