@@ -19,11 +19,11 @@ public class Board extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="BOARD_ID")
+    @Column(name = "BOARD_ID")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name="USER_ID")
+    @JoinColumn(name = "USER_ID")
     private User user;
 
     @NotNull
@@ -33,7 +33,7 @@ public class Board extends BaseEntity {
 
 
     @OneToOne
-    @JoinColumn(name="GOAL_ITEM")
+    @JoinColumn(name = "GOAL_ITEM")
     private GoalItem goalItem;
 
 
@@ -43,18 +43,19 @@ public class Board extends BaseEntity {
     @NotNull
     private boolean checkLike;
 
-    public Board(Request request,GoalItem goalItem,User user){
+    public Board(Request request, GoalItem goalItem, User user) {
         this.goalItem = goalItem;
         this.contents = request.contents;
         this.user = user;
         this.likeCount = (long) 0;
         this.checkLike = false;
     }
-    public void updateBoard(Board.Update update){
+
+    public void updateBoard(Board.Update update) {
         this.contents = update.contents;
     }
 
-    public void likeBoard(boolean like, Long likeCount){
+    public void likeBoard(boolean like, Long likeCount) {
 
         this.checkLike = like;
         this.likeCount = likeCount;
@@ -64,7 +65,7 @@ public class Board extends BaseEntity {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Request{
+    public static class Request {
 
         private Long goalItemId;
         private String contents;
@@ -73,7 +74,7 @@ public class Board extends BaseEntity {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Update{
+    public static class Update {
         private String contents;
 
 
@@ -91,13 +92,13 @@ public class Board extends BaseEntity {
         private String categoryName;
         private Long goalItemId;
         private String goalItemName;
-//        private Long likeCount;
+        //        private Long likeCount;
         private LocalDateTime createdAt;
         private LocalDateTime modifiedAt;
         private Long likeCount;
         private boolean checkLike;
 
-        public Response(Board board){
+        public Response(Board board) {
             this.boardId = board.getId();
 //            this.UserId = board.user.getUsername();
 //            this.nickname = board.user.getNickname();

@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
-
 @RestController
 @RequiredArgsConstructor
 public class BoardController {
@@ -27,14 +26,14 @@ public class BoardController {
     }
 
     @PutMapping("/api/board/{boardId}")
-    public ResponseEntity<Message> putBoard(@RequestBody Board.Update request,@PathVariable Long boardId){
-        Message message = boardService.putBoard(request,boardId);
+    public ResponseEntity<Message> putBoard(@RequestBody Board.Update request, @PathVariable Long boardId) {
+        Message message = boardService.putBoard(request, boardId);
         return ResponseEntity.ok(message);
     }
 
     @DeleteMapping("/api/board/{boardId}")
-    public ResponseEntity<Message> deleteBoard(@PathVariable Long boardId){
+    public ResponseEntity<Message> deleteBoard(@PathVariable Long boardId) {
         Message message = boardService.deleteBoard(boardId);
-        return ResponseEntity.ok(message); 
+        return ResponseEntity.ok(message);
     }
 }

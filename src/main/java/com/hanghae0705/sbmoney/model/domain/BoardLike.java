@@ -1,6 +1,5 @@
 package com.hanghae0705.sbmoney.model.domain;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -10,11 +9,10 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Getter
 @RequiredArgsConstructor
-public class Like {
+public class BoardLike {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="LIKE_ID")
     private Long id;
 
     @NotNull
@@ -25,25 +23,26 @@ public class Like {
 //    private User user;
 
     @ManyToOne
-    @JoinColumn(name="BOARD_ID")
+    @JoinColumn(name = "BOARD_ID")
     private Board board;
 
-    public Like(Board board){
+    public BoardLike(Board board) {
         this.like = true;
 //        this.user =
         this.board = board;
     }
-    public void changeLike(boolean like){
+
+    public void changeLike(boolean like) {
         this.like = like;
     }
 
 
     @Getter
-    public static class Response{
+    public static class Response {
         private Long likeCount;
         private boolean checkLike;
 
-        public Response(Long likeCount, boolean checkLike ){
+        public Response(Long likeCount, boolean checkLike) {
             this.checkLike = checkLike;
             this.likeCount = likeCount;
         }

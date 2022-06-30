@@ -15,7 +15,7 @@ public class LikeController {
     private final LikeService likeService;
 
     @PostMapping("/api/board/{boardId}")
-    public ResponseEntity<Message>  changeLike(@PathVariable Long boardId){
+    public ResponseEntity<Message> changeLike(@PathVariable Long boardId) {
         Message message = likeService.changeLike(boardId);
         return ResponseEntity.ok(message);
     }
