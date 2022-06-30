@@ -1,5 +1,6 @@
 package com.hanghae0705.sbmoney.service;
 
+import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRequestException;
 import com.hanghae0705.sbmoney.model.domain.RefreshToken;
@@ -96,10 +97,24 @@ public class UserService {
         }
     }
 
-    public User.Response getMyInfo(){
-        return userRepository.findById(SecurityUtil.getCurrentUserId())
-                .map(User.Response::of)
-                .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_USER));
+    public Message getMyInfo(){
+        Optional<User.Response> resp = userRepository.findByUsername(SecurityUtil.getCurrentUsername())
+                .map(User.Response::of);
+
+        if(resp.isPresent()){
+            return Message.builder()
+                    .result(true)
+                    .respMsg("로그인 유저 정보 조회에 성공하였습니다.")
+                    .data(resp)
+                    .build();
+        } else {
+            return Message.builder()
+                    .result(false)
+                    .respMsg("로그인 유저 정보가 없습니다.")
+                    .data(null)
+                    .build();
+        }
+
     }
 
 
