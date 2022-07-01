@@ -6,6 +6,7 @@ import com.hanghae0705.sbmoney.model.dto.RespDto;
 import com.hanghae0705.sbmoney.model.dto.TokenDto;
 import com.hanghae0705.sbmoney.model.dto.TokenRequestDto;
 import com.hanghae0705.sbmoney.service.UserService;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,9 @@ public class UserController {
                 .respMsg("회원가입에 성공했습니다.")
                 .build();
     }
+
+    //@GetMapping("/login/oauth/code/google") //라이브러리에서 처리하는 부분이기 때문에 작성 불필요
+    // 또한 /login/oauth/code 는 구글 API 신청 시 한 번 등록한 후 변경불가
 
     // 아이디 중복검사
     @PostMapping("/api/user/register/checkUsername")

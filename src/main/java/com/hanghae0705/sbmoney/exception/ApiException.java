@@ -12,7 +12,8 @@ public enum ApiException implements BaseExceptionType{
     REGEXP_PASSWORD(1005, 203, "비밀번호는 영문 대소문자, 숫자만 사용 가능합니다"),
     NOT_EXIST_IN_SECURITY_CONTEXT(2001, 203, "Security Context에 인증 정보가 없습니다."),
     NOT_VALID_TOKEN(3001, 203, "유효한 토큰이 아닙니다."),
-    NO_AUTHORITY_KEY(3001, 203, "권한 정보가 없는 토큰입니다.");
+    NO_AUTHORITY_KEY(3002, 203, "권한 정보가 없는 토큰입니다."),
+    NO_PROVIDER(3010, 203, "provider가 없습니다.");
 
 
     private int errorCode;

@@ -98,9 +98,22 @@ public class User extends BaseEntity {
     public static class RequestRegister {
         private String username;
         private String password;
-        private String passwordCheck;
+        private String checkPassword;
         private String nickname;
         private String email;
+        private String profileImg;
+        private String provider;
+
+        @Builder
+        public RequestRegister(String username, String password, String checkPassword, String nickname, String email, String profileImg, String provider) {
+            this.username = username;
+            this.password = password;
+            this.checkPassword = checkPassword;
+            this.nickname = nickname;
+            this.email = email;
+            this.profileImg = profileImg;
+            this.provider = provider;
+        }
     }
 
     @Setter
@@ -117,26 +130,38 @@ public class User extends BaseEntity {
 
     @Setter
     @Getter
-    @AllArgsConstructor
-    @Builder
+    @NoArgsConstructor
     public static class RequestCheckUsername {
         private String username;
+
+        @Builder
+        public RequestCheckUsername(String username) {
+            this.username = username;
+        }
     }
 
     @Setter
     @Getter
-    @AllArgsConstructor
-    @Builder
+    @NoArgsConstructor
     public static class RequestCheckEmail {
         private String email;
+
+        @Builder
+        public RequestCheckEmail(String email) {
+            this.email = email;
+        }
     }
 
     @Setter
     @Getter
-    @AllArgsConstructor
-    @Builder
+    @NoArgsConstructor
     public static class RequestCheckNickname {
         private String nickname;
+
+        @Builder
+        public RequestCheckNickname(String nickname) {
+            this.nickname = nickname;
+        }
     }
 
     @Setter
