@@ -80,6 +80,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/",
             "/h2-console/**",
             "/api/user/**",
-            "/test"
+            "/test",
+            "/**",
+            "/**/**",
+            "/**/**/**"
     };
 }
