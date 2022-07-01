@@ -15,14 +15,15 @@ public class CorsFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
 
-        String origin = request.getHeader("Origin");
-
-        if(origin.startsWith("http://localhost:3000")
-                || origin.startsWith("http://localhost:8090")
-                || origin.startsWith("http://sparta-ej.shop")){
-            response.setHeader("Access-Control-Allow-Origin", origin); //허용대상 도메인
-        }
-
+//        String origin = request.getHeader("Origin");
+//
+//        if(origin.startsWith("http://localhost:3000")
+//                || origin.startsWith("http://localhost:8080")
+//                || origin.startsWith("http://sparta-ej.shop")
+//                || origin.isEmpty() ){
+//            response.setHeader("Access-Control-Allow-Origin", origin); //허용대상 도메인
+//        }
+        response.setHeader("Access-Control-Allow-Origin", "http://sparta-ej.shop");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT, PATCH, OPTIONS");
         response.setHeader("Access-Control-Max-Age", "3600");
         //response.setHeader("Access-Control-Allow-Headers", "X-Requested-With, Origin, Content-Type, Accept, Custom-Header, Authorization");

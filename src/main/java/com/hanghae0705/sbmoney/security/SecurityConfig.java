@@ -4,34 +4,42 @@ import com.hanghae0705.sbmoney.security.handler.JwtAccessDeniedHandler;
 import com.hanghae0705.sbmoney.security.handler.JwtAuthenticationEntryPoint;
 import com.hanghae0705.sbmoney.security.jwt.JwtSecurityConfig;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
-import lombok.RequiredArgsConstructor;
+import com.hanghae0705.sbmoney.security.oauth.OAuth2AuthenticationSuccessHandler;
+import com.hanghae0705.sbmoney.security.oauth.Oauth2UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(securedEnabled = true) //@Secured 어노테이션 활성화 - admin 만 접근 제한할 수 있음
-@RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+    private final Oauth2UserService oauth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+
+    @Autowired
+    public SecurityConfig(TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler, @Lazy Oauth2UserService oauth2UserService, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) {
+        this.tokenProvider = tokenProvider;
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+        this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
+        this.oauth2UserService = oauth2UserService;
+        this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
+    }
 
     @Bean
-    public BCryptPasswordEncoder  encodePassword(){
+    public BCryptPasswordEncoder encodePassword(){
         return new BCryptPasswordEncoder();
     }
 
@@ -62,7 +70,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 //토큰 프로바이더 사용
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider));
+                .apply(new JwtSecurityConfig(tokenProvider))
+
+                //Oauth2
+                .and()
+                .oauth2Login()
+                .userInfoEndpoint() // 로그인 성공 후 사용자 정보 가져올 때의 설정
+                .userService(oauth2UserService)
+                .and()
+                .successHandler(oAuth2AuthenticationSuccessHandler);
     }
 
 //    @Bean
