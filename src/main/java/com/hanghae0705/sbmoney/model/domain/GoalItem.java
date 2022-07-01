@@ -16,7 +16,7 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class GoalItem extends BaseEntity {
-    @Column(name = "GOAL_ITEM")
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     Long id;
@@ -60,14 +60,38 @@ public class GoalItem extends BaseEntity {
         this.item = item;
     }
 
+
+    public void setCheckReached(boolean checkReached, double goalPercent, LocalDateTime reachedAt){
+        this.checkReached = checkReached;
+        this.goalPercent = goalPercent;
+        this.reachedAt = reachedAt;
+    }
+
+    public void setCheckReached(boolean checkReached, LocalDateTime reachedAt){
+        this.checkReached = checkReached;
+        this.reachedAt = reachedAt;
+    }
+
     public void setGoalPercent(double goalPercent){
         this.goalPercent = goalPercent;
     }
 
-    public void setCheckReached(boolean checkReached){
-        this.checkReached = checkReached;
+    public void setImage(String image){
+        this.image = image;
     }
 
+    public void updateGoalItem(int count, int total, double goalPercent){
+        this.count = count;
+        this.total = total;
+        this.goalPercent = goalPercent;
+    }
+
+    public void updateGoalItem(int count, int total, Item item, double goalPercent) {
+        this.count = count;
+        this.total = total;
+        this.item = item;
+        this.goalPercent = goalPercent;
+    }
 
     @Getter
     @AllArgsConstructor
@@ -75,6 +99,14 @@ public class GoalItem extends BaseEntity {
     public static class Request {
         private Long categoryId;
         private Long itemId;
+        private int goalItemCount;
+        private int price;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UpdateRequest {
         private int goalItemCount;
         private int price;
     }
@@ -101,11 +133,11 @@ public class GoalItem extends BaseEntity {
             this.itemId = goalItem.getItem().getId();
             this.itemName = goalItem.getItem().getName();
             this.goalItemCount = goalItem.getCount();
-            this.price = goalItem.getTotal() / goalItem.getCount();
+            this.price = (goalItem.getCount() == 0)? 0 : goalItem.getTotal() / goalItem.getCount();
             this.totalPrice = goalItem.getTotal();
             this.checkReached = goalItem.isCheckReached();
             this.goalPercent = goalItem.getGoalPercent();
-            this.savedItemCount = goalItem.getSavedItems().size();
+            this.savedItemCount = (goalItem.getSavedItems() == null) ? 0 : goalItem.getSavedItems().size();
             this.createdAt = goalItem.getCreatedDate();
             this.reachedAt = goalItem.getReachedAt();
 

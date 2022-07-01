@@ -1,15 +1,11 @@
 package com.hanghae0705.sbmoney.service;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.Claim;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.Board;
 import com.hanghae0705.sbmoney.model.domain.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.repository.BoardRepository;
-import com.hanghae0705.sbmoney.repository.GoalItemRepositroy;
-import com.hanghae0705.sbmoney.repository.UserRepository;
+import com.hanghae0705.sbmoney.repository.GoalItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,26 +13,12 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.auth0.jwt.JWT.decode;
-
 @Service
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final GoalItemRepositroy goalItemRepositroy;
+    private final GoalItemRepository goalItemRepository;
 
-    private final UserRepository userRepository;
-    @Transactional
-    public String getUser(String authorization){
-        String token = authorization.substring(7);
-        DecodedJWT decodeToken = JWT.decode(token);
-        String a = decodeToken.getClaim().toString();
-//        User user = userRepository.findById(Long.parseLong(decodeToken.getClaim("USER_ID").toString()))
-//              .orElseThrow(() -> new NullPointerException("ID DOES NOT EXIST"));
-
-        return a;
-
-    }
     @Transactional
     public Message GetBoard() {
         List<Board> boardList = boardRepository.findAll();
@@ -51,7 +33,7 @@ public class BoardService {
     @Transactional
     public Message postBoard(Board.Request request) {
         User user = null;
-        GoalItem goalItem = goalItemRepositroy.findAllById(request.getGoalItemId());
+        GoalItem goalItem = goalItemRepository.findAllById(request.getGoalItemId());
         Board board = new Board(request, goalItem, user);
         boardRepository.save(board);
         return new Message(true, "게시글을 등록하였습니다");
