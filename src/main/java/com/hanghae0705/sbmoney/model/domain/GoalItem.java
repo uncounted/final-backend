@@ -67,8 +67,17 @@ public class GoalItem extends BaseEntity {
         this.reachedAt = reachedAt;
     }
 
+    public void setCheckReached(boolean checkReached, LocalDateTime reachedAt){
+        this.checkReached = checkReached;
+        this.reachedAt = reachedAt;
+    }
+
     public void setGoalPercent(double goalPercent){
         this.goalPercent = goalPercent;
+    }
+
+    public void setImage(String image){
+        this.image = image;
     }
 
     public void updateGoalItem(int count, int total, double goalPercent){
@@ -124,7 +133,7 @@ public class GoalItem extends BaseEntity {
             this.itemId = goalItem.getItem().getId();
             this.itemName = goalItem.getItem().getName();
             this.goalItemCount = goalItem.getCount();
-            this.price = goalItem.getTotal() / goalItem.getCount();
+            this.price = (goalItem.getCount() == 0)? 0 : goalItem.getTotal() / goalItem.getCount();
             this.totalPrice = goalItem.getTotal();
             this.checkReached = goalItem.isCheckReached();
             this.goalPercent = goalItem.getGoalPercent();
