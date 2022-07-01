@@ -29,6 +29,12 @@ public class GoalItemController {
         return ResponseEntity.ok(message);
     }
 
+    @GetMapping("/api/mypage/history")
+    public ResponseEntity<Message> getHistory() {
+        Message message = goalItemService.getHistory();
+        return ResponseEntity.ok(message);
+    }
+
     @PostMapping("/api/goalItem")
     public ResponseEntity<Message> postGoalItem(@RequestBody GoalItem.Request goalItemRequest) throws ItemException {
         //JWT, 스프링 시큐리티 병합 후 활성화

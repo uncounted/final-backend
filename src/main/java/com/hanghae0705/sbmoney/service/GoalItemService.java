@@ -6,8 +6,7 @@ import com.hanghae0705.sbmoney.model.domain.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.SavedItem;
 import com.hanghae0705.sbmoney.model.domain.User;
-import com.hanghae0705.sbmoney.repository.GoalItemRepositroy;
-import com.hanghae0705.sbmoney.repository.ItemRepository;
+import com.hanghae0705.sbmoney.repository.GoalItemRepository;
 import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;
 import com.hanghae0705.sbmoney.util.MathFloor;
@@ -20,7 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,19 +26,20 @@ import java.util.List;
 public class GoalItemService {
     private final SavedItemRepository savedItemRepository;
     private final UserRepository userRepository;
-    private final GoalItemRepositroy goalItemRepositroy;
+    private final GoalItemRepository goalItemRepository;
     private final S3Uploader s3Uploader;
     private final ItemValidator itemValidator;
 
-    @Transactional
+
     public Message getGoalItemList() {
-        List<GoalItem> goalItemList = goalItemRepositroy.findAll();
-        List<GoalItem.Response> goalItemResponseList = new ArrayList<>();
-        for (GoalItem goalItem : goalItemList) {
-            GoalItem.Response goalItemResponse = new GoalItem.Response(goalItem);
-            goalItemResponseList.add(goalItemResponse);
-        }
-        return new Message(true, "목표 항목을 조회하였습니다.", goalItemResponseList);
+        GoalItem goalItem = goalItemRepository.findByCheckReached(false);
+        GoalItem.Response goalItemResponse = new GoalItem.Response(goalItem);
+        return new Message(true, "목표 항목을 조회하였습니다.", goalItemResponse);
+    }
+
+    public Message getHistory(){
+        List<GoalItem> goalItemList = goalItemRepository.findAllByCheckReachedOrderByCreatedAtDesc(true);
+        return new Message(true, "히스토리를 성공적으로 조회하였습니다.", goalItemList);
     }
 
     @Transactional
@@ -67,7 +66,7 @@ public class GoalItemService {
 
         int total = (price == 0) ? item.getDefaultPrice() * count : goalItemRequest.getPrice() * count;
 
-        GoalItem goalItem = goalItemRepositroy.save(new GoalItem(user, count, total, item));
+        GoalItem goalItem = goalItemRepository.save(new GoalItem(user, count, total, item));
 
         List<SavedItem> savedItemList = savedItemRepository.findAll();
 
@@ -135,7 +134,7 @@ public class GoalItemService {
                 savedItem.setGoalItem(null);
             }
         }
-        goalItemRepositroy.deleteById(goalItemId);
+        goalItemRepository.deleteById(goalItemId);
         return new Message(true, "목표 항목을 삭제하였습니다.");
     }
 

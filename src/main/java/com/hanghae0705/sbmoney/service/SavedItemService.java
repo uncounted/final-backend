@@ -6,14 +6,11 @@ import com.hanghae0705.sbmoney.model.domain.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.SavedItem;
 import com.hanghae0705.sbmoney.model.domain.User;
-import com.hanghae0705.sbmoney.repository.GoalItemRepositroy;
-import com.hanghae0705.sbmoney.repository.ItemRepository;
 import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;
 import com.hanghae0705.sbmoney.util.MathFloor;
 import com.hanghae0705.sbmoney.validator.ItemValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -45,7 +42,7 @@ public class SavedItemService {
             savedItemRepository.save(new SavedItem(item, price, user, noGoalItem));
         } else { //GoalItem이 등록되었을 때
             GoalItem goalItem = itemValidator.isValidGoalItem(savedItemRequest.getGoalItemId());
-
+            itemValidator.isReachedGoalItem(goalItem.getGoalPercent());
             int savedItemTotal = 0;
 
             for (SavedItem savedItem : goalItem.getSavedItems()) {
