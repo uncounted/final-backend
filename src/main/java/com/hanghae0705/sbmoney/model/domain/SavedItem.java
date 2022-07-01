@@ -37,12 +37,6 @@ public class SavedItem extends BaseEntity {
     @JsonBackReference(value = "goalItem-fk")
     GoalItem goalItem;
 
-    public SavedItem(Item item, int price, User user){
-        this.item = item;
-        this.price = price;
-        this.user = user;
-    }
-
     public SavedItem(Item item, int price, User user, GoalItem goalItem){
         this.item = item;
         this.price = price;

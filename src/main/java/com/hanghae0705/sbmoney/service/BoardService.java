@@ -5,7 +5,7 @@ import com.hanghae0705.sbmoney.model.domain.Board;
 import com.hanghae0705.sbmoney.model.domain.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.repository.BoardRepository;
-import com.hanghae0705.sbmoney.repository.GoalItemRepositroy;
+import com.hanghae0705.sbmoney.repository.GoalItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final GoalItemRepositroy goalItemRepositroy;
+    private final GoalItemRepository goalItemRepository;
 
     @Transactional
     public Message GetBoard() {
@@ -33,7 +33,7 @@ public class BoardService {
     @Transactional
     public Message postBoard(Board.Request request) {
         User user = null;
-        GoalItem goalItem = goalItemRepositroy.findAllById(request.getGoalItemId());
+        GoalItem goalItem = goalItemRepository.findAllById(request.getGoalItemId());
         Board board = new Board(request, goalItem, user);
         boardRepository.save(board);
         return new Message(true, "게시글을 등록하였습니다");
