@@ -6,7 +6,6 @@ import com.hanghae0705.sbmoney.security.jwt.JwtSecurityConfig;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.security.oauth.OAuth2AuthenticationSuccessHandler;
 import com.hanghae0705.sbmoney.security.oauth.Oauth2UserService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
