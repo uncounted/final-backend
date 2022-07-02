@@ -39,7 +39,8 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
         System.out.println("super.loadUser(userRequest) :" + super.loadUser(userRequest).getAttributes());
 
         try {
-            return process(userRequest, oAuth2User);
+            OAuth2User userAA = process(userRequest, oAuth2User);
+            return userAA;
         } catch (Exception e) {
             throw new OAuth2AuthenticationException(e.getMessage());
         }
@@ -51,8 +52,13 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
         OAuth2UserInfo userInfo = OAuth2UserFactory.getOAuth2UserInfo(provider, user.getAttributes());
         Optional<User> savedUser = userRepository.findByUsername(provider + "_" + userInfo.getId());
 
-        return savedUser.map(value -> new UserDetailsImpl(value, user.getAttributes()))
-                .orElseGet(() -> new UserDetailsImpl(createUser(userInfo, provider), user.getAttributes()));
+//        return savedUser.map(value -> new UserDetailsImpl(value, user.getAttributes()))
+//                .orElseGet(() -> new UserDetailsImpl(createUser(userInfo, provider), user.getAttributes()));
+        if (savedUser.isEmpty()){
+            return new UserDetailsImpl(createUser(userInfo, provider), user.getAttributes());
+        } else {
+            return new UserDetailsImpl(savedUser.get(), user.getAttributes());
+        }
     }
 
     private User createUser(OAuth2UserInfo userInfo, String provider) {

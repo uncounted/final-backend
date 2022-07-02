@@ -9,6 +9,7 @@ import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public final class TokenProvider {
+public class TokenProvider {
     private static final int SEC = 1;
     private static final int MINUTE = 60 * SEC;
     private static final int HOUR = 60 * MINUTE;
