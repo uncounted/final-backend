@@ -24,17 +24,19 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final GoalItemRepository goalItemRepository;
     private final UserRepository userRepository;
-    private Optional<User> getUser(String authorization){
+
+    private Optional<User> getUser(String authorization) {
         String token = authorization.substring(7);
         DecodedJWT decodeToken = decode(token);
         String username = decodeToken.getClaim("sub").toString();
         int length = username.length();
-        username = username.substring(1,length-1);
+        username = username.substring(1, length - 1);
         Optional<User> user = userRepository.findByUsername(username);
 
         return user;
 
     }
+
     @Transactional
     public Message GetBoard() {
         List<Board> boardList = boardRepository.findAll();
@@ -47,7 +49,7 @@ public class BoardService {
     }
 
     @Transactional
-    public Message postBoard(Board.Request request,String authorization) {
+    public Message postBoard(Board.Request request, String authorization) {
         Optional<User> user = getUser(authorization);
         GoalItem goalItem = goalItemRepository.findAllById(request.getGoalItemId());
         Board board = new Board(request, goalItem, user);
@@ -56,28 +58,27 @@ public class BoardService {
     }
 
     @Transactional
-    public Message putBoard(Board.Update request, Long boardId,String authorization) {
+    public Message putBoard(Board.Update request, Long boardId, String authorization) {
         Optional<User> user = getUser(authorization);
         Board board = boardRepository.findAllById(boardId);
-        if(user.get().getId().equals(board.getUser().getId())){
+        if (user.get().getId().equals(board.getUser().getId())) {
             board.updateBoard(request);
             return new Message(true, "게시글을 수정하였습니다");
-        }else {
+        } else {
             return new Message(false, "게시글을 수정에 실패하였습니다");
         }
-
 
 
     }
 
     @Transactional
-    public Message deleteBoard(Long boardId,String authorization) {
+    public Message deleteBoard(Long boardId, String authorization) {
         Optional<User> user = getUser(authorization);
         Board board = boardRepository.findAllById(boardId);
-        if(user.get().getId().equals(board.getUser().getId())){
+        if (user.get().getId().equals(board.getUser().getId())) {
             boardRepository.delete(board);
             return new Message(true, "게시글을 삭제하였습니다");
-        }else {
+        } else {
             return new Message(false, "게시글을 삭제에 실패하였습니다");
         }
     }
