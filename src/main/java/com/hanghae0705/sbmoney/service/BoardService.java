@@ -22,6 +22,7 @@ import static com.auth0.jwt.JWT.decode;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
+    private final LikeService likeService;
     private final GoalItemRepository goalItemRepository;
     private final UserRepository userRepository;
 
@@ -38,10 +39,13 @@ public class BoardService {
     }
 
     @Transactional
-    public Message GetBoard() {
+    public Message GetBoard(String authorization) {
         List<Board> boardList = boardRepository.findAll();
         List<Board.Response> responseList = new ArrayList<>();
         for (Board board : boardList) {
+            boolean checkLike = likeService.checkLike(board.getId(),authorization);
+            Long likeCount = likeService.likeCount(board.getId());
+            board.likeBoard(checkLike,likeCount);
             Board.Response response = new Board.Response(board);
             responseList.add(response);
         }

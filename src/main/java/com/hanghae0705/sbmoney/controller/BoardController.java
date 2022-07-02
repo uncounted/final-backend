@@ -15,8 +15,8 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/api/board")
-    public ResponseEntity<Message> getBoard() {
-        Message message = boardService.GetBoard();
+    public ResponseEntity<Message> getBoard(@RequestHeader("Authorization") String authorization) {
+        Message message = boardService.GetBoard(authorization);
         return ResponseEntity.ok(message);
     }
 
