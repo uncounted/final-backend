@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -43,10 +44,10 @@ public class Board extends BaseEntity {
     @NotNull
     private boolean checkLike;
 
-    public Board(Request request, GoalItem goalItem, User user) {
+    public Board(Request request, GoalItem goalItem, Optional<User> user) {
         this.goalItem = goalItem;
         this.contents = request.contents;
-        this.user = user;
+        this.user = user.get();
         this.likeCount = (long) 0;
         this.checkLike = false;
     }
