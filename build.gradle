@@ -50,4 +50,10 @@ dependencies {
 
     //s3
     implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.248'
+
+    //thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    //configuration
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }

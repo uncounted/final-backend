@@ -23,7 +23,8 @@ public class CorsFilter implements Filter {
 //                || origin.isEmpty() ){
 //            response.setHeader("Access-Control-Allow-Origin", origin); //허용대상 도메인
 //        }
-        response.setHeader("Access-Control-Allow-Origin", "http://sparta-ej.shop");
+        //response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Origin", "https://accounts.google.com");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT, PATCH, OPTIONS");
         response.setHeader("Access-Control-Max-Age", "3600");
         //response.setHeader("Access-Control-Allow-Headers", "X-Requested-With, Origin, Content-Type, Accept, Custom-Header, Authorization");

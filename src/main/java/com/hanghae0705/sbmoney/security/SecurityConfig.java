@@ -4,12 +4,12 @@ import com.hanghae0705.sbmoney.security.handler.JwtAccessDeniedHandler;
 import com.hanghae0705.sbmoney.security.handler.JwtAuthenticationEntryPoint;
 import com.hanghae0705.sbmoney.security.jwt.JwtSecurityConfig;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
+import com.hanghae0705.sbmoney.security.oauth.OAuth2AuthenticationFailureHandler;
 import com.hanghae0705.sbmoney.security.oauth.OAuth2AuthenticationSuccessHandler;
 import com.hanghae0705.sbmoney.security.oauth.Oauth2UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,14 +28,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final Oauth2UserService oauth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
     @Autowired
-    public SecurityConfig(TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler, @Lazy Oauth2UserService oauth2UserService, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler) {
+    public SecurityConfig(TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler, Oauth2UserService oauth2UserService, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler, OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler) {
         this.tokenProvider = tokenProvider;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
         this.oauth2UserService = oauth2UserService;
         this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
+        this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
     }
 
     @Bean
@@ -46,6 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception{
         //http.cors().configurationSource(corsConfigurationSource());
+
         http.csrf().disable()
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
@@ -65,8 +68,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //접근권한 제어
                 .and()
                 .authorizeRequests()
-                .antMatchers(AUTH_WHITELIST).permitAll()
-                .anyRequest().authenticated()
+                //.antMatchers(AUTH_WHITELIST).permitAll()
+                //.anyRequest().authenticated()
+                .anyRequest().permitAll()
 
                 //토큰 프로바이더 사용
                 .and()
@@ -75,10 +79,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //Oauth2
                 .and()
                 .oauth2Login()
+                .loginPage("/user/login")
+                //.and()
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+                .failureHandler(oAuth2AuthenticationFailureHandler)
                 .userInfoEndpoint() // 로그인 성공 후 사용자 정보 가져올 때의 설정
-                .userService(oauth2UserService)
-                .and()
-                .successHandler(oAuth2AuthenticationSuccessHandler);
+                .userService(oauth2UserService);
     }
 
 //    @Bean
@@ -107,6 +113,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/h2-console/**",
             "/api/user/**",
             "/test",
-
+            "/oauth2/**",
+            "/login/oauth2/code/google",
+            "/user/login"
     };
 }
