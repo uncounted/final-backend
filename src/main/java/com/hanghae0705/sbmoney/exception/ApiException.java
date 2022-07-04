@@ -1,8 +1,10 @@
 package com.hanghae0705.sbmoney.exception;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum ApiException implements BaseExceptionType{
 
     DUPLICATED_USER(1001, 500, "이미 존재하는 사용자 아이디입니다."),

@@ -11,7 +11,6 @@ import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.util.MathFloor;
 import com.hanghae0705.sbmoney.validator.ItemValidator;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.authenticator.SavedRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
