@@ -1,5 +1,6 @@
 package com.hanghae0705.sbmoney.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.model.dto.RespDto;
@@ -8,10 +9,11 @@ import com.hanghae0705.sbmoney.model.dto.TokenRequestDto;
 import com.hanghae0705.sbmoney.service.UserService;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,8 +53,8 @@ public class UserController {
 
     // 로그인
     @PostMapping("/api/user/login")
-    public TokenDto login(@RequestBody User.RequestLogin requestLogin) {
-        return userService.login(requestLogin);
+    public TokenDto login(@RequestBody User.RequestLogin requestLogin, HttpServletRequest request, HttpServletResponse response) {
+        return userService.login(requestLogin, request, response);
     }
 
     // 로그인된 유저의 데이터를 반환
@@ -63,7 +65,40 @@ public class UserController {
 
     // 액세스 토큰, 리프레시 토큰 재발급
     @PostMapping("/api/user/reissue")
-    public TokenDto reissue(@RequestBody TokenRequestDto tokenRequestDto) {
-        return userService.reissue(tokenRequestDto);
+    public TokenDto reissue(@RequestBody TokenRequestDto tokenRequestDto, HttpServletRequest request, HttpServletResponse response) {
+        return userService.reissue(tokenRequestDto, request, response);
     }
+
+    // 소셜 로그인 - 부가 정보 회원가입
+    // 인증정보가 남아 있는 경우에만 할 수 있는 걸로 수정 필요
+//    @PostMapping("/api/user/register/social")
+//    public RespDto registerSocialUser(@RequestBody User.RequestSocialRegister requesetDto){
+//        userService.updateSocialUser(requesetDto);
+//    }
+
+    // 아이디 찾기
+    @PostMapping("/api/user/findId")
+    public Message findUsername(@RequestBody User.RequestUserId requestUserId) {
+        return userService.findUsername(requestUserId);
+    }
+
+    // 비밀번호 찾기
+    @PostMapping("/api/user/findPassword")
+    public RespDto findPassword(@RequestBody User.RequestPassword requestPassword) {
+        return userService.findPassword(requestPassword);
+    }
+
+    @PostMapping("/api/user/changePassword")
+    public RespDto changePassword(HttpServletRequest httpServletRequest, @RequestBody User.RequestChangePassword requestChangePassword) {
+        return userService.changePassword(httpServletRequest, requestChangePassword);
+    }
+
+    //로그인 테스트
+    @GetMapping("/user/login")
+    public ModelAndView login() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/login.html");
+        return modelAndView;
+    }
+
 }

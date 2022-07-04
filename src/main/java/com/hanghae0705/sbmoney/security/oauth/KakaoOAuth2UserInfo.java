@@ -9,31 +9,62 @@ public class KakaoOAuth2UserInfo extends OAuth2UserInfo{
 
     @Override
     public String getId() {
-        return (String) attributes.get("sub");
+        return (String) attributes.get("id").toString();
     }
 
     @Override
     public String getName() {
-        return (String) attributes.get("name");
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+
+        if (properties == null) {
+            return null;
+        }
+
+        return (String) properties.get("nickname");
     }
 
     @Override
     public String getEmail() {
-        return (String) attributes.get("email");
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("kakao_account");
+
+        if (properties == null) {
+            return null;
+        }
+        return (String) properties.get("email");
     }
 
     @Override
     public String getImageUrl() {
-        return (String) attributes.get("picture");
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+
+        if (properties == null) {
+            return null;
+        }
+
+        return (String) properties.get("thumbnail_image");
     }
 
     @Override
     public String getFirstName() {
-        return (String) attributes.get("given_name");
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+
+        if (properties == null) {
+            return null;
+        }
+
+        String name = (String) properties.get("nickname");
+        return name.substring(1);
     }
 
     @Override
     public String getLastName() {
-        return (String) attributes.get("family_name");
+        Map<String, Object> properties = (Map<String, Object>) attributes.get("properties");
+
+        if (properties == null) {
+            return null;
+        }
+
+        String name = (String) properties.get("nickname");
+        return name.substring(0,1);
     }
 }

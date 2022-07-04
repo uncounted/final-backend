@@ -45,10 +45,18 @@ dependencies {
     implementation group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
     implementation group: 'io.jsonwebtoken', name: 'jjwt-jackson', version: '0.11.2'
 
-    //aws S3
-    implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.248'
-
     //validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    //s3
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.248'
+
+    //thymeleaf
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+
+    //configuration
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    //mail
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
