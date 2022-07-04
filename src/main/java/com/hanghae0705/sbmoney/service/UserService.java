@@ -14,19 +14,27 @@ import com.hanghae0705.sbmoney.security.SecurityUtil;
 import com.hanghae0705.sbmoney.model.dto.TokenDto;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.security.CookieUtils;
+import com.hanghae0705.sbmoney.util.MailService;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import static com.hanghae0705.sbmoney.security.filter.JwtFilter.AUTHORIZATION_HEADER;
+import static com.hanghae0705.sbmoney.security.filter.JwtFilter.BEARER_PREFIX;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +44,7 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-
+    private final MailService mailService;
 
     public void saveUser(User.RequestRegister requestRegisterDto) {
         userRepository.save(User.builder()
@@ -159,13 +167,62 @@ public class UserService {
                         .respMsg(found.get().getProvider()+" 로 가입된 회원입니다.")
                         .build();
             } else {
-                // 메일 보내기
+                String email =  found.get().getEmail();
 
+                // 메일 인증용 토큰 발급 및 메일 발송
+                // 1. 익명 사용자용 authentication 생성
+                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+                System.out.println("anonymous authentication :"+authentication);
+
+                // 2. 인증 정보를 기반으로 JWT 토큰 생성(3분 짜리)
+                TokenDto tokenDto = tokenProvider.generateAccessToken(authentication, 60 * 3 * 1000);
+
+                // 3. 메일 발송
+                mailService.sendMail(email, tokenDto.getAccessToken(), requestPassword.getUsername());
+
+                return RespDto.builder()
+                        .result(true)
+                        .respMsg("메일을 발송했습니다.")
+                        .build();
             }
         } else {
             return RespDto.builder()
                     .result(false)
                     .respMsg("가입된 정보가 없습니다.")
+                    .build();
+        }
+    }
+
+    @Transactional
+    public RespDto changePassword(HttpServletRequest request, User.RequestChangePassword requestChangePassword) {
+        // 토큰 꺼내기
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        String accessToken = null;
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+             accessToken = bearerToken.substring(7);
+        }
+
+        if (!tokenProvider.validateToken(accessToken)) {
+            throw new RuntimeException("Token 이 유효하지 않습니다.");
+        }
+
+//        String tokenUsername = TokenProvider.parseClaims(accessToken).getSubject();
+//        System.out.println("tokenUsername: "+tokenUsername);
+        String password = passwordEncoder.encode(requestChangePassword.getPassword());
+        String username = requestChangePassword.getUsername();
+        Optional<User> found = userRepository.findByUsername(username);
+
+        // changePassword
+        if (found.isPresent()) {
+            found.get().changePassword(password);
+            return RespDto.builder()
+                    .result(true)
+                    .respMsg("비밀번호를 변경했습니다.")
+                    .build();
+        } else {
+            return RespDto.builder()
+                    .result(false)
+                    .respMsg("토큰에 해당하는 유저가 없습니다.")
                     .build();
         }
     }

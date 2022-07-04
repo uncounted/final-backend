@@ -92,6 +92,10 @@ public class User extends BaseEntity {
         this.lastEntered = lastEntered;
     }
 
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
     @Setter
     @Getter
     @NoArgsConstructor
@@ -190,6 +194,14 @@ public class User extends BaseEntity {
     @NoArgsConstructor
     public static class RequestPassword {
         private String username;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class RequestChangePassword {
+        private String username;
+        private String password;
     }
 
     @Setter

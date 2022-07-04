@@ -49,7 +49,7 @@ public class TokenProvider {
     @Value("${jwt.issuer}")
     public static String JWT_ISSUER;
 
-    private final Key key;
+    private static Key key;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -63,6 +63,27 @@ public class TokenProvider {
 
         //accessToken 생성
         Date accessTokenExpiresIn = new Date(System.currentTimeMillis() + JWT_ACCESS_TOKEN_VALID_MILLI_SEC);
+        String accessToken = Jwts.builder()
+                .setSubject(authentication.getName())       // payload "sub": "name"
+                .claim(AUTHORITIES_KEY, authority)          // payload "auth": "ROLE_USER"
+                .setExpiration(accessTokenExpiresIn)        // payload "exp": 1516239022 (예시)
+                .signWith(key, SignatureAlgorithm.HS512)    // header "alg": "HS512"
+                .compact();
+
+        return TokenDto.builder()
+                .grantType(TOKEN_TYPE)
+                .accessToken(accessToken)
+                .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
+                .build();
+    }
+
+    public TokenDto generateAccessToken(Authentication authentication, int expiredIn) {
+        String authority = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        //accessToken 생성
+        Date accessTokenExpiresIn = new Date(System.currentTimeMillis() + expiredIn);
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())       // payload "sub": "name"
                 .claim(AUTHORITIES_KEY, authority)          // payload "auth": "ROLE_USER"
@@ -122,7 +143,7 @@ public class TokenProvider {
         return false;
     }
 
-    private Claims parseClaims(String accessToken) {
+    public static Claims parseClaims(String accessToken) {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {

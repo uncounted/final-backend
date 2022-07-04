@@ -68,9 +68,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //접근권한 제어
                 .and()
                 .authorizeRequests()
-                //.antMatchers(AUTH_WHITELIST).permitAll()
-                //.anyRequest().authenticated()
-                .anyRequest().permitAll()
+                .antMatchers(AUTH_WHITELIST).permitAll()
+                .anyRequest().authenticated()
+                //.anyRequest().permitAll()
 
                 //토큰 프로바이더 사용
                 .and()
@@ -115,6 +115,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/test",
             "/oauth2/**",
             "/login/oauth2/code/google",
-            "/user/login"
+            "/user/login",
+            "/user/changePassword/**"
     };
 }

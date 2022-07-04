@@ -88,6 +88,11 @@ public class UserController {
         return userService.findPassword(requestPassword);
     }
 
+    @PostMapping("/api/user/changePassword")
+    public RespDto changePassword(HttpServletRequest httpServletRequest, @RequestBody User.RequestChangePassword requestChangePassword) {
+        return userService.changePassword(httpServletRequest, requestChangePassword);
+    }
+
     //로그인 테스트
     @GetMapping("/user/login")
     public ModelAndView login() {
