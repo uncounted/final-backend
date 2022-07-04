@@ -1,8 +1,6 @@
 package com.hanghae0705.sbmoney.model.domain;
 
 import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
-import com.hanghae0705.sbmoney.service.BoardService;
-import com.hanghae0705.sbmoney.service.LikeService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,7 +29,6 @@ public class Board extends BaseEntity {
     private String contents;
 
 //    private String image;
-
 
     @OneToOne
     @JoinColumn(name = "GOAL_ITEM")
@@ -77,8 +74,6 @@ public class Board extends BaseEntity {
     @NoArgsConstructor
     public static class Update {
         private String contents;
-
-
     }
 
     @Getter
@@ -93,10 +88,9 @@ public class Board extends BaseEntity {
         private String categoryName;
         private Long goalItemId;
         private String goalItemName;
-        //        private Long likeCount;
+        private Long likeCount;
         private LocalDateTime createdAt;
         private LocalDateTime modifiedAt;
-        private Long likeCount;
         private boolean checkLike;
 
         public Response(Board board) {
@@ -109,7 +103,7 @@ public class Board extends BaseEntity {
 //            this.categoryName = board.goalItem.item.getCategory().getName();
 //            this.goalItemId = board.goalItem.id;
 //            this.goalItemName = board.goalItem.item.getName();
-//            this.likeCount =
+            this.likeCount = board.likeCount;
             this.createdAt = board.getCreatedDate();
             this.modifiedAt = board.getModifiedDate();
             this.likeCount = board.likeCount;

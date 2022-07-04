@@ -62,6 +62,13 @@ public class SavedItem extends BaseEntity {
         private Long goalItemId;
         private int price;
     }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class getRequest { ;
+        private Long goalItemId;
+    }
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor

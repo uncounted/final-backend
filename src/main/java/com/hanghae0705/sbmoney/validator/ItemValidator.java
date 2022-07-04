@@ -4,6 +4,7 @@ import com.hanghae0705.sbmoney.exception.Constants;
 import com.hanghae0705.sbmoney.exception.ItemException;
 import com.hanghae0705.sbmoney.model.domain.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.Item;
+import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.repository.GoalItemRepository;
 import com.hanghae0705.sbmoney.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +17,14 @@ public class ItemValidator {
     private final GoalItemRepository goalItemRepository;
     private final ItemRepository itemRepository;
 
-    public GoalItem isValidGoalItem(Long goalItemId) throws ItemException {
-        return goalItemRepository.findById(goalItemId).orElseThrow(
+    public GoalItem isValidGoalItem(Long goalItemId, User user) throws ItemException {
+        GoalItem goalItem = goalItemRepository.findById(goalItemId).orElseThrow(
                 () -> new ItemException(Constants.ExceptionClass.GOAL_ITEM, HttpStatus.BAD_REQUEST, "존재하지 않는 태산입니다.")
         );
+        if(!goalItem.getUser().getId().equals(user.getId())){
+            throw new ItemException(Constants.ExceptionClass.GOAL_ITEM, HttpStatus.BAD_REQUEST, "태산과 유저정보가 일치하지 않습니다");
+        }
+        return goalItem;
     }
 
     public void isReachedGoalItem(double goalPercent) throws ItemException {
