@@ -21,7 +21,7 @@ public class GoalItem extends BaseEntity {
     @Id
     Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID")
     @JsonBackReference(value = "user-fk")
     User user;
