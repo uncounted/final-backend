@@ -56,9 +56,9 @@ public class GoalItemController {
     }
 
     @DeleteMapping("/api/goalItem/{goalItemId}")
-    public ResponseEntity<Message> deleteGoalItem(@PathVariable Long goalItemId) {
+    public ResponseEntity<Message> deleteGoalItem(@PathVariable Long goalItemId) throws ItemException {
         User user = commonService.getUser();
-        Message message = goalItemService.deleteGoalItem(goalItemId);
+        Message message = goalItemService.deleteGoalItem(goalItemId, user);
         return ResponseEntity.ok(message);
     }
 }

@@ -8,7 +8,6 @@ import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.SavedItem;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.repository.GoalItemRepository;
-import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.util.MathFloor;
 import com.hanghae0705.sbmoney.validator.ItemValidator;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.awt.print.Book;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,7 +25,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GoalItemService {
-    private final SavedItemRepository savedItemRepository;
     private final GoalItemRepository goalItemRepository;
     private final S3Uploader s3Uploader;
     private final ItemValidator itemValidator;
@@ -145,13 +144,18 @@ public class GoalItemService {
     }
 
     @Transactional
-    public Message deleteGoalItem(Long goalItemId) {
-        List<SavedItem> savedItemList = savedItemRepository.findAll();
+    public Message deleteGoalItem(Long goalItemId, User user) throws ItemException {
+        GoalItem goalItem = itemValidator.isValidGoalItem(goalItemId, user);
+        List<SavedItem> savedItemList = goalItem.getSavedItems();
+        Item item = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
+        GoalItem noGoalItem = new GoalItem(user, 0, 0, item);
         for (SavedItem savedItem : savedItemList) {
-            if (savedItem.getGoalItem().getId() != -1 && savedItem.getGoalItem().getId().equals(goalItemId)) {
-                savedItem.setGoalItem(null);
+            if (savedItem.getGoalItem().getId().equals(goalItemId)) {
+                savedItem.setGoalItem(noGoalItem);
             }
         }
+        LocalDateTime nowDate = LocalDateTime.now();
+        noGoalItem.setCheckReached(true, 100.0, nowDate);
         goalItemRepository.deleteById(goalItemId);
         return new Message(true, "목표 항목을 삭제하였습니다.");
     }
