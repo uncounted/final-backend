@@ -3,7 +3,9 @@ package com.hanghae0705.sbmoney.controller;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ItemException;
 import com.hanghae0705.sbmoney.model.domain.SavedItem;
+import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.repository.SavedItemRepository;
+import com.hanghae0705.sbmoney.service.CommonService;
 import com.hanghae0705.sbmoney.service.SavedItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,26 +16,26 @@ import org.springframework.web.bind.annotation.*;
 public class SavedItemController {
     private final SavedItemService savedItemService;
     private final SavedItemRepository savedItemRepository;
+    private final CommonService commonService;
 
     @GetMapping("/api/savedItem")
-    private ResponseEntity<Message> getSavedItem(){
-        Message message = savedItemService.getSavedItems();
+    private ResponseEntity<Message> getSavedItem(@RequestBody SavedItem.getRequest getRequest) throws ItemException {
+        User user = commonService.getUser();
+        Message message = savedItemService.getSavedItems(getRequest, user);
         return ResponseEntity.ok(message);
     }
 
     @PostMapping("/api/savedItem")
     private ResponseEntity<Message> postSavedItem(@RequestBody SavedItem.Request savedItemRequest) throws ItemException {
-        //JWT, 스프링 시큐리티 병합 후 활성화
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.geyPrincipal()
-//        User user = userDetails.getUser();
-        Message message = savedItemService.postSavedItem(savedItemRequest);
+        User user = commonService.getUser();
+        Message message = savedItemService.postSavedItem(savedItemRequest, user);
         return ResponseEntity.ok(message);
     }
 
     @PutMapping("/api/savedItem/{itemId}")
-    private ResponseEntity<Message> updateSavedItem(@PathVariable Long itemId, @RequestBody SavedItem.Update price){
-        Message message = savedItemService.updateSavedItem(itemId, price);
+    private ResponseEntity<Message> updateSavedItem(@PathVariable Long itemId, @RequestBody SavedItem.Update price) throws ItemException {
+        User user = commonService.getUser();
+        Message message = savedItemService.updateSavedItem(itemId, price, user);
         return ResponseEntity.ok(message);
     }
 
