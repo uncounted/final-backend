@@ -69,8 +69,24 @@ public class UserController {
         return userService.reissue(tokenRequestDto, request, response);
     }
 
-    // 아이디 찾기
+    // 소셜 로그인 - 부가 정보 회원가입
+    // 인증정보가 남아 있는 경우에만 할 수 있는 걸로 수정 필요
+//    @PostMapping("/api/user/register/social")
+//    public RespDto registerSocialUser(@RequestBody User.RequestSocialRegister requesetDto){
+//        userService.updateSocialUser(requesetDto);
+//    }
 
+    // 아이디 찾기
+    @PostMapping("/api/user/findId")
+    public Message findUsername(@RequestBody User.RequestUserId requestUserId) {
+        return userService.findUsername(requestUserId);
+    }
+
+    // 비밀번호 찾기
+    @PostMapping("/api/user/findPassword")
+    public RespDto findPassword(@RequestBody User.RequestPassword requestPassword) {
+        return userService.findPassword(requestPassword);
+    }
 
     //로그인 테스트
     @GetMapping("/user/login")

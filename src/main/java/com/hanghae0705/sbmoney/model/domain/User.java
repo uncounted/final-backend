@@ -119,6 +119,20 @@ public class User extends BaseEntity {
     @Setter
     @Getter
     @NoArgsConstructor
+    public static class RequestSocialRegister {
+        private String nickname;
+        private String email;
+
+        @Builder
+        public RequestSocialRegister(String nickname, String email) {
+            this.nickname = nickname;
+            this.email = email;
+        }
+    }
+
+    @Setter
+    @Getter
+    @NoArgsConstructor
     public static class RequestLogin {
         private String username;
         private String password;
@@ -164,6 +178,20 @@ public class User extends BaseEntity {
         }
     }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class RequestUserId {
+        private String email;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class RequestPassword {
+        private String username;
+    }
+
     @Setter
     @Getter
     @NoArgsConstructor
@@ -185,6 +213,26 @@ public class User extends BaseEntity {
             this.username = username;
             this.nickname = nickname;
             this.email = email;
+        }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class ResponseFoundId {
+        String userId;
+        String provider;
+
+        public static ResponseFoundId of(User user){
+            return ResponseFoundId.builder()
+                    .userId(user.getUsername())
+                    .provider(user.getProvider())
+                    .build();
+        }
+        @Builder
+        public ResponseFoundId(String userId, String provider) {
+            this.userId = userId;
+            this.provider = provider;
         }
     }
 }

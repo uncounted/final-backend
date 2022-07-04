@@ -53,6 +53,29 @@ public class UserService {
                 .build());
     }
 
+//    public void updateSocialUser(User.RequestSocialRegister requesetDto, HttpServletRequest request) {
+//        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+//        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX)) {
+//            if (tokenProvider.validateToken(bearerToken.substring(7))) {
+//                userRepository.updateEmailNickname(requesetDto);
+//                TokenDto tokenDto = tokenProvider.generateAccessToken(authentication);
+//
+//            RefreshToken refreshToken = RefreshToken.builder()
+//                    .key(authentication.getName())
+//                    .value(tokenProvider.generateRefreshToken())
+//                    .build();
+//
+//            refreshTokenRepository.save(refreshToken);
+//
+//            CookieUtils.deleteCookie(request, response, "refreshToken");
+//            CookieUtils.addCookie(response, "refreshToken", refreshToken.getValue(), TokenProvider.JWT_REFRESH_TOKEN_VALID_MILLI_SEC);
+//
+//            } else {
+//                userRepository.delete();
+//            }
+//        }
+//    }
+
     public RespDto checkUser(String username) {
         Optional<User> found = userRepository.findByUsername(username);
 
@@ -101,6 +124,52 @@ public class UserService {
         }
     }
 
+    public Message findUsername(User.RequestUserId requestUserId) {
+        Optional<User.ResponseFoundId> found = userRepository.findByEmail(requestUserId.getEmail())
+                .map(User.ResponseFoundId::of);
+
+        // .get()을 안 쓸 수 있는 방향 찾아보기
+        if(found.isPresent()) {
+            if(found.get().getProvider().equals("general")) {
+                found.get().setUserId(found.get().getUserId().substring(0, 3) + "***");
+                System.out.println(found.get().getUserId());
+            }
+
+            return Message.builder()
+                    .result(true)
+                    .respMsg("가입된 회원입니다.")
+                    .data(found.get())
+                    .build();
+        } else {
+            return Message.builder()
+                    .result(false)
+                    .respMsg("회원정보가 없습니다.")
+                    .data(null)
+                    .build();
+        }
+    }
+
+    public RespDto findPassword(User.RequestPassword requestPassword) {
+        Optional<User> found = userRepository.findByUsername(requestPassword.getUsername());
+        if (found.isPresent()) {
+            // 소셜로 가입된 회원이면 메일 발송하지 않기
+            if (!found.get().getProvider().equals("general")) {
+                return RespDto.builder()
+                        .result(true)
+                        .respMsg(found.get().getProvider()+" 로 가입된 회원입니다.")
+                        .build();
+            } else {
+                // 메일 보내기
+
+            }
+        } else {
+            return RespDto.builder()
+                    .result(false)
+                    .respMsg("가입된 정보가 없습니다.")
+                    .build();
+        }
+    }
+
     public Message getMyInfo() {
         Optional<User.Response> resp = userRepository.findByUsername(SecurityUtil.getCurrentUsername())
                 .map(User.Response::of);
@@ -118,9 +187,7 @@ public class UserService {
                     .data(null)
                     .build();
         }
-
     }
-
 
     @Transactional
     public TokenDto login(User.RequestLogin requestLogin, HttpServletRequest request, HttpServletResponse response) {
@@ -187,5 +254,4 @@ public class UserService {
         // 토큰 발급
         return tokenDto;
     }
-
 }
