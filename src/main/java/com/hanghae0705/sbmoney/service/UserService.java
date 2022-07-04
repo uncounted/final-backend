@@ -158,8 +158,11 @@ public class UserService {
     }
 
     public RespDto findPassword(User.RequestPassword requestPassword) {
+
         Optional<User> found = userRepository.findByUsername(requestPassword.getUsername());
-        if (found.isPresent()) {
+
+        // username의 email과 클라이언트에서 보낸 email이 일치하는지 검사
+        if (found.isPresent() && found.get().getEmail().equals(requestPassword.getEmail())) {
             // 소셜로 가입된 회원이면 메일 발송하지 않기
             if (!found.get().getProvider().equals("general")) {
                 return RespDto.builder()

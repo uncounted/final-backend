@@ -24,12 +24,14 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 //    private final AppProperties appProperties;
-    private final HttpCookieOAuth2AuthorizationRequestRepository cookieOAuth2AuthorizationResquestRepository;
+    //private final HttpCookieOAuth2AuthorizationRequestRepository cookieOAuth2AuthorizationResquestRepository;
 
 //    @Override
 //    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws ServletException, IOException {
 //        super.onAuthenticationSuccess(request, response, authentication);
 //    }
+
+
 
         @Override
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -51,11 +53,12 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
     //        super.onAuthenticationSuccess(request, response, chain, authentication);
 
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:8080/oauth2/redirect")
-                    .queryParam("Authorization", tokenDto.getAccessToken())
-                    .queryParam("username", userDetails.getUsername())
+            String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth2/redirect")
+                    //.queryParam("Authorization", tokenDto.getAccessToken())
+                    .queryParam("username", userDetails.getUsername()) // email, nickname
                     .build().toUriString();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
+
     }
 
 }

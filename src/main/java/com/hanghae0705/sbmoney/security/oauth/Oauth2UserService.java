@@ -1,26 +1,17 @@
 package com.hanghae0705.sbmoney.security.oauth;
 
-import com.hanghae0705.sbmoney.model.domain.RefreshToken;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.UserRoleEnum;
-import com.hanghae0705.sbmoney.model.dto.TokenDto;
-import com.hanghae0705.sbmoney.repository.RefreshTokenRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;
-import com.hanghae0705.sbmoney.security.SecurityUtil;
 import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
-import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
