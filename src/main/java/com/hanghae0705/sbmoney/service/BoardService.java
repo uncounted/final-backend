@@ -43,9 +43,9 @@ public class BoardService {
         List<Board> boardList = boardRepository.findAll();
         List<Board.Response> responseList = new ArrayList<>();
         for (Board board : boardList) {
-            boolean checkLike = likeService.checkLike(board.getId(),authorization);
+            boolean checkLike = likeService.checkLike(board.getId(), authorization);
             Long likeCount = likeService.likeCount(board.getId());
-            board.likeBoard(checkLike,likeCount);
+            board.likeBoard(checkLike, likeCount);
             Board.Response response = new Board.Response(board);
             responseList.add(response);
         }

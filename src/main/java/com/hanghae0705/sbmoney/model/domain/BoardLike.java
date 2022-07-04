@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
+
 
 @Entity
 @Getter
@@ -20,7 +20,7 @@ public class BoardLike {
     private boolean like;
 
     @ManyToOne
-    @JoinColumn(name="USER_ID")
+    @JoinColumn(name = "USER_ID")
     private User user;
 
     @ManyToOne

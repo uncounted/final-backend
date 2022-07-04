@@ -24,6 +24,7 @@ public class LikeService {
     private final BoardRepository boardRepository;
 
     private final UserRepository userRepository;
+
     private User getUser(String authorization) {
         String token = authorization.substring(7);
         DecodedJWT decodeToken = decode(token);
@@ -40,11 +41,11 @@ public class LikeService {
     public Message changeLike(Long boardId, String authorization) {
         Board board = boardRepository.findAllById(boardId);
         User user = getUser(authorization);
-        if (likeRepository.findByBoardAndUser(board,user) == null) {
+        if (likeRepository.findByBoardAndUser(board, user) == null) {
             BoardLike like = new BoardLike(board, user);
             likeRepository.save(like);
         } else {
-            BoardLike like = likeRepository.findByBoardAndUser(board,user);
+            BoardLike like = likeRepository.findByBoardAndUser(board, user);
             if (like.isLike() == true) {
                 like.changeLike(false);
             } else {
@@ -62,9 +63,6 @@ public class LikeService {
     @Transactional
     public boolean checkLike(Long boardId, String authorization) {
 
-        if (authorization =="aa"){
-            return false;
-        }
         Board board = boardRepository.findAllById(boardId);
         User user = getUser(authorization);
         if (likeRepository.findByBoardAndUser(board, user) == null) {

@@ -29,4 +29,11 @@ public class Category {
     @OneToMany(mappedBy = "category")
     @JsonManagedReference(value = "item-category-fk")
     private List<Item> itemList;
+
+    public Category(Long id, String name, String iconImg, List<Item> itemList) {
+        this.id = id;
+        this.name = name;
+        this.iconImg = iconImg;
+        this.itemList = itemList;
+    }
 }
