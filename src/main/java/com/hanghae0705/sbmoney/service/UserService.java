@@ -15,7 +15,6 @@ import com.hanghae0705.sbmoney.model.dto.TokenDto;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.security.CookieUtils;
 import com.hanghae0705.sbmoney.util.MailService;
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.EntityManager;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -158,8 +156,11 @@ public class UserService {
     }
 
     public RespDto findPassword(User.RequestPassword requestPassword) {
+
         Optional<User> found = userRepository.findByUsername(requestPassword.getUsername());
-        if (found.isPresent()) {
+
+        // username의 email과 클라이언트에서 보낸 email이 일치하는지 검사
+        if (found.isPresent() && found.get().getEmail().equals(requestPassword.getEmail())) {
             // 소셜로 가입된 회원이면 메일 발송하지 않기
             if (!found.get().getProvider().equals("general")) {
                 return RespDto.builder()

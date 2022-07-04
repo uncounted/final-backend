@@ -81,10 +81,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .oauth2Login()
                 .loginPage("/user/login")
                 //.and()
-                .successHandler(oAuth2AuthenticationSuccessHandler)
-                .failureHandler(oAuth2AuthenticationFailureHandler)
                 .userInfoEndpoint() // 로그인 성공 후 사용자 정보 가져올 때의 설정
-                .userService(oauth2UserService);
+                .userService(oauth2UserService)
+                .and()
+                .successHandler(oAuth2AuthenticationSuccessHandler)
+                .failureHandler(oAuth2AuthenticationFailureHandler);
     }
 
 //    @Bean
@@ -116,6 +117,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/oauth2/**",
             "/login/oauth2/code/google",
             "/user/login",
-            "/user/changePassword/**"
+            "/user/changePassword/**",
+            "/user/kakao/callback"
     };
 }

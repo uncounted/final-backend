@@ -1,12 +1,7 @@
 package com.hanghae0705.sbmoney.util;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Service;
-
-import java.util.Properties;
 
 @Service
 public class MailService {
@@ -37,7 +32,7 @@ public class MailService {
 
         // 메일 내용
         simpleMailMessage.setText("비밀번호 변경 링크: "
-                + "http://localhost:8080/user/changePassword/"
+                + "http://localhost:3000/user/changePassword/"
                 + accessToken
                 + "&"
                 + username);

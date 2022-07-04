@@ -21,15 +21,18 @@ public class User extends BaseEntity {
     private Long id;
 
     @NotNull
+    @Column(unique = true)
     private String username;
 
     @NotNull
     private String password;
 
     @NotNull
+    @Column(unique = true)
     private String nickname;
 
     @NotNull
+    @Column(unique = true)
     private String email;
 
     @NotNull
@@ -39,7 +42,7 @@ public class User extends BaseEntity {
     private String introDesc;
 
     @NotNull
-    private String provider; //general, google, kakao
+    private String provider; //general, google, kakao - enum 으로 바꿀까..
 
     @NotNull
     @Enumerated(value = EnumType.STRING)
@@ -194,6 +197,7 @@ public class User extends BaseEntity {
     @NoArgsConstructor
     public static class RequestPassword {
         private String username;
+        private String email;
     }
 
     @Getter
@@ -202,6 +206,7 @@ public class User extends BaseEntity {
     public static class RequestChangePassword {
         private String username;
         private String password;
+        private String checkPassword;
     }
 
     @Setter
