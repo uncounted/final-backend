@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 @Entity
 @Getter
@@ -18,17 +19,17 @@ public class BoardLike {
     @NotNull
     private boolean like;
 
-//    @ManyToOne
-//    @JoinColumn(name="USER_ID")
-//    private User user;
+    @ManyToOne
+    @JoinColumn(name="USER_ID")
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "BOARD_ID")
     private Board board;
 
-    public BoardLike(Board board) {
+    public BoardLike(Board board, User user) {
         this.like = true;
-//        this.user =
+        this.user = user;
         this.board = board;
     }
 
