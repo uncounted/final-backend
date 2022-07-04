@@ -17,9 +17,8 @@ public class CommonService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         String username = userDetails.getUsername();
-        User user = userRepository.findByUsername(username).orElseThrow(
+        return userRepository.findByUsername(username).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 유저입니다.")
         );
-        return user;
     }
 }

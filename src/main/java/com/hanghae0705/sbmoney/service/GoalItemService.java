@@ -12,7 +12,6 @@ import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.util.MathFloor;
 import com.hanghae0705.sbmoney.validator.ItemValidator;
 import lombok.RequiredArgsConstructor;
-import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,9 +34,9 @@ public class GoalItemService {
     public Message getGoalItem(User user) {
         List<GoalItem> goalItemList = user.getGoalItems();
         GoalItem.Response goalItemResponse = null;
-        if(goalItemList != null){
+        if(goalItemList != null){ // 서비스를 처음 이용하는 사용자는 티끌도 태산도 존재하지 않음
             for(GoalItem goalItem : goalItemList){
-                if(goalItem.isCheckReached()){
+                if(!goalItem.isCheckReached()){
                     goalItemResponse = new GoalItem.Response(goalItem);
                 }
             }

@@ -37,3 +37,5 @@ out/
 .vscode/
 
 application.properties
+application-oauth.properties
+application-aws.yml

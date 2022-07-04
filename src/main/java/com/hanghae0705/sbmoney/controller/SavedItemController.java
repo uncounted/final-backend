@@ -19,9 +19,9 @@ public class SavedItemController {
     private final CommonService commonService;
 
     @GetMapping("/api/savedItem")
-    private ResponseEntity<Message> getSavedItem(@RequestBody Long goalItemId) throws ItemException {
+    private ResponseEntity<Message> getSavedItem(@RequestBody SavedItem.getRequest getRequest) throws ItemException {
         User user = commonService.getUser();
-        Message message = savedItemService.getSavedItems(goalItemId, user);
+        Message message = savedItemService.getSavedItems(getRequest, user);
         return ResponseEntity.ok(message);
     }
 

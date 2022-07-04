@@ -21,7 +21,7 @@ public class ItemValidator {
         GoalItem goalItem = goalItemRepository.findById(goalItemId).orElseThrow(
                 () -> new ItemException(Constants.ExceptionClass.GOAL_ITEM, HttpStatus.BAD_REQUEST, "존재하지 않는 태산입니다.")
         );
-        if(goalItem.getUser().getId().equals(user.getId())){
+        if(!goalItem.getUser().getId().equals(user.getId())){
             throw new ItemException(Constants.ExceptionClass.GOAL_ITEM, HttpStatus.BAD_REQUEST, "태산과 유저정보가 일치하지 않습니다");
         }
         return goalItem;
