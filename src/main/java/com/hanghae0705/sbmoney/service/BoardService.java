@@ -4,6 +4,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.Board;
 import com.hanghae0705.sbmoney.model.domain.GoalItem;
+import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.repository.BoardRepository;
 import com.hanghae0705.sbmoney.repository.GoalItemRepository;
@@ -53,7 +54,25 @@ public class BoardService {
     }
 
     @Transactional
+    public Message GetDetailBoard(Long boardId, String authorization){
+        Board board = boardRepository.findAllById(boardId);
+        boolean checkLike = likeService.checkLike(board.getId(), authorization);
+        Long likeCount = likeService.likeCount(board.getId());
+        board.likeBoard(checkLike, likeCount);
+        board.viewCount(board.getViewCount()+1);
+        Board.Response response = new Board.Response(board);
+        return new Message(true, "게시판을 조회하였습니다.", response);
+    }
+
+    @Transactional
     public Message postBoard(Board.Request request, String authorization) {
+
+        if(request.isCheckImage()){
+
+        }else {
+
+        }
+
         Optional<User> user = getUser(authorization);
         GoalItem goalItem = goalItemRepository.findAllById(request.getGoalItemId());
         Board board = new Board(request, goalItem, user);
@@ -71,7 +90,6 @@ public class BoardService {
         } else {
             return new Message(false, "게시글을 수정에 실패하였습니다");
         }
-
 
     }
 

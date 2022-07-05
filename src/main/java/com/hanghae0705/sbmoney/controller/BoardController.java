@@ -19,6 +19,11 @@ public class BoardController {
         Message message = boardService.GetBoard(authorization);
         return ResponseEntity.ok(message);
     }
+    @GetMapping("/api/board/detail/{boardId}")
+    public ResponseEntity<Message> getDetailBoard(@PathVariable Long boardId,@RequestHeader("Authorization") String authorization){
+        Message message = boardService.GetDetailBoard(boardId,authorization);
+        return ResponseEntity.ok(message);
+    }
 
     @PostMapping("/api/board")
     public ResponseEntity<Message> postBoard(@RequestBody Board.Request request, @RequestHeader("Authorization") String authorization) {
