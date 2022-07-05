@@ -8,6 +8,7 @@ import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.SavedItem;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.repository.GoalItemRepository;
+import com.hanghae0705.sbmoney.repository.ItemRepository;
 import com.hanghae0705.sbmoney.util.MathFloor;
 import com.hanghae0705.sbmoney.validator.ItemValidator;
 import lombok.RequiredArgsConstructor;
@@ -150,9 +151,7 @@ public class GoalItemService {
         Item item = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
         GoalItem noGoalItem = new GoalItem(user, 0, 0, item);
         for (SavedItem savedItem : savedItemList) {
-            if (savedItem.getGoalItem().getId().equals(goalItemId)) {
                 savedItem.setGoalItem(noGoalItem);
-            }
         }
         LocalDateTime nowDate = LocalDateTime.now();
         noGoalItem.setCheckReached(true, 100.0, nowDate);
