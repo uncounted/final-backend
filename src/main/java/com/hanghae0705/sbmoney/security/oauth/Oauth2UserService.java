@@ -3,16 +3,15 @@ package com.hanghae0705.sbmoney.security.oauth;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.UserRoleEnum;
 import com.hanghae0705.sbmoney.repository.UserRepository;
-import com.hanghae0705.sbmoney.security.SecurityUtil;
 import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -20,9 +19,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class Oauth2UserService extends DefaultOAuth2UserService {
 
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserRepository userRepository;
-    //private final SecurityUtil securityUtil;
 
     //구글로 받은 userRequest 데이터에 대한 후처리 함수
     @Override
@@ -39,9 +36,11 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
         System.out.println("super.loadUser(userRequest) :" + super.loadUser(userRequest).getAttributes());
 
         try {
+            //return (UserDetailsImpl) process(userRequest, oAuth2User);
             return process(userRequest, oAuth2User);
+
         } catch (Exception e) {
-            throw new OAuth2AuthenticationException(e.getMessage());
+            throw new InternalAuthenticationServiceException(e.getMessage(), e.getCause());
         }
 
     }
@@ -51,8 +50,13 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
         OAuth2UserInfo userInfo = OAuth2UserFactory.getOAuth2UserInfo(provider, user.getAttributes());
         Optional<User> savedUser = userRepository.findByUsername(provider + "_" + userInfo.getId());
 
-        return savedUser.map(value -> new UserDetailsImpl(value, user.getAttributes()))
-                .orElseGet(() -> new UserDetailsImpl(createUser(userInfo, provider), user.getAttributes()));
+//        return savedUser.map(value -> new UserDetailsImpl(value, user.getAttributes()))
+//                .orElseGet(() -> new UserDetailsImpl(createUser(userInfo, provider), user.getAttributes()));
+        if (savedUser.isEmpty()){
+            return new UserDetailsImpl(createUser(userInfo, provider), user.getAttributes());
+        } else {
+            return new UserDetailsImpl(savedUser.get(), user.getAttributes());
+        }
     }
 
     private User createUser(OAuth2UserInfo userInfo, String provider) {
@@ -68,7 +72,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
         User newUser = User.builder()
                 .id(null)
                 .username(provider + "_" + userInfo.getId())
-                .password(bCryptPasswordEncoder.encode("social-login-password-google-" + userInfo.getId()))
+                .password(new BCryptPasswordEncoder().encode("social-login-password-google-" + userInfo.getId()))
                 .nickname(nickname)
                 .email(userInfo.getEmail())
                 .profileImg(userInfo.getImageUrl())

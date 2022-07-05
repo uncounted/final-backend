@@ -21,15 +21,18 @@ public class User extends BaseEntity {
     private Long id;
 
     @NotNull
+    @Column(unique = true)
     private String username;
 
     @NotNull
     private String password;
 
     @NotNull
+    @Column(unique = true)
     private String nickname;
 
     @NotNull
+    @Column(unique = true)
     private String email;
 
     @NotNull
@@ -39,7 +42,7 @@ public class User extends BaseEntity {
     private String introDesc;
 
     @NotNull
-    private String provider; //general, google, kakao
+    private String provider; //general, google, kakao - enum 으로 바꿀까..
 
     @NotNull
     @Enumerated(value = EnumType.STRING)
@@ -92,6 +95,10 @@ public class User extends BaseEntity {
         this.lastEntered = lastEntered;
     }
 
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
     @Setter
     @Getter
     @NoArgsConstructor
@@ -113,6 +120,20 @@ public class User extends BaseEntity {
             this.email = email;
             this.profileImg = profileImg;
             this.provider = provider;
+        }
+    }
+
+    @Setter
+    @Getter
+    @NoArgsConstructor
+    public static class RequestSocialRegister {
+        private String nickname;
+        private String email;
+
+        @Builder
+        public RequestSocialRegister(String nickname, String email) {
+            this.nickname = nickname;
+            this.email = email;
         }
     }
 
@@ -164,6 +185,30 @@ public class User extends BaseEntity {
         }
     }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class RequestUserId {
+        private String email;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class RequestPassword {
+        private String username;
+        private String email;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class RequestChangePassword {
+        private String username;
+        private String password;
+        private String checkPassword;
+    }
+
     @Setter
     @Getter
     @NoArgsConstructor
@@ -185,6 +230,26 @@ public class User extends BaseEntity {
             this.username = username;
             this.nickname = nickname;
             this.email = email;
+        }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class ResponseFoundId {
+        String userId;
+        String provider;
+
+        public static ResponseFoundId of(User user){
+            return ResponseFoundId.builder()
+                    .userId(user.getUsername())
+                    .provider(user.getProvider())
+                    .build();
+        }
+        @Builder
+        public ResponseFoundId(String userId, String provider) {
+            this.userId = userId;
+            this.provider = provider;
         }
     }
 }
