@@ -161,7 +161,7 @@ public class Board extends BaseEntity {
         private int savedItemTotalPrice;
         private List<SavedItem> savedItemList;
 
-        public SaveItemResponse(Board board){
+        public SaveItemResponse(Board board, int savedItemTotalPrice){
             this.boardId = board.getId();
             this.userId = board.getUser().getUsername();
             this.totalPrice = board.getGoalItem().getTotal();
@@ -169,6 +169,7 @@ public class Board extends BaseEntity {
             this.createdAt = board.getGoalItem().getCreatedDate();
             this.modifiedAt = board.getGoalItem().getModifiedDate();
             this.savedItemList = board.getGoalItem().getSavedItems();
+            this.savedItemTotalPrice = savedItemTotalPrice;
         }
     }
 }
