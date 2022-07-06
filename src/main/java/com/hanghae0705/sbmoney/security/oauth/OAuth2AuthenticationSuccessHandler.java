@@ -44,8 +44,8 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
 
             refreshTokenRepository.save(refreshToken);
 
-            CookieUtils.deleteCookie(request, response, "refreshToken");
-            CookieUtils.addCookie(response, "refreshToken", refreshToken.getValue(), TokenProvider.JWT_REFRESH_TOKEN_VALID_MILLI_SEC);
+//            CookieUtils.deleteCookie(request, response, "refreshToken");
+//            CookieUtils.addCookie(response, "refreshToken", refreshToken.getValue(), TokenProvider.JWT_REFRESH_TOKEN_VALID_MILLI_SEC);
 
     //        //redirectUri 에 대한 설정이 구현되어 있음
     //        super.onAuthenticationSuccess(request, response, chain, authentication);
@@ -53,6 +53,7 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth2/redirect")
                     .queryParam("Authorization", tokenDto.getAccessToken())
+                    .queryParam("refreshToken", tokenDto.getRefreshToken())
                     .queryParam("username", userDetails.getUsername()) // email, nickname
                     .build().toUriString();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);

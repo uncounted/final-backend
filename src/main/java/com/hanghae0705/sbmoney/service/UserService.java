@@ -265,13 +265,13 @@ public class UserService {
         // 4. RefreshToken DB에 저장
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(authentication.getName())
-                .value(tokenProvider.generateRefreshToken())
+                .value(tokenDto.getRefreshToken())
                 .build();
 
         refreshTokenRepository.save(refreshToken);
 
-        CookieUtils.deleteCookie(request, response, "refreshToken");
-        CookieUtils.addCookie(response, "refreshToken", refreshToken.getValue(), TokenProvider.JWT_REFRESH_TOKEN_VALID_MILLI_SEC);
+//        CookieUtils.deleteCookie(request, response, "refreshToken");
+//        CookieUtils.addCookie(response, "refreshToken", refreshToken.getValue(), TokenProvider.JWT_REFRESH_TOKEN_VALID_MILLI_SEC);
 
         //5. 토큰 발급
         return tokenDto;
@@ -283,10 +283,14 @@ public class UserService {
         // 만약 리프레시 토큰을 탈취하고, reissue 요청을 날리면 1~5까지 다 뚫리는 거 아닌지?!
         // 방비: 탈취 방비(리프레시 토큰 http-only, secure 쿠키로 저장) & 탈취 후 방비(로그아웃 시 DB에서 리프레시 토큰 비워주기)
         // http-only는 자바스크립트로 조작 불가 / secure 쿠키는 https 가 아니면 전송하지 않는다.
-        Cookie refreshTokenCookie = CookieUtils.getCookie(request, "refreshToken")
-                .orElseThrow(()->new ApiRequestException(ApiException.NO_COOKIE));
+//        Cookie refreshTokenCookie = CookieUtils.getCookie(request, "refreshToken")
+//                .orElseThrow(()->new ApiRequestException(ApiException.NO_COOKIE));
 
-        if (!tokenProvider.validateToken(refreshTokenCookie.getValue())) {
+//        if (!tokenProvider.validateToken(refreshTokenCookie.getValue())) {
+//            throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
+//        }
+
+        if (!tokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
             throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
         }
 
@@ -298,7 +302,9 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("로그아웃 된 사용자입니다."));
 
         // 4. Refresh Token 일치하는지 검사
-        if (!refreshToken.getValue().equals(refreshTokenCookie.getValue())) {
+//        if (!refreshToken.getValue().equals(refreshTokenCookie.getValue())) {
+//            throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
+        if (!refreshToken.getValue().equals(tokenRequestDto.getRefreshToken())) {
             throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
         }
 
@@ -306,11 +312,11 @@ public class UserService {
         TokenDto tokenDto = tokenProvider.generateAccessToken(authentication);
 
         // 6. 저장소 정보 업데이트
-        RefreshToken newRefreshToken = refreshToken.updateValue(tokenProvider.generateRefreshToken());
+        RefreshToken newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());
         refreshTokenRepository.save(newRefreshToken);
 
-        CookieUtils.deleteCookie(request, response, "refreshToken");
-        CookieUtils.addCookie(response, "refreshToken", newRefreshToken.getValue(), TokenProvider.JWT_REFRESH_TOKEN_VALID_MILLI_SEC);
+//        CookieUtils.deleteCookie(request, response, "refreshToken");
+//        CookieUtils.addCookie(response, "refreshToken", newRefreshToken.getValue(), TokenProvider.JWT_REFRESH_TOKEN_VALID_MILLI_SEC);
 
         // 토큰 발급
         return tokenDto;

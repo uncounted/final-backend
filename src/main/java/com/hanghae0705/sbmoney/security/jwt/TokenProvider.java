@@ -32,14 +32,16 @@ public class TokenProvider {
     private static final int DAY = 24 * HOUR;
 
     //access token 유효기간 - seconds, milliseconds
-//    private static final int JWT_ACCESS_TOKEN_VALID_SEC = 30 * MINUTE;
-    private static final int JWT_ACCESS_TOKEN_VALID_SEC = 86400000;
-    private static final int JWT_ACCESS_TOKEN_VALID_MILLI_SEC = 8640000;
+    private static final int JWT_ACCESS_TOKEN_VALID_SEC = 30 * MINUTE;
+    // private static final int JWT_ACCESS_TOKEN_VALID_SEC = 86400000;
+    // private static final int JWT_ACCESS_TOKEN_VALID_MILLI_SEC = 1000 * JWT_ACCESS_TOKEN_VALID_SEC;
+    private static final int JWT_ACCESS_TOKEN_VALID_MILLI_SEC = 1000 * JWT_ACCESS_TOKEN_VALID_SEC;
 
     //refresh token 유효기간 - seconds, milliseconds
-    //private static final int JWT_REFRESH_TOKEN_VALID_SEC = 10 * DAY;
-    private static final int JWT_REFRESH_TOKEN_VALID_SEC = 86400000;
-    public static final int JWT_REFRESH_TOKEN_VALID_MILLI_SEC = 86400000;
+    private static final int JWT_REFRESH_TOKEN_VALID_SEC = 7 * DAY;
+    // private static final int JWT_REFRESH_TOKEN_VALID_SEC = 86400000;
+    // public static final int JWT_REFRESH_TOKEN_VALID_MILLI_SEC = 1000 * JWT_REFRESH_TOKEN_VALID_SEC;
+    public static final int JWT_REFRESH_TOKEN_VALID_MILLI_SEC = 1000 * JWT_REFRESH_TOKEN_VALID_SEC;
     private static final String AUTHORITIES_KEY = "auth";
     public static final String TOKEN_TYPE = "Bearer";
 
@@ -73,6 +75,7 @@ public class TokenProvider {
         return TokenDto.builder()
                 .grantType(TOKEN_TYPE)
                 .accessToken(accessToken)
+                .refreshToken(generateRefreshToken())
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
                 .build();
     }
@@ -94,6 +97,7 @@ public class TokenProvider {
         return TokenDto.builder()
                 .grantType(TOKEN_TYPE)
                 .accessToken(accessToken)
+                .refreshToken(generateRefreshToken())
                 .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
                 .build();
     }
@@ -134,7 +138,7 @@ public class TokenProvider {
             log.info("잘못된 JWT 서명입니다.");
         } catch (ExpiredJwtException e) {
             log.info("만료된 JWT 토큰입니다.");
-            throw new ApiRuntimeException(ApiException.EXPIRED_TOKEN);
+            throw new IllegalArgumentException("만료된 토큰입니다.");
         } catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰입니다.");
         } catch (IllegalArgumentException e) {
