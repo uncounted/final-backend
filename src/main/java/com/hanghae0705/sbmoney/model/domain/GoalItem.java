@@ -19,33 +19,33 @@ public class GoalItem extends BaseEntity {
     @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    private Long id;
+    Long id;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID")
     @JsonBackReference(value = "user-fk")
-    private User user;
+    User user;
 
     @Column
     private LocalDateTime reachedAt;
 
     @Column
-    private String image;
+    String image;
 
     @Column(nullable = false)
-    private int count;
+    int count;
 
     @Column(nullable = false)
-    private int total;
+    int total;
 
     @OneToOne
     @JoinColumn(name = "ITEM_ID")
     @JsonBackReference(value = "item-fk")
-    private Item item;
+    Item item;
 
     @OneToMany(mappedBy = "goalItem")
     @JsonManagedReference(value = "goalItem-fk")
-    private List<SavedItem> savedItems;
+    List<SavedItem> savedItems;
 
     @Column
     boolean checkReached;
