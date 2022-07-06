@@ -20,7 +20,8 @@ public class CorsFilter implements Filter {
         if (origin == null){
             response.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
         } else if(origin.startsWith("http://localhost:3000")
-                || origin.startsWith("http://sparta-ej.shop")){
+                || origin.startsWith("http://sparta-ej.shop")
+                || origin.startsWith("https://www.tikkeeul.com")){
             response.setHeader("Access-Control-Allow-Origin", origin); //허용대상 도메인
         }
         //response.setHeader("Access-Control-Allow-Origin", origin);
