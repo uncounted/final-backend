@@ -52,7 +52,7 @@ public class Board extends BaseEntity {
 
     public Board(Request request, GoalItem goalItem, Optional<User> user) {
         this.goalItem = goalItem;
-        this.image = goalItem.image;
+        this.image = goalItem.getImage();
         this.title = request.title;
         this.contents = request.contents;
         this.user = user.get();
@@ -134,11 +134,11 @@ public class Board extends BaseEntity {
             this.title = board.title;
             this.contents = board.contents;
             this.image = board.image;
-            this.categoryId = board.goalItem.item.getCategory().getId();
-            this.categoryName = board.goalItem.item.getCategory().getName();
-            this.goalItemId = board.goalItem.id;
-            this.goalItemName = board.goalItem.item.getName();
-            this.goalPercent =board.goalItem.goalPercent;
+            this.categoryId = board.goalItem.getItem().getCategory().getId();
+            this.categoryName = board.goalItem.getItem().getCategory().getName();
+            this.goalItemId = board.goalItem.getId();
+            this.goalItemName = board.goalItem.getItem().getName();
+            this.goalPercent =board.goalItem.getGoalPercent();
             this.commentCount = board.commentCount;
             this.viewCount = board.viewCount;
             this.likeCount = board.likeCount;
