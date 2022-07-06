@@ -75,6 +75,14 @@ public class BoardService {
     }
 
     @Transactional
+    public Message GetSaveBoard(Long boardId){
+        Board board = boardRepository.findAllById(boardId);
+        Board.SaveItemResponse response = new Board.SaveItemResponse(board);
+        return new Message(true, "게시판을 조회하였습니다.", response);
+    }
+
+
+    @Transactional
     public Message postBoard(Board.Request request, String authorization, MultipartFile multipartFile) throws IOException {
         Optional<User> user = getUser(authorization);
         GoalItem goalItem = goalItemRepository.findAllById(request.getGoalItemId());

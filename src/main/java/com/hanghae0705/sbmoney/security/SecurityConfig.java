@@ -119,6 +119,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/user/login",
             "/user/changePassword/**",
             "/user/kakao/callback",
-            "/api/board"
+            "/api/board",
+            "/api/board/detail/{boardId}",
+            "/api/board/save/{boardId}"
     };
 }
