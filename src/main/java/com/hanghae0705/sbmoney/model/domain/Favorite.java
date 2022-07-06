@@ -38,7 +38,16 @@ public class Favorite {
         this.user = user;
     }
 
+    public void updateFavorite(UpdateFavorite request) {
+        this.price = request.getPrice();
+    }
 
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UpdateFavorite {
+        private int price;
+    }
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
@@ -52,16 +61,19 @@ public class Favorite {
     @Getter
     @NoArgsConstructor
     public static class Response {
-        private User user;
-        private Item item;
+        private Long itemId;
+        private String itemName;
         private int price;
-        private Category category;
+        private Long categoryId;
+        private String categoryName;
 
         public Response(Favorite favorite){
-            this.user = favorite.getUser();
-            this.item = favorite.getItem();
+            Item item = favorite.getItem();
+            this.itemId = favorite.getItem().getId();
+            this.itemName = favorite.getItem().getName();
             this.price = favorite.getPrice();
-
+            this.categoryId = item.getCategory().getId();
+            this.categoryName = item.getCategory().getName();
         }
     }
 }
