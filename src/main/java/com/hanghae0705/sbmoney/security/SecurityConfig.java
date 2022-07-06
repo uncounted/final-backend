@@ -118,6 +118,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/login/oauth2/code/google",
             "/user/login",
             "/user/changePassword/**",
-            "/user/kakao/callback"
+            "/user/kakao/callback",
+            "/api/board"
     };
 }

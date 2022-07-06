@@ -1,8 +1,10 @@
 package com.hanghae0705.sbmoney.exception;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public enum ApiException implements BaseExceptionType{
 
     DUPLICATED_USER(1001, 500, "이미 존재하는 사용자 아이디입니다."),
@@ -10,6 +12,7 @@ public enum ApiException implements BaseExceptionType{
     SHORT_PASSWORD(1003,203,"비밀번호는 4자 이상입니다."),
     SAME_PASSWORD(1004, 203, "유저 이름과 같은 비밀번호는 사용할 수 없습니다."),
     REGEXP_PASSWORD(1005, 203, "비밀번호는 영문 대소문자, 숫자만 사용 가능합니다"),
+    NOT_MATCH_USER(1006, 500, "해당 사용자가 아닙니다."),
     NOT_EXIST_IN_SECURITY_CONTEXT(2001, 203, "Security Context에 인증 정보가 없습니다."),
     NOT_VALID_TOKEN(3001, 203, "유효한 토큰이 아닙니다."),
     EXPIRED_TOKEN(3002, 203, "만료된 토큰입니다."),

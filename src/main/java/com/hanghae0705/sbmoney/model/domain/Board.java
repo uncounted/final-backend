@@ -26,27 +26,40 @@ public class Board extends BaseEntity {
     private User user;
 
     @NotNull
+    private String title;
+
+    @NotNull
     private String contents;
 
-//    private String image;
+    @Column
+    private String image;
 
     @OneToOne
     @JoinColumn(name = "GOAL_ITEM")
     private GoalItem goalItem;
 
+    @NotNull
+    private Long commentCount;
 
     @NotNull
     private Long likeCount;
+
+    @NotNull
+    private Long viewCount;
 
     @NotNull
     private boolean checkLike;
 
     public Board(Request request, GoalItem goalItem, Optional<User> user) {
         this.goalItem = goalItem;
+        this.image = goalItem.image;
+        this.title = request.title;
         this.contents = request.contents;
         this.user = user.get();
         this.likeCount = (long) 0;
         this.checkLike = false;
+        this.commentCount = (long) 0;
+        this.viewCount = (long) 0;
     }
 
     public void updateBoard(Board.Update update) {
@@ -59,6 +72,18 @@ public class Board extends BaseEntity {
         this.likeCount = likeCount;
     }
 
+    public void commentCount(Long commentCount){
+        this.commentCount = commentCount;
+    }
+
+    public void viewCount(Long viewCount){
+        this.viewCount = viewCount;
+    }
+
+    public void changeImage(String image){
+        this.image = image;
+    }
+
 
     @Getter
     @AllArgsConstructor
@@ -66,13 +91,16 @@ public class Board extends BaseEntity {
     public static class Request {
 
         private Long goalItemId;
+        private String title;
         private String contents;
+        private boolean checkImage;
     }
 
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Update {
+        private String title;
         private String contents;
     }
 
@@ -83,12 +111,17 @@ public class Board extends BaseEntity {
         private String UserId;
         private String nickname;
         private String profileImg;
+        private String title;
         private String contents;
+        private String image;
         private Long categoryId;
         private String categoryName;
         private Long goalItemId;
         private String goalItemName;
+        private double goalPercent;
         private Long likeCount;
+        private Long viewCount;
+        private Long commentCount;
         private LocalDateTime createdAt;
         private LocalDateTime modifiedAt;
         private boolean checkLike;
@@ -98,16 +131,23 @@ public class Board extends BaseEntity {
             this.UserId = board.user.getUsername();
             this.nickname = board.user.getNickname();
             this.profileImg = board.user.getProfileImg();
+            this.title = board.title;
             this.contents = board.contents;
-//            this.categoryId = board.goalItem.item.getCategory().getId();
-//            this.categoryName = board.goalItem.item.getCategory().getName();
-//            this.goalItemId = board.goalItem.id;
-//            this.goalItemName = board.goalItem.item.getName();
+            this.image = board.image;
+            this.categoryId = board.goalItem.item.getCategory().getId();
+            this.categoryName = board.goalItem.item.getCategory().getName();
+            this.goalItemId = board.goalItem.id;
+            this.goalItemName = board.goalItem.item.getName();
+            this.goalPercent =board.goalItem.goalPercent;
+            this.commentCount = board.commentCount;
+            this.viewCount = board.viewCount;
             this.likeCount = board.likeCount;
             this.createdAt = board.getCreatedDate();
             this.modifiedAt = board.getModifiedDate();
             this.likeCount = board.likeCount;
             this.checkLike = board.checkLike;
         }
+
+
     }
 }

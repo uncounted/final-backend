@@ -123,6 +123,32 @@ public class User extends BaseEntity {
         }
     }
 
+    public void updateProfile(RequestProfile requestProfile) {
+        this.nickname = requestProfile.getNickname();
+        this.email = requestProfile.getEmail();
+        this.introDesc = requestProfile.getIntroDesc();
+        this.profileImg = requestProfile.getProfileImg();
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    public static class RequestProfile {
+        private String nickname;
+        private String email;
+        private String profileImg;
+        private String introDesc;
+    }
+
+    @Getter
+    @Setter
+    @RequiredArgsConstructor
+    public static class ResponseProfile{
+        private String nickname;
+        private String email;
+        private String profileImg;
+        private String introDesc;
+    }
     @Setter
     @Getter
     @NoArgsConstructor
