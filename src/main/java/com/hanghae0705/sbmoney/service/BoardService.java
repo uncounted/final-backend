@@ -2,10 +2,7 @@ package com.hanghae0705.sbmoney.service;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.model.domain.Board;
-import com.hanghae0705.sbmoney.model.domain.GoalItem;
-import com.hanghae0705.sbmoney.model.domain.Item;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.*;
 import com.hanghae0705.sbmoney.repository.BoardRepository;
 import com.hanghae0705.sbmoney.repository.GoalItemRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;
@@ -73,6 +70,21 @@ public class BoardService {
         Board.Response response = new Board.Response(board);
         return new Message(true, "게시판을 조회하였습니다.", response);
     }
+
+    @Transactional
+    public Message GetSaveBoard(Long boardId){
+        Board board = boardRepository.findAllById(boardId);
+        int length = board.getGoalItem().getSavedItems().size();
+        int total = 0;
+       
+        List<SavedItem> savedItem = board.getGoalItem().getSavedItems();
+        for (int i = 0; i<length;i++){
+            total = total+savedItem.get(i).getPrice();
+        }
+        Board.SaveItemResponse response = new Board.SaveItemResponse(board,total);
+        return new Message(true, "게시판을 조회하였습니다.", response);
+    }
+
 
     @Transactional
     public Message postBoard(Board.Request request, String authorization, MultipartFile multipartFile) throws IOException {

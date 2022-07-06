@@ -27,6 +27,12 @@ public class ItemValidator {
         return goalItem;
     }
 
+    public void isExistItem(String itemName) throws ItemException {
+        if(itemRepository.findByName(itemName).isPresent()){
+            throw new ItemException(Constants.ExceptionClass.ITEM, HttpStatus.BAD_REQUEST, "이미 존재하는 아이템입니다.");
+        }
+    }
+
     public void isReachedGoalItem(double goalPercent) throws ItemException {
         if(goalPercent > 100.0){
             throw new ItemException(Constants.ExceptionClass.SAVED_ITEM, HttpStatus.BAD_REQUEST, "달성율을 초과한 태산입니다.");

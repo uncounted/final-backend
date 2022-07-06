@@ -72,7 +72,6 @@ public class SavedItem extends BaseEntity {
     }
 
     @Getter
-    @Builder
     @AllArgsConstructor
     public static class Response {
         private Long categoryId;

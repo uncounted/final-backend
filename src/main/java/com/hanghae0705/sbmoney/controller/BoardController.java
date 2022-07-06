@@ -28,8 +28,15 @@ public class BoardController {
         return ResponseEntity.ok(message);
     }
 
-    @PostMapping("/api/board")
-    public ResponseEntity<Message> postBoard(@RequestBody Board.Request request, @RequestHeader("Authorization") String authorization,@RequestPart(required = false,value = "file") MultipartFile multipartFile) throws IOException  {
+    @GetMapping("/api/board/save/{boardId}")
+    public ResponseEntity<Message> getSaveBoard(@PathVariable Long boardId){
+        Message message = boardService.GetSaveBoard(boardId);
+        return ResponseEntity.ok(message);
+    }
+
+
+    @PostMapping("/api/post/board")
+    public ResponseEntity<Message> postBoard(@RequestPart(value = "request") Board.Request request, @RequestHeader("Authorization") String authorization,@RequestPart(required = false,value = "file") MultipartFile multipartFile) throws IOException  {
         Message message = boardService.postBoard(request, authorization,multipartFile);
         return ResponseEntity.ok(message);
     }

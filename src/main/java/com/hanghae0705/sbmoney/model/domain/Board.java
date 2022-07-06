@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Entity
@@ -93,7 +94,6 @@ public class Board extends BaseEntity {
         private Long goalItemId;
         private String title;
         private String contents;
-        private boolean checkImage;
     }
 
     @Getter
@@ -147,7 +147,29 @@ public class Board extends BaseEntity {
             this.likeCount = board.likeCount;
             this.checkLike = board.checkLike;
         }
+    }
 
+    @Getter
+    @AllArgsConstructor
+    public static class SaveItemResponse{
+        private Long boardId;
+        private String userId;
+        private int price;
+        private int totalPrice;
+        private LocalDateTime createdAt;
+        private LocalDateTime modifiedAt;
+        private int savedItemTotalPrice;
+        private List<SavedItem> savedItemList;
 
+        public SaveItemResponse(Board board, int savedItemTotalPrice){
+            this.boardId = board.getId();
+            this.userId = board.getUser().getUsername();
+            this.totalPrice = board.getGoalItem().getTotal();
+            this.price = this.totalPrice/board.getGoalItem().getCount();
+            this.createdAt = board.getGoalItem().getCreatedDate();
+            this.modifiedAt = board.getGoalItem().getModifiedDate();
+            this.savedItemList = board.getGoalItem().getSavedItems();
+            this.savedItemTotalPrice = savedItemTotalPrice;
+        }
     }
 }

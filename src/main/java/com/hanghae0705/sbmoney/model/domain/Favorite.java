@@ -32,10 +32,10 @@ public class Favorite {
         this.item = item;
     }
 
-    public Favorite(Request request) {
-        this.user = request.getUser();
-        this.item = request.getItem();
+    public Favorite(Request request, User user, Item item) {
+        this.item = item;
         this.price = request.getPrice();
+        this.user = user;
     }
 
 
@@ -43,9 +43,7 @@ public class Favorite {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Request {
-
-        private User user;
-        private Item item;
+        private Long itemId;
         private int price;
         private Long categoryId;
 
@@ -54,7 +52,6 @@ public class Favorite {
     @Getter
     @NoArgsConstructor
     public static class Response {
-
         private User user;
         private Item item;
         private int price;

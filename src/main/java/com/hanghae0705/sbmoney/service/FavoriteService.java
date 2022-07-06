@@ -15,9 +15,6 @@ import com.hanghae0705.sbmoney.security.SecurityUtil;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 public class FavoriteService {
     private final FavoriteRepository favoriteRepository;
@@ -46,24 +43,20 @@ public class FavoriteService {
         return new Message(true, "추가에 성공했습니다");
     }
 
-//    public Message addFaverite(Long favoriteItemId, Favorite.Request request) {
-//        if(checkValueIsEmptyByRepo("favorite", favoriteItemId) &&
-//                checkValueIsEmptyByRepo("item", request.getItem().getId()) &&
-//            checkValueIsEmptyByRepo("category", request.getCategoryId())) {
-//            favoriteRepository.save(new Favorite(request));
-//        } else {
-//            throw new IllegalArgumentException("잘못된 입력값");
-//        }
-//        return new Message(true, "추가에 성공했습니다.");
-//    }
-
-//    public Message deleteFavorite(Long favoriteItemId) {
-//        if(checkValueIsEmptyByRepo("favorite", favoriteItemId)){
-//            favoriteRepository.deleteById(favoriteItemId);
-//        } else {
-//            throw new IllegalArgumentException("잘못된 입력값");
-//        }
-//    }
+    public Message addFavorite(Long favoriteItemId, Favorite.Request request) {
+        if(checkValueIsEmptyByRepo("favorite", favoriteItemId)
+                && checkValueIsEmptyByRepo("item", request.getItemId())
+                && checkValueIsEmptyByRepo("category", request.getCategoryId())
+        ) {
+            Item item = itemRepository.findById(request.getItemId()).orElseThrow(
+                    () -> new IllegalArgumentException("존재하지 않는 아이템")
+            );
+            favoriteRepository.save(new Favorite(request, getUser(), item));
+        } else {
+            throw new IllegalArgumentException("잘못된 입력값");
+        }
+        return new Message(true, "추가에 성공했습니다.");
+    }
 
     public boolean checkValueIsEmptyByRepo(String repoName, Long id) {
         switch(repoName) {
@@ -78,10 +71,9 @@ public class FavoriteService {
     }
 
     public User getUser(){
-        User currentUser = userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(
+        return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(
                 () -> new ApiRequestException(ApiException.NOT_EXIST_USER)
         );
-        return currentUser;
     }
 
 }
