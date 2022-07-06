@@ -43,7 +43,6 @@ public class Favorite {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Request {
-
         private Long itemId;
         private int price;
         private Long categoryId;
@@ -53,7 +52,6 @@ public class Favorite {
     @Getter
     @NoArgsConstructor
     public static class Response {
-
         private User user;
         private Item item;
         private int price;

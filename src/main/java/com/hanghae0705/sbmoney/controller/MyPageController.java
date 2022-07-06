@@ -28,12 +28,7 @@ public class MyPageController {
         Message message = myProfileService.updateProfile(requestProfile);
         return ResponseEntity.ok(message);
     }
-//
-//    @GetMapping("/favorite")
-//    public ResponseEntity<Message> getFavorite(){
-//        return;
-//    }
-//
+
     @PostMapping("/favorite")
     public ResponseEntity<Message> createFavorite(@RequestBody Item.Request request){
         Message message = favoriteService.createFavorite(request);
@@ -45,15 +40,4 @@ public class MyPageController {
         Message message = favoriteService.addFavorite(favoriteItemId, request);
         return ResponseEntity.ok(message);
     }
-
-//    @PutMapping("/favorite/{favoriteItemId}")
-//    public ResponseEntity<Message> editFavorite(@PathVariable Long favoriteItemId) {
-//
-//    }
-//
-//    @DeleteMapping("/favorite/{favoriteItemId}")
-//    public ResponseEntity<Message> deleteFavorite(@PathVariable Long favoriteItemId) {
-//
-//    }
-
 }

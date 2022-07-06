@@ -49,7 +49,7 @@ public class FavoriteService {
                 && checkValueIsEmptyByRepo("category", request.getCategoryId())
         ) {
             Item item = itemRepository.findById(request.getItemId()).orElseThrow(
-                    () -> new IllegalArgumentException("잘못됨")
+                    () -> new IllegalArgumentException("존재하지 않는 아이템")
             );
             favoriteRepository.save(new Favorite(request, getUser(), item));
         } else {
@@ -71,10 +71,9 @@ public class FavoriteService {
     }
 
     public User getUser(){
-        User currentUser = userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(
+        return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(
                 () -> new ApiRequestException(ApiException.NOT_EXIST_USER)
         );
-        return currentUser;
     }
 
 }
