@@ -31,8 +31,6 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
 //        super.onAuthenticationSuccess(request, response, authentication);
 //    }
 
-
-
         @Override
         public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
@@ -54,7 +52,7 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
 
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
             String targetUrl = UriComponentsBuilder.fromUriString("http://localhost:3000/oauth2/redirect")
-                    //.queryParam("Authorization", tokenDto.getAccessToken())
+                    .queryParam("Authorization", tokenDto.getAccessToken())
                     .queryParam("username", userDetails.getUsername()) // email, nickname
                     .build().toUriString();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);

@@ -153,13 +153,19 @@ public class User extends BaseEntity {
     @Getter
     @NoArgsConstructor
     public static class RequestSocialRegister {
+        private String username;
         private String nickname;
         private String email;
 
         @Builder
-        public RequestSocialRegister(String nickname, String email) {
+        public RequestSocialRegister(String username, String nickname, String email) {
+            this.username = username;
             this.nickname = nickname;
             this.email = email;
+        }
+
+        public UsernamePasswordAuthenticationToken toAuthentication(){
+            return new UsernamePasswordAuthenticationToken(username, "");
         }
     }
 

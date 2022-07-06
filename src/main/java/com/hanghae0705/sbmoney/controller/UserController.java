@@ -51,6 +51,12 @@ public class UserController {
         return userService.checkNickname(requestCheckNickname.getNickname());
     }
 
+    // 수정 예정
+    @PostMapping("/api/user/register/social")
+    public Message registerSocialUser(@RequestBody User.RequestSocialRegister requestSocialRegister, HttpServletRequest request, HttpServletResponse response) {
+        return userService.registerSocialUser(requestSocialRegister, request, response);
+    }
+
     // 로그인
     @PostMapping("/api/user/login")
     public TokenDto login(@RequestBody User.RequestLogin requestLogin, HttpServletRequest request, HttpServletResponse response) {
