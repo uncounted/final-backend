@@ -32,13 +32,13 @@ public class TokenProvider {
     private static final int DAY = 24 * HOUR;
 
     //access token 유효기간 - seconds, milliseconds
-//    private static final int JWT_ACCESS_TOKEN_VALID_SEC = 30 * MINUTE;
-    private static final int JWT_ACCESS_TOKEN_VALID_SEC = 60;
+    private static final int JWT_ACCESS_TOKEN_VALID_SEC = 30 * MINUTE;
+    //private static final int JWT_ACCESS_TOKEN_VALID_SEC = 60;
     private static final int JWT_ACCESS_TOKEN_VALID_MILLI_SEC = 1000 * JWT_ACCESS_TOKEN_VALID_SEC;
 
     //refresh token 유효기간 - seconds, milliseconds
-    //private static final int JWT_REFRESH_TOKEN_VALID_SEC = 10 * DAY;
-    private static final int JWT_REFRESH_TOKEN_VALID_SEC = 120;
+    private static final int JWT_REFRESH_TOKEN_VALID_SEC = 7 * DAY;
+    //private static final int JWT_REFRESH_TOKEN_VALID_SEC = 120;
     public static final int JWT_REFRESH_TOKEN_VALID_MILLI_SEC = 1000 * JWT_REFRESH_TOKEN_VALID_SEC;
     private static final String AUTHORITIES_KEY = "auth";
     public static final String TOKEN_TYPE = "Bearer";
