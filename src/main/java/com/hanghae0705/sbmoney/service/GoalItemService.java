@@ -8,7 +8,6 @@ import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.SavedItem;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.repository.GoalItemRepository;
-import com.hanghae0705.sbmoney.repository.ItemRepository;
 import com.hanghae0705.sbmoney.util.MathFloor;
 import com.hanghae0705.sbmoney.validator.ItemValidator;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
-import java.awt.print.Book;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,21 +54,13 @@ public class GoalItemService {
     }
 
     @Transactional
-    public Message uploadImage(Long goalItemId, MultipartFile multipartFile, User user) throws IOException, ItemException {
-        GoalItem goalItem = itemValidator.isValidGoalItem(goalItemId, user);
-        String url = s3Uploader.upload(multipartFile, "static");
-        goalItem.setImage(url);
-        return new Message(true, "이미지를 등록하였습니다.", url);
-    }
-
-    @Transactional
-    public Message postGoalItem(GoalItem.Request goalItemRequest, User user) throws ItemException {
+    public Message postGoalItem(GoalItem.Request goalItemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
         List<GoalItem> goalItemList = user.getGoalItems();
         if(goalItemList != null){
             for (GoalItem goalItem : goalItemList){
                 if(!goalItem.isCheckReached() && goalItem.getItem().getId() != -1){
                     throw new ItemException(Constants.ExceptionClass.GOAL_ITEM, HttpStatus.BAD_REQUEST, "이미 태산으로 등록된 상품이 존재합니다.");
-                } else {
+                } else { // 태산 없음으로 등록된 goalItem을 히스토리에 추가
                     LocalDateTime reachedDateTime = LocalDateTime.now();
                     goalItem.setCheckReached(true, reachedDateTime);
                 }
@@ -87,12 +77,14 @@ public class GoalItemService {
         int total = (price == 0) ? item.getDefaultPrice() * count : goalItemRequest.getPrice() * count;
 
         GoalItem goalItem = goalItemRepository.save(new GoalItem(user, count, total, item));
+        String url = s3Uploader.upload(multipartFile, "static");
+        goalItem.setImage(url);
 
         return new Message(true, "목표 항목을 등록하였습니다.", goalItem);
     }
 
     @Transactional
-    public Message updateGoalItem(Long goalItemId, GoalItem.Request goalItemRequest, User user) throws ItemException {
+    public Message updateGoalItem(Long goalItemId, GoalItem.Request goalItemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
         GoalItem goalItem = itemValidator.isValidGoalItem(goalItemId, user);
 
         // 목표 품목을 변경할 때
@@ -114,6 +106,9 @@ public class GoalItemService {
 
             double decimal = (double) savedItemTotal / total;
             goalPercent = MathFloor.PercentTenths(decimal);
+
+            String url = s3Uploader.upload(multipartFile, "static");
+            goalItem.setImage(url);
 
             if (savedItemTotal >= total) { // 변경한 품목이 달성률 100%를 넘은 지점
                 LocalDateTime reachedAt = LocalDateTime.now();
@@ -140,6 +135,9 @@ public class GoalItemService {
             double decimal = (double) savedItemTotal / total;
             double goalPercent = MathFloor.PercentTenths(decimal);
             goalItem.updateGoalItem(count, total, goalPercent);
+
+            String url = s3Uploader.upload(multipartFile, "static");
+            goalItem.setImage(url);
         }
         return new Message(true, "목표 항목을 수정하였습니다.");
     }

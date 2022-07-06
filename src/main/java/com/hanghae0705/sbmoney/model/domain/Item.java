@@ -32,15 +32,25 @@ public class Item {
     @Getter
     @NoArgsConstructor
     public static class Request {
+        private Long categoryId;
         private String itemName;
         private int defaultPrice;
-        private Category category;
-        private Long categoryId;
+    }
 
-        public Request(String itemName, int defaultPrice, Category category) {
-            this.itemName = itemName;
-            this.defaultPrice = defaultPrice;
-            this.category = category;
+    @Getter
+    @NoArgsConstructor
+    public static class Response {
+        private Long categoryId;
+        private String categoryName;
+        private Long itemId;
+        private String itemName;
+
+        public Response(Item item){
+            this.categoryId = item.getCategory().getId();
+            this.categoryName = item.getCategory().getName();
+            this.itemId = item.getId();
+            this.itemName = item.getName();
+
         }
     }
 
@@ -48,6 +58,13 @@ public class Item {
         this.name = request.getItemName();
         this.category = category;
         this.defaultPrice = request.getDefaultPrice();
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class getRequest {
+        private Long goalItemId;
     }
 
 }

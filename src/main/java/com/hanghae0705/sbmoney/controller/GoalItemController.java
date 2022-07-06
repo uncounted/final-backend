@@ -34,24 +34,20 @@ public class GoalItemController {
         return ResponseEntity.ok(message);
     }
 
-    @PostMapping("/api/goalItem/{goalItemId}")
-    public ResponseEntity<Message> uploadImage(@PathVariable Long goalItemId, @RequestPart(value = "file") MultipartFile multipartFile) throws IOException, ItemException {
-        User user = commonService.getUser();
-        Message message = goalItemService.uploadImage(goalItemId, multipartFile, user);
-        return ResponseEntity.ok(message);
-    }
-
     @PostMapping("/api/goalItem")
-    public ResponseEntity<Message> postGoalItem(@RequestBody GoalItem.Request goalItemRequest) throws ItemException {
+    public ResponseEntity<Message> postGoalItem(@RequestPart(value = "image",required = false) MultipartFile multipartFile,
+                                                @RequestPart(value = "goalItem") GoalItem.Request goalItemRequest) throws ItemException, IOException {
         User user = commonService.getUser();
-        Message message = goalItemService.postGoalItem(goalItemRequest, user);
+        Message message = goalItemService.postGoalItem(goalItemRequest, multipartFile,  user);
         return ResponseEntity.ok(message);
     }
 
     @PutMapping("/api/goalItem/{goalItemId}")
-    public ResponseEntity<Message> updateGoalItem(@PathVariable Long goalItemId, @RequestBody GoalItem.Request goalItemRequest) throws ItemException {
+    public ResponseEntity<Message> updateGoalItem(@PathVariable Long goalItemId,
+                                                  @RequestPart(value = "image",required = false) MultipartFile multipartFile,
+                                                  @RequestPart(value = "goalItem") GoalItem.Request goalItemRequest) throws ItemException, IOException {
         User user = commonService.getUser();
-        Message message = goalItemService.updateGoalItem(goalItemId, goalItemRequest, user);
+        Message message = goalItemService.updateGoalItem(goalItemId, goalItemRequest, multipartFile, user);
         return ResponseEntity.ok(message);
     }
 
