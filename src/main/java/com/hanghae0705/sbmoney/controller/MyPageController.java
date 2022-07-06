@@ -36,17 +36,15 @@ public class MyPageController {
 //
     @PostMapping("/favorite")
     public ResponseEntity<Message> createFavorite(@RequestBody Item.Request request){
-        System.out.println(request.getItemName() + " 컨트롤러 아이템 네임");
-        System.out.println(request.getCategoryId() + " 컨트롤러 카테고리 id");
         Message message = favoriteService.createFavorite(request);
         return ResponseEntity.ok(message);
     }
 
-//    @PostMapping("/favorite/{favoriteItemId}")
-//    public ResponseEntity<Message> addFavorite(@PathVariable Long favoriteItemId, @RequestBody Favorite.Request request){
-//        Message message = new Message();
-//        return ResponseEntity.ok(message);
-//    }
+    @PostMapping("/favorite/{favoriteItemId}")
+    public ResponseEntity<Message> addFavorite(@PathVariable Long favoriteItemId, @RequestBody Favorite.Request request){
+        Message message = favoriteService.addFavorite(favoriteItemId, request);
+        return ResponseEntity.ok(message);
+    }
 
 //    @PutMapping("/favorite/{favoriteItemId}")
 //    public ResponseEntity<Message> editFavorite(@PathVariable Long favoriteItemId) {
