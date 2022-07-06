@@ -80,6 +80,10 @@ public class Board extends BaseEntity {
         this.viewCount = viewCount;
     }
 
+    public void changeImage(String image){
+        this.image = image;
+    }
+
 
     @Getter
     @AllArgsConstructor

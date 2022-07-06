@@ -11,8 +11,10 @@ import com.hanghae0705.sbmoney.repository.GoalItemRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +28,7 @@ public class BoardService {
     private final LikeService likeService;
     private final GoalItemRepository goalItemRepository;
     private final UserRepository userRepository;
+    private final S3Uploader s3Uploader;
 
     private Optional<User> getUser(String authorization) {
         String token = authorization.substring(7);
@@ -44,9 +47,16 @@ public class BoardService {
         List<Board> boardList = boardRepository.findAll();
         List<Board.Response> responseList = new ArrayList<>();
         for (Board board : boardList) {
-            boolean checkLike = likeService.checkLike(board.getId(), authorization);
-            Long likeCount = likeService.likeCount(board.getId());
-            board.likeBoard(checkLike, likeCount);
+            if(authorization == null){
+                Long likeCount = likeService.likeCount(board.getId());
+                board.likeBoard(false, likeCount);
+
+            }else {
+                boolean checkLike = likeService.checkLike(board.getId(), authorization);
+                Long likeCount = likeService.likeCount(board.getId());
+                board.likeBoard(checkLike, likeCount);
+            }
+
             Board.Response response = new Board.Response(board);
             responseList.add(response);
         }
@@ -65,27 +75,28 @@ public class BoardService {
     }
 
     @Transactional
-    public Message postBoard(Board.Request request, String authorization) {
-
-        if(request.isCheckImage()){
-
-        }else {
-
-        }
-
+    public Message postBoard(Board.Request request, String authorization, MultipartFile multipartFile) throws IOException {
         Optional<User> user = getUser(authorization);
         GoalItem goalItem = goalItemRepository.findAllById(request.getGoalItemId());
         Board board = new Board(request, goalItem, user);
+        if(multipartFile != null) {
+            String url = s3Uploader.upload(multipartFile, "static");
+            board.changeImage(url);
+        }
         boardRepository.save(board);
         return new Message(true, "게시글을 등록하였습니다");
     }
 
     @Transactional
-    public Message putBoard(Board.Update request, Long boardId, String authorization) {
+    public Message putBoard(Board.Update request, Long boardId, String authorization, MultipartFile multipartFile) throws IOException {
         Optional<User> user = getUser(authorization);
         Board board = boardRepository.findAllById(boardId);
         if (user.get().getId().equals(board.getUser().getId())) {
             board.updateBoard(request);
+            if(multipartFile != null) {
+                String url = s3Uploader.upload(multipartFile, "static");
+                board.changeImage(url);
+            }
             return new Message(true, "게시글을 수정하였습니다");
         } else {
             return new Message(false, "게시글을 수정에 실패하였습니다");
