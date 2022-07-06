@@ -60,3 +60,13 @@ dependencies {
     //mail
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
+
+jar {
+    enabled = false
+}
+
+bootJar{
+    archivesBaseName = 'app'
+    archiveFileName = 'app.jar'
+    archiveVersion = "0.0.0"
+}
