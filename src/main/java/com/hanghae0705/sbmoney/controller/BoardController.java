@@ -29,7 +29,7 @@ public class BoardController {
     }
 
     @PostMapping("/api/post/board")
-    public ResponseEntity<Message> postBoard(@RequestBody Board.Request request, @RequestHeader("Authorization") String authorization,@RequestPart(required = false,value = "file") MultipartFile multipartFile) throws IOException  {
+    public ResponseEntity<Message> postBoard(@RequestPart(value = "request") Board.Request request, @RequestHeader("Authorization") String authorization,@RequestPart(required = false,value = "file") MultipartFile multipartFile) throws IOException  {
         Message message = boardService.postBoard(request, authorization,multipartFile);
         return ResponseEntity.ok(message);
     }

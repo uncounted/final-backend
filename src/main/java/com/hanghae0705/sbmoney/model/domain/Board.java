@@ -93,7 +93,6 @@ public class Board extends BaseEntity {
         private Long goalItemId;
         private String title;
         private String contents;
-        private boolean checkImage;
     }
 
     @Getter
