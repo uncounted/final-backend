@@ -1,6 +1,7 @@
 package com.hanghae0705.sbmoney.controller;
 
 import com.hanghae0705.sbmoney.data.Message;
+import com.hanghae0705.sbmoney.model.domain.Favorite;
 import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.service.FavoriteService;
@@ -40,12 +41,13 @@ public class MyPageController {
         Message message = favoriteService.createFavorite(request);
         return ResponseEntity.ok(message);
     }
-//
+
 //    @PostMapping("/favorite/{favoriteItemId}")
-//    public ResponseEntity<Message> addFavorite(@PathVariable Long favoriteItemId){
-//        return;
+//    public ResponseEntity<Message> addFavorite(@PathVariable Long favoriteItemId, @RequestBody Favorite.Request request){
+//        Message message = new Message();
+//        return ResponseEntity.ok(message);
 //    }
-//
+
 //    @PutMapping("/favorite/{favoriteItemId}")
 //    public ResponseEntity<Message> editFavorite(@PathVariable Long favoriteItemId) {
 //

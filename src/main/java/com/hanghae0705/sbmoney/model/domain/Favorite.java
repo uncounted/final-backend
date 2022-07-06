@@ -47,6 +47,7 @@ public class Favorite {
         private User user;
         private Item item;
         private int price;
+        private Long categoryId;
 
     }
 

@@ -23,7 +23,6 @@ public class FavoriteService {
     private final FavoriteRepository favoriteRepository;
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
-
     private final CategoryRepository categoryRepository;
 
     public FavoriteService(FavoriteRepository favoriteRepository, @Lazy ItemRepository itemRepository, UserRepository userRepository, @Lazy CategoryRepository categoryRepository) {
@@ -33,13 +32,10 @@ public class FavoriteService {
         this.categoryRepository = categoryRepository;
     }
 
-
-
     public Message createFavorite(Item.Request request) {
-        System.out.println(request.getCategoryId() + " 서비스 카테고리 아이디");
         if(checkValueIsEmptyByRepo("category", request.getCategoryId())) {
             Item item = new Item(request, categoryRepository.findById(request.getCategoryId()).orElseThrow(
-                    () -> new IllegalArgumentException("으잉?")
+                    () -> new IllegalArgumentException("존재하지 않는 아이템")
             ));
             Favorite favorite = new Favorite(request, getUser(), item);
             itemRepository.save(item);
@@ -50,13 +46,23 @@ public class FavoriteService {
         return new Message(true, "추가에 성공했습니다");
     }
 
-
-//    public Message editFaverite() {
-//
+//    public Message addFaverite(Long favoriteItemId, Favorite.Request request) {
+//        if(checkValueIsEmptyByRepo("favorite", favoriteItemId) &&
+//                checkValueIsEmptyByRepo("item", request.getItem().getId()) &&
+//            checkValueIsEmptyByRepo("category", request.getCategoryId())) {
+//            favoriteRepository.save(new Favorite(request));
+//        } else {
+//            throw new IllegalArgumentException("잘못된 입력값");
+//        }
+//        return new Message(true, "추가에 성공했습니다.");
 //    }
-//
-//    public Message deleteFavorite() {
-//
+
+//    public Message deleteFavorite(Long favoriteItemId) {
+//        if(checkValueIsEmptyByRepo("favorite", favoriteItemId)){
+//            favoriteRepository.deleteById(favoriteItemId);
+//        } else {
+//            throw new IllegalArgumentException("잘못된 입력값");
+//        }
 //    }
 
     public boolean checkValueIsEmptyByRepo(String repoName, Long id) {
