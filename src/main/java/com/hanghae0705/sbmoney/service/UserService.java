@@ -3,6 +3,7 @@ package com.hanghae0705.sbmoney.service;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRequestException;
+import com.hanghae0705.sbmoney.exception.ApiRuntimeException;
 import com.hanghae0705.sbmoney.model.domain.RefreshToken;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.UserRoleEnum;
@@ -12,6 +13,7 @@ import com.hanghae0705.sbmoney.repository.RefreshTokenRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;
 import com.hanghae0705.sbmoney.security.SecurityUtil;
 import com.hanghae0705.sbmoney.model.dto.TokenDto;
+import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.security.CookieUtils;
 import com.hanghae0705.sbmoney.util.MailService;
@@ -21,6 +23,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -311,5 +314,55 @@ public class UserService {
 
         // 토큰 발급
         return tokenDto;
+    }
+
+    @Transactional
+    public Message registerSocialUser(User.RequestSocialRegister requestSocialRegister, HttpServletRequest request, HttpServletResponse response) {
+
+        User found = userRepository.findByUsername(requestSocialRegister.getUsername())
+                .orElseThrow(() -> new ApiRuntimeException(ApiException.NOT_EXIST_USER));
+
+        if (found.getEmail().equals("")
+                && requestSocialRegister.getUsername().equals(found.getUsername())) {
+
+            UserDetailsImpl userDetails = new UserDetailsImpl(User.builder()
+                    .username(found.getUsername())
+                    .nickname(requestSocialRegister.getNickname())
+                    .email(requestSocialRegister.getEmail())
+                    .password(found.getPassword())
+                    .profileImg(found.getProfileImg())
+                    .introDesc(found.getIntroDesc())
+                    .provider(found.getProvider())
+                    .lastEntered(LocalDateTime.now())
+                    .role(UserRoleEnum.USER)
+                    .build());
+
+            UsernamePasswordAuthenticationToken authenticationToken = requestSocialRegister.toAuthentication();
+
+            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+
+            TokenDto tokenDto = tokenProvider.generateAccessToken(authentication);
+
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .key(authentication.getName())
+                    .value(tokenProvider.generateRefreshToken())
+                    .build();
+
+            refreshTokenRepository.save(refreshToken);
+
+            CookieUtils.deleteCookie(request, response, "refreshToken");
+            CookieUtils.addCookie(response, "refreshToken", refreshToken.getValue(), TokenProvider.JWT_REFRESH_TOKEN_VALID_MILLI_SEC);
+
+            return Message.builder()
+                    .result(true)
+                    .respMsg("소셜 회원가입에 성공했습니다.")
+                    .data(tokenDto)
+                    .build();
+        } else {
+            return Message.builder()
+                    .result(false)
+                    .respMsg("이미 가입된 회원입니다.")
+                    .build();
+        }
     }
 }

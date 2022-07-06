@@ -50,8 +50,6 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
         OAuth2UserInfo userInfo = OAuth2UserFactory.getOAuth2UserInfo(provider, user.getAttributes());
         Optional<User> savedUser = userRepository.findByUsername(provider + "_" + userInfo.getId());
 
-//        return savedUser.map(value -> new UserDetailsImpl(value, user.getAttributes()))
-//                .orElseGet(() -> new UserDetailsImpl(createUser(userInfo, provider), user.getAttributes()));
         if (savedUser.isEmpty()){
             return new UserDetailsImpl(createUser(userInfo, provider), user.getAttributes());
         } else {
@@ -62,19 +60,32 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
     private User createUser(OAuth2UserInfo userInfo, String provider) {
         System.out.println("소셜 로그인 최초 시도");
 
-        String nickname;
-        if(userInfo.getFirstName() != null) {
-            nickname = userInfo.getFirstName() + userInfo.getLastName();
-        } else {
-            nickname = userInfo.getName();
-        }
+//        String nickname;
+//        if(userInfo.getFirstName() != null) {
+//            nickname = userInfo.getFirstName() + userInfo.getLastName();
+//        } else {
+//            nickname = userInfo.getName();
+//        }
+
+//        User newUser = User.builder()
+//                .id(null)
+//                .username(provider + "_" + userInfo.getId())
+//                .password(new BCryptPasswordEncoder().encode("social-login-password-google-" + userInfo.getId()))
+//                .nickname(nickname)
+//                .email(userInfo.getEmail())
+//                .profileImg(userInfo.getImageUrl())
+//                .introDesc("티끌모아 태산!")
+//                .provider(provider)
+//                .role(UserRoleEnum.USER)
+//                .lastEntered(LocalDateTime.now())
+//                .build();
 
         User newUser = User.builder()
                 .id(null)
                 .username(provider + "_" + userInfo.getId())
                 .password(new BCryptPasswordEncoder().encode("social-login-password-google-" + userInfo.getId()))
-                .nickname(nickname)
-                .email(userInfo.getEmail())
+                .nickname("")
+                .email("")
                 .profileImg(userInfo.getImageUrl())
                 .introDesc("티끌모아 태산!")
                 .provider(provider)
