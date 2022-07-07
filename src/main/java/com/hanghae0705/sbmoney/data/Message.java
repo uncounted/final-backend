@@ -1,5 +1,6 @@
 package com.hanghae0705.sbmoney.data;
 
+import lombok.Builder;
 import lombok.Data;
 
 @Data
@@ -9,6 +10,7 @@ public class Message {
     private String respMsg;
     private Object data;
 
+    @Builder
     public Message(boolean result, String respMsg, Object data) {
         this.result = result;
         this.respMsg = respMsg;

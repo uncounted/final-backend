@@ -1,8 +1,7 @@
 package com.hanghae0705.sbmoney.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -29,4 +28,43 @@ public class Item {
     @JoinColumn(name="CATEGORY_ID")
     @JsonBackReference(value = "item-category-fk")
     private Category category;
+
+    @Getter
+    @NoArgsConstructor
+    public static class Request {
+        private Long categoryId;
+        private String itemName;
+        private int defaultPrice;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class Response {
+        private Long categoryId;
+        private String categoryName;
+        private Long itemId;
+        private String itemName;
+
+        public Response(Item item){
+            this.categoryId = item.getCategory().getId();
+            this.categoryName = item.getCategory().getName();
+            this.itemId = item.getId();
+            this.itemName = item.getName();
+
+        }
+    }
+
+    public Item(Request request, Category category) {
+        this.name = request.getItemName();
+        this.category = category;
+        this.defaultPrice = request.getDefaultPrice();
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class getRequest {
+        private Long goalItemId;
+    }
+
 }

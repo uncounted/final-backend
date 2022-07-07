@@ -2,10 +2,7 @@ package com.hanghae0705.sbmoney.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -16,32 +13,26 @@ import javax.validation.constraints.NotNull;
 public class SavedItem extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    Long id;
+    private Long id;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     @JsonBackReference(value = "user-fk")
-    User user;
+    private User user;
 
     @Column(nullable = false)
-    int price;
+    private int price;
 
     @OneToOne
     @JoinColumn(name = "ITEM_ID")
     @JsonBackReference(value = "item-fk")
-    Item item;
+    private Item item;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "GOAL_ITEM_ID")
     @JsonBackReference(value = "goalItem-fk")
-    GoalItem goalItem;
-
-    public SavedItem(Item item, int price, User user){
-        this.item = item;
-        this.price = price;
-        this.user = user;
-    }
+    private GoalItem goalItem;
 
     public SavedItem(Item item, int price, User user, GoalItem goalItem){
         this.item = item;
@@ -61,12 +52,17 @@ public class SavedItem extends BaseEntity {
 
 
     @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
     public static class Request {
         private Long itemId;
         private Long goalItemId;
         private int price;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class getRequest {
+        private Long goalItemId;
     }
     @Getter
     @AllArgsConstructor

@@ -16,42 +16,42 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class GoalItem extends BaseEntity {
-    @Column(name = "GOAL_ITEM")
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
-    Long id;
+    private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "USER_ID")
     @JsonBackReference(value = "user-fk")
-    User user;
+    private User user;
 
     @Column
-    LocalDateTime reachedAt;
+    private LocalDateTime reachedAt;
 
     @Column
-    String image;
+    private String image;
 
     @Column(nullable = false)
-    int count;
+    private int count;
 
     @Column(nullable = false)
-    int total;
+    private int total;
 
     @OneToOne
     @JoinColumn(name = "ITEM_ID")
     @JsonBackReference(value = "item-fk")
-    Item item;
+    private Item item;
 
     @OneToMany(mappedBy = "goalItem")
     @JsonManagedReference(value = "goalItem-fk")
     private List<SavedItem> savedItems;
 
     @Column
-    boolean checkReached;
+    private boolean checkReached;
 
     @Column
-    double goalPercent;
+    private double goalPercent;
 
     public GoalItem(User user, int count, int total, Item item) {
         this.user = user;
@@ -60,14 +60,38 @@ public class GoalItem extends BaseEntity {
         this.item = item;
     }
 
+
+    public void setCheckReached(boolean checkReached, double goalPercent, LocalDateTime reachedAt){
+        this.checkReached = checkReached;
+        this.goalPercent = goalPercent;
+        this.reachedAt = reachedAt;
+    }
+
+    public void setCheckReached(boolean checkReached, LocalDateTime reachedAt){
+        this.checkReached = checkReached;
+        this.reachedAt = reachedAt;
+    }
+
     public void setGoalPercent(double goalPercent){
         this.goalPercent = goalPercent;
     }
 
-    public void setCheckReached(boolean checkReached){
-        this.checkReached = checkReached;
+    public void setImage(String image){
+        this.image = image;
     }
 
+    public void updateGoalItem(int count, int total, double goalPercent){
+        this.count = count;
+        this.total = total;
+        this.goalPercent = goalPercent;
+    }
+
+    public void updateGoalItem(int count, int total, Item item, double goalPercent) {
+        this.count = count;
+        this.total = total;
+        this.item = item;
+        this.goalPercent = goalPercent;
+    }
 
     @Getter
     @AllArgsConstructor
@@ -75,6 +99,14 @@ public class GoalItem extends BaseEntity {
     public static class Request {
         private Long categoryId;
         private Long itemId;
+        private int goalItemCount;
+        private int price;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UpdateRequest {
         private int goalItemCount;
         private int price;
     }
@@ -101,11 +133,11 @@ public class GoalItem extends BaseEntity {
             this.itemId = goalItem.getItem().getId();
             this.itemName = goalItem.getItem().getName();
             this.goalItemCount = goalItem.getCount();
-            this.price = goalItem.getTotal() / goalItem.getCount();
+            this.price = (goalItem.getCount() == 0)? 0 : goalItem.getTotal() / goalItem.getCount();
             this.totalPrice = goalItem.getTotal();
             this.checkReached = goalItem.isCheckReached();
             this.goalPercent = goalItem.getGoalPercent();
-            this.savedItemCount = goalItem.getSavedItems().size();
+            this.savedItemCount = (goalItem.getSavedItems() == null) ? 0 : goalItem.getSavedItems().size();
             this.createdAt = goalItem.getCreatedDate();
             this.reachedAt = goalItem.getReachedAt();
 

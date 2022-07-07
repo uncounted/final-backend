@@ -1,90 +1,161 @@
 package com.hanghae0705.sbmoney.service;
 
 import com.hanghae0705.sbmoney.data.Message;
+import com.hanghae0705.sbmoney.exception.Constants;
+import com.hanghae0705.sbmoney.exception.ItemException;
 import com.hanghae0705.sbmoney.model.domain.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.SavedItem;
 import com.hanghae0705.sbmoney.model.domain.User;
-import com.hanghae0705.sbmoney.repository.GoalItemRepositroy;
-import com.hanghae0705.sbmoney.repository.ItemRepository;
-import com.hanghae0705.sbmoney.repository.SavedItemRepository;
-import com.hanghae0705.sbmoney.repository.UserRepository;
+import com.hanghae0705.sbmoney.repository.GoalItemRepository;
+import com.hanghae0705.sbmoney.util.MathFloor;
+import com.hanghae0705.sbmoney.validator.ItemValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class GoalItemService {
-    private final ItemRepository itemRepository;
-    private final SavedItemRepository savedItemRepository;
-    private final UserRepository userRepository;
-    private final GoalItemRepositroy goalItemRepositroy;
+    private final GoalItemRepository goalItemRepository;
+    private final S3Uploader s3Uploader;
+    private final ItemValidator itemValidator;
 
-    @Transactional
-    public Message getGoalItemList(){
-        List<GoalItem> goalItemList = goalItemRepositroy.findAll();
-        List<GoalItem.Response> goalItemResponseList = new ArrayList<>();
-        for(GoalItem goalItem : goalItemList){
-            GoalItem.Response goalItemResponse = new GoalItem.Response(goalItem);
-            goalItemResponseList.add(goalItemResponse);
+
+    public Message getGoalItem(User user) {
+        List<GoalItem> goalItemList = user.getGoalItems();
+        GoalItem.Response goalItemResponse = null;
+        if(goalItemList != null){ // 서비스를 처음 이용하는 사용자는 티끌도 태산도 존재하지 않음
+            for(GoalItem goalItem : goalItemList){
+                if(!goalItem.isCheckReached()){
+                    goalItemResponse = new GoalItem.Response(goalItem);
+                }
+            }
         }
-        return new Message(true, "목표 항목을 조회하였습니다.", goalItemResponseList);
+        return new Message(true, "목표 항목을 조회하였습니다.", goalItemResponse);
+    }
+
+    public Message getHistory(User user){
+        List<GoalItem> goalItemList = user.getGoalItems();
+        List<GoalItem.Response> reachedGoalItemList = new ArrayList<>();
+        for(GoalItem goalItem : goalItemList){
+            if(goalItem.isCheckReached()){
+                reachedGoalItemList.add(new GoalItem.Response(goalItem));
+            }
+        }
+        return new Message(true, "히스토리를 성공적으로 조회하였습니다.", reachedGoalItemList);
     }
 
     @Transactional
-    public Message postGoalItem(GoalItem.Request goalItemRequest){
-        //추후 삭제
-        User user = userRepository.findById(1L).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 유저입니다.")
-        );
+    public Message postGoalItem(GoalItem.Request goalItemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
+        List<GoalItem> goalItemList = user.getGoalItems();
+        if(goalItemList != null){
+            for (GoalItem goalItem : goalItemList){
+                if(!goalItem.isCheckReached() && goalItem.getItem().getId() != -1){
+                    throw new ItemException(Constants.ExceptionClass.GOAL_ITEM, HttpStatus.BAD_REQUEST, "이미 태산으로 등록된 상품이 존재합니다.");
+                } else { // 태산 없음으로 등록된 goalItem을 히스토리에 추가
+                    LocalDateTime reachedDateTime = LocalDateTime.now();
+                    goalItem.setCheckReached(true, reachedDateTime);
+                }
+            }
+        }
 
         Long categoryId = goalItemRequest.getCategoryId();
         Long itemId = goalItemRequest.getItemId();
-        Item item = itemRepository.findByCategoryIdAndId(categoryId, itemId);
+        Item item = itemValidator.isValidCategoryAndItem(categoryId, itemId);
+
         int count = goalItemRequest.getGoalItemCount();
         int price = goalItemRequest.getPrice();
 
-        int total = (price == 0)? item.getDefaultPrice() * count : goalItemRequest.getPrice() * count;
-        double goalPercent = 1.0;
+        int total = (price == 0) ? item.getDefaultPrice() * count : goalItemRequest.getPrice() * count;
 
-        GoalItem goalItem = goalItemRepositroy.save(new GoalItem(user, count, total, item));
-
-        int savedItemTotal = 0;
-        List<SavedItem> savedItemList = savedItemRepository.findAll();
-        if(!savedItemList.isEmpty()){
-            for(SavedItem savedItem : savedItemList){
-                savedItem.setGoalItem(goalItem);
-                savedItemTotal += savedItem.getPrice();
-                if(savedItemTotal > total) {
-                    goalItem.setGoalPercent(100.0);
-                    goalItem.setCheckReached(true);
-                    break;
-                }
-            }
-            goalPercent = (double) savedItemTotal / total * 100 ;
-        }
-        goalItem.setGoalPercent((double)Math.round(goalPercent*100)/100);
+        GoalItem goalItem = goalItemRepository.save(new GoalItem(user, count, total, item));
+        String url = s3Uploader.upload(multipartFile, "static");
+        goalItem.setImage(url);
 
         return new Message(true, "목표 항목을 등록하였습니다.", goalItem);
     }
 
     @Transactional
-    public Message deleteGoalItem(Long goalItemId){
-        List<SavedItem> savedItemList = savedItemRepository.findAll();
-        for(SavedItem savedItem : savedItemList){
-            if(savedItem.getGoalItem().getId() == goalItemId){
-                savedItem.setGoalItem(null);
+    public Message updateGoalItem(Long goalItemId, GoalItem.Request goalItemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
+        GoalItem goalItem = itemValidator.isValidGoalItem(goalItemId, user);
+
+        // 목표 품목을 변경할 때
+        if (goalItemRequest.getItemId() != -1) {
+            Long categoryId = goalItemRequest.getCategoryId();
+            Long itemId = goalItemRequest.getItemId();
+            Item item = itemValidator.isValidCategoryAndItem(categoryId, itemId);
+            int count = goalItemRequest.getGoalItemCount();
+            int price = goalItemRequest.getPrice();
+            int total = (price == 0) ? item.getDefaultPrice() * count : goalItemRequest.getPrice() * count;
+            int savedItemTotal = 0;
+            double goalPercent = 1.0;
+
+            List<SavedItem> savedItems = goalItem.getSavedItems();
+
+            for (SavedItem savedItem : savedItems) {
+                savedItemTotal += savedItem.getPrice();
             }
+
+            double decimal = (double) savedItemTotal / total;
+            goalPercent = MathFloor.PercentTenths(decimal);
+
+            String url = s3Uploader.upload(multipartFile, "static");
+            goalItem.setImage(url);
+
+            if (savedItemTotal >= total) { // 변경한 품목이 달성률 100%를 넘은 지점
+                LocalDateTime reachedAt = LocalDateTime.now();
+                goalItem.setCheckReached(true, reachedAt);
+            }
+            goalItem.updateGoalItem(count, total, item, goalPercent);
         }
-        goalItemRepositroy.deleteById(goalItemId);
+        // 목표 품목을 변경하지 않을 때
+        else {
+            int itemDefaultPrice = goalItem.getItem().getDefaultPrice();
+            int count = goalItemRequest.getGoalItemCount();
+            int price = goalItemRequest.getPrice();
+            int total = (price == 0) ? itemDefaultPrice * count : goalItemRequest.getPrice() * count;
+            int savedItemTotal = 0;
+
+            List<SavedItem> savedItems = goalItem.getSavedItems();
+            for (SavedItem savedItem : savedItems) {
+                savedItemTotal += savedItem.getPrice();
+                if (savedItemTotal >= total) { // 수량/금액 변경으로 달성률 100%를 넘은 지점
+                    LocalDateTime reachedAt = LocalDateTime.now();
+                    goalItem.setCheckReached(true, reachedAt);
+                }
+            }
+            double decimal = (double) savedItemTotal / total;
+            double goalPercent = MathFloor.PercentTenths(decimal);
+            goalItem.updateGoalItem(count, total, goalPercent);
+
+            String url = s3Uploader.upload(multipartFile, "static");
+            goalItem.setImage(url);
+        }
+        return new Message(true, "목표 항목을 수정하였습니다.");
+    }
+
+    @Transactional
+    public Message deleteGoalItem(Long goalItemId, User user) throws ItemException {
+        GoalItem goalItem = itemValidator.isValidGoalItem(goalItemId, user);
+        List<SavedItem> savedItemList = goalItem.getSavedItems();
+        Item item = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
+        GoalItem noGoalItem = new GoalItem(user, 0, 0, item);
+        for (SavedItem savedItem : savedItemList) {
+                savedItem.setGoalItem(noGoalItem);
+        }
+        LocalDateTime nowDate = LocalDateTime.now();
+        noGoalItem.setCheckReached(true, 100.0, nowDate);
+        goalItemRepository.deleteById(goalItemId);
         return new Message(true, "목표 항목을 삭제하였습니다.");
     }
 
 
-
 }
-
