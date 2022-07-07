@@ -55,7 +55,6 @@ public class Favorite {
         private Long itemId;
         private int price;
         private Long categoryId;
-
     }
 
     @Getter

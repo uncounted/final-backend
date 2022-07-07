@@ -14,7 +14,6 @@ import java.io.IOException;
 
 @Service
 public class MyProfileService {
-
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
 
@@ -40,7 +39,6 @@ public class MyProfileService {
         responseProfile.setIntroDesc(user.getIntroDesc());
         responseProfile.setNickname(user.getNickname());
         return new Message(true, "프로필이 변경되었습니다", responseProfile);
-
     }
 
 //    public void checkValueIsEmpty(Object target) {
@@ -48,10 +46,4 @@ public class MyProfileService {
 //            throw new NullPointerException("내용이 없음");
 //        }
 //    }
-
-    public boolean checkValisEmpty(String target) {
-        return target.isEmpty();
-    }
-
-
 }
