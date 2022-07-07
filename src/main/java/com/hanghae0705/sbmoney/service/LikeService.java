@@ -39,7 +39,8 @@ public class LikeService {
 
     @Transactional
     public Message changeLike(Long boardId, String authorization) {
-        Board board = boardRepository.findAllById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NullPointerException("존재하지 않는 게시글입니다"));
         User user = getUser(authorization);
         if (likeRepository.findByBoardAndUser(board, user) == null) {
             BoardLike like = new BoardLike(board, user);
@@ -63,7 +64,8 @@ public class LikeService {
     @Transactional
     public boolean checkLike(Long boardId, String authorization) {
 
-        Board board = boardRepository.findAllById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NullPointerException("존재하지 않는 게시글입니다"));
         User user = getUser(authorization);
         if (likeRepository.findByBoardAndUser(board, user) == null) {
             return false;
@@ -75,7 +77,8 @@ public class LikeService {
 
     @Transactional
     public Long likeCount(Long boardId) {
-        Board board = boardRepository.findAllById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NullPointerException("존재하지 않는 게시글입니다"));
         return (long) likeRepository.findAllByBoardAndLikeIsTrue(board).size();
     }
 
