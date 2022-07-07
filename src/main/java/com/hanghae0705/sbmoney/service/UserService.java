@@ -206,7 +206,7 @@ public class UserService {
              accessToken = bearerToken.substring(7);
         }
 
-        if (!tokenProvider.validateToken(accessToken)) {
+        if (!tokenProvider.validateToken(request, accessToken)) {
             throw new RuntimeException("Token 이 유효하지 않습니다.");
         }
 
@@ -290,7 +290,7 @@ public class UserService {
 //            throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
 //        }
 
-        if (!tokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
+        if (!tokenProvider.validateToken(request, tokenRequestDto.getRefreshToken())) {
             throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
         }
 

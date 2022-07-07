@@ -17,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.ServletRequest;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -32,13 +33,13 @@ public class TokenProvider {
     private static final int DAY = 24 * HOUR;
 
     //access token 유효기간 - seconds, milliseconds
-    private static final int JWT_ACCESS_TOKEN_VALID_SEC = 30 * MINUTE;
+    private static final int JWT_ACCESS_TOKEN_VALID_SEC = 1 * MINUTE;
     // private static final int JWT_ACCESS_TOKEN_VALID_SEC = 86400000;
     // private static final int JWT_ACCESS_TOKEN_VALID_MILLI_SEC = 1000 * JWT_ACCESS_TOKEN_VALID_SEC;
     private static final int JWT_ACCESS_TOKEN_VALID_MILLI_SEC = 1000 * JWT_ACCESS_TOKEN_VALID_SEC;
 
     //refresh token 유효기간 - seconds, milliseconds
-    private static final int JWT_REFRESH_TOKEN_VALID_SEC = 7 * DAY;
+    private static final int JWT_REFRESH_TOKEN_VALID_SEC = 30 * MINUTE;
     // private static final int JWT_REFRESH_TOKEN_VALID_SEC = 86400000;
     // public static final int JWT_REFRESH_TOKEN_VALID_MILLI_SEC = 1000 * JWT_REFRESH_TOKEN_VALID_SEC;
     public static final int JWT_REFRESH_TOKEN_VALID_MILLI_SEC = 1000 * JWT_REFRESH_TOKEN_VALID_SEC;
@@ -58,7 +59,7 @@ public class TokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenDto generateAccessToken(Authentication authentication) {
+    public static TokenDto generateAccessToken(Authentication authentication) {
         String authority = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -103,8 +104,8 @@ public class TokenProvider {
     }
 
     //refreshToken 생성
-    Date refreshTokenExpiresIn = new Date(System.currentTimeMillis() + JWT_REFRESH_TOKEN_VALID_MILLI_SEC);
-    public String generateRefreshToken() {
+    static Date refreshTokenExpiresIn = new Date(System.currentTimeMillis() + JWT_REFRESH_TOKEN_VALID_MILLI_SEC);
+    public static String generateRefreshToken() {
         return Jwts.builder()
                 .setExpiration(refreshTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -130,19 +131,24 @@ public class TokenProvider {
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
-    public boolean validateToken(String token) {
+    public boolean validateToken(ServletRequest request, String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+        } catch (io.jsonwebtoken.security.SecurityException e) {
             log.info("잘못된 JWT 서명입니다.");
-        } catch (ExpiredJwtException e) {
+            request.setAttribute("exception", "SecurityException");
+        } catch (MalformedJwtException e) {
+            request.setAttribute("exception", "MalformedJwtException");
+        } catch(ExpiredJwtException e) {
             log.info("만료된 JWT 토큰입니다.");
-            throw new IllegalArgumentException("만료된 토큰입니다.");
+            request.setAttribute("exception", "ExpiredJwtException");
         } catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰입니다.");
+            request.setAttribute("exception", "UnsupportedJwtException");
         } catch (IllegalArgumentException e) {
             log.info("JWT 토큰이 잘못되었습니다.");
+            request.setAttribute("exception", "IllegalArgumentException");
         }
         return false;
     }

@@ -1,5 +1,7 @@
 package com.hanghae0705.sbmoney.security;
 
+import com.hanghae0705.sbmoney.security.auth.UserDetailsServiceImpl;
+import com.hanghae0705.sbmoney.security.filter.LoginFilter;
 import com.hanghae0705.sbmoney.security.handler.JwtAccessDeniedHandler;
 import com.hanghae0705.sbmoney.security.handler.JwtAuthenticationEntryPoint;
 import com.hanghae0705.sbmoney.security.jwt.JwtSecurityConfig;
@@ -16,6 +18,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsUtils;
 
 @Configuration
 @EnableWebSecurity
@@ -26,15 +30,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
+    private final UserDetailsServiceImpl userDetailsService;
     private final Oauth2UserService oauth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
 
     @Autowired
-    public SecurityConfig(TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler, Oauth2UserService oauth2UserService, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler, OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler) {
+    public SecurityConfig(TokenProvider tokenProvider, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint, JwtAccessDeniedHandler jwtAccessDeniedHandler, UserDetailsServiceImpl userDetailsService, Oauth2UserService oauth2UserService, OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler, OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler) {
         this.tokenProvider = tokenProvider;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
+        this.userDetailsService = userDetailsService;
         this.oauth2UserService = oauth2UserService;
         this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
         this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
@@ -48,11 +54,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception{
         //http.cors().configurationSource(corsConfigurationSource());
+        //http.addFilterBefore(formLoginFilter(), UsernamePasswordAuthenticationFilter.class);
 
         http.csrf().disable()
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
-                .accessDeniedHandler(jwtAccessDeniedHandler)
+//                .accessDeniedHandler(jwtAccessDeniedHandler)
 
                 //h2 대시보드 허용
                 .and()
@@ -68,6 +75,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //접근권한 제어
                 .and()
                 .authorizeRequests()
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated()
                 //.anyRequest().permitAll()
@@ -121,6 +129,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/user/kakao/callback",
             "/api/board",
             "/api/board/detail/{boardId}",
-            "/api/board/save/{boardId}"
+            "/api/board/save/{boardId}",
+            //"/api/goalItem"
     };
+
 }
