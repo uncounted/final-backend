@@ -18,31 +18,32 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/api/board")
-    public ResponseEntity<Message> getBoard(@RequestHeader(required = false,name = "Authorization") String authorization) {
-        Message message = boardService.GetBoard(authorization);
+    public ResponseEntity<Message> getBoard(@RequestHeader(required = false, name = "Authorization") String authorization) {
+        Message message = boardService.getBoard(authorization);
         return ResponseEntity.ok(message);
     }
+
     @GetMapping("/api/board/detail/{boardId}")
-    public ResponseEntity<Message> getDetailBoard(@PathVariable Long boardId,@RequestHeader("Authorization") String authorization){
-        Message message = boardService.GetDetailBoard(boardId,authorization);
+    public ResponseEntity<Message> getDetailBoard(@PathVariable Long boardId, @RequestHeader("Authorization") String authorization) {
+        Message message = boardService.getDetailBoard(boardId, authorization);
         return ResponseEntity.ok(message);
     }
 
     @GetMapping("/api/board/save/{boardId}")
-    public ResponseEntity<Message> getSaveBoard(@PathVariable Long boardId){
-        Message message = boardService.GetSaveBoard(boardId);
+    public ResponseEntity<Message> getSaveBoard(@PathVariable Long boardId) {
+        Message message = boardService.getSaveBoard(boardId);
         return ResponseEntity.ok(message);
     }
 
 
     @PostMapping("/api/post/board")
-    public ResponseEntity<Message> postBoard(@RequestPart(value = "request") Board.Request request, @RequestHeader("Authorization") String authorization,@RequestPart(required = false,value = "file") MultipartFile multipartFile) throws IOException  {
-        Message message = boardService.postBoard(request, authorization,multipartFile);
+    public ResponseEntity<Message> postBoard(@RequestPart(value = "request") Board.Request request, @RequestHeader("Authorization") String authorization, @RequestPart(required = false, value = "file") MultipartFile multipartFile) throws IOException {
+        Message message = boardService.postBoard(request, authorization, multipartFile);
         return ResponseEntity.ok(message);
     }
 
     @PutMapping("/api/board/{boardId}")
-    public ResponseEntity<Message> putBoard(@RequestBody Board.Update request, @PathVariable Long boardId, @RequestHeader("Authorization") String authorization,@RequestPart(required = false,value = "file") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<Message> putBoard(@RequestBody Board.Update request, @PathVariable Long boardId, @RequestHeader("Authorization") String authorization, @RequestPart(required = false, value = "file") MultipartFile multipartFile) throws IOException {
         Message message = boardService.putBoard(request, boardId, authorization, multipartFile);
         return ResponseEntity.ok(message);
     }
