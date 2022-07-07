@@ -5,6 +5,7 @@ import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.UserRoleEnum;
 import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -123,11 +124,17 @@ public class User extends BaseEntity {
         }
     }
 
+    public void updateProfile(RequestProfile requestProfile, String profileImg) {
+        this.nickname = requestProfile.getNickname();
+        this.email = requestProfile.getEmail();
+        this.introDesc = requestProfile.getIntroDesc();
+        this.profileImg = profileImg;
+    }
+
     public void updateProfile(RequestProfile requestProfile) {
         this.nickname = requestProfile.getNickname();
         this.email = requestProfile.getEmail();
         this.introDesc = requestProfile.getIntroDesc();
-        this.profileImg = requestProfile.getProfileImg();
     }
 
     @Getter

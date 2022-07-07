@@ -9,6 +9,10 @@ import com.hanghae0705.sbmoney.service.MyProfileService;
 import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOError;
+import java.io.IOException;
 
 @RestController
 @RequestMapping(value="/api/mypage")
@@ -22,8 +26,9 @@ public class MyPageController {
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<Message> updateProfile(@RequestBody User.RequestProfile requestProfile){
-        Message message = myProfileService.updateProfile(requestProfile);
+    public ResponseEntity<Message> updateProfile(@RequestPart User.RequestProfile requestProfile,
+                                                 @RequestPart(value="image", required = false) MultipartFile profileImg) throws IOException {
+        Message message = myProfileService.updateProfile(requestProfile, profileImg);
         return ResponseEntity.ok(message);
     }
 
