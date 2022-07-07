@@ -64,7 +64,7 @@ public class UserController {
     }
 
     // 로그인된 유저의 데이터를 반환
-    @GetMapping("/api/user/myInfo")
+    @GetMapping("/api/myInfo")
     public Message getMyInfo(){
         return userService.getMyInfo();
     }
