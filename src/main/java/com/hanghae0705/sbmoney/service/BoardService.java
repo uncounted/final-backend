@@ -40,15 +40,15 @@ public class BoardService {
     }
 
     @Transactional
-    public Message GetBoard(String authorization) {
+    public Message getBoard(String authorization) {
         List<Board> boardList = boardRepository.findAll();
         List<Board.Response> responseList = new ArrayList<>();
         for (Board board : boardList) {
-            if(authorization == null){
+            if (authorization == null) {
                 Long likeCount = likeService.likeCount(board.getId());
                 board.likeBoard(false, likeCount);
 
-            }else {
+            } else {
                 boolean checkLike = likeService.checkLike(board.getId(), authorization);
                 Long likeCount = likeService.likeCount(board.getId());
                 board.likeBoard(checkLike, likeCount);
@@ -61,27 +61,29 @@ public class BoardService {
     }
 
     @Transactional
-    public Message GetDetailBoard(Long boardId, String authorization){
-        Board board = boardRepository.findAllById(boardId);
+    public Message getDetailBoard(Long boardId, String authorization) {
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NullPointerException("존재하지 않는 게시글입니다"));
         boolean checkLike = likeService.checkLike(board.getId(), authorization);
         Long likeCount = likeService.likeCount(board.getId());
         board.likeBoard(checkLike, likeCount);
-        board.viewCount(board.getViewCount()+1);
+        board.viewCount(board.getViewCount() + 1);
         Board.Response response = new Board.Response(board);
         return new Message(true, "게시판을 조회하였습니다.", response);
     }
 
     @Transactional
-    public Message GetSaveBoard(Long boardId){
-        Board board = boardRepository.findAllById(boardId);
+    public Message getSaveBoard(Long boardId) {
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NullPointerException("존재하지 않는 게시글입니다"));
         int length = board.getGoalItem().getSavedItems().size();
         int total = 0;
-       
+
         List<SavedItem> savedItem = board.getGoalItem().getSavedItems();
-        for (int i = 0; i<length;i++){
-            total = total+savedItem.get(i).getPrice();
+        for (int i = 0; i < length; i++) {
+            total = total + savedItem.get(i).getPrice();
         }
-        Board.SaveItemResponse response = new Board.SaveItemResponse(board,total);
+        Board.SaveItemResponse response = new Board.SaveItemResponse(board, total);
         return new Message(true, "게시판을 조회하였습니다.", response);
     }
 
@@ -89,9 +91,10 @@ public class BoardService {
     @Transactional
     public Message postBoard(Board.Request request, String authorization, MultipartFile multipartFile) throws IOException {
         Optional<User> user = getUser(authorization);
-        GoalItem goalItem = goalItemRepository.findAllById(request.getGoalItemId());
+        GoalItem goalItem = goalItemRepository.findById(request.getGoalItemId()).orElseThrow(
+                () -> new NullPointerException("존재하지 태산입니다"));
         Board board = new Board(request, goalItem, user);
-        if(multipartFile != null) {
+        if (multipartFile != null) {
             String url = s3Uploader.upload(multipartFile, "static");
             board.changeImage(url);
         }
@@ -102,10 +105,11 @@ public class BoardService {
     @Transactional
     public Message putBoard(Board.Update request, Long boardId, String authorization, MultipartFile multipartFile) throws IOException {
         Optional<User> user = getUser(authorization);
-        Board board = boardRepository.findAllById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NullPointerException("존재하지 않는 게시글입니다"));
         if (user.get().getId().equals(board.getUser().getId())) {
             board.updateBoard(request);
-            if(multipartFile != null) {
+            if (multipartFile != null) {
                 String url = s3Uploader.upload(multipartFile, "static");
                 board.changeImage(url);
             }
@@ -119,7 +123,8 @@ public class BoardService {
     @Transactional
     public Message deleteBoard(Long boardId, String authorization) {
         Optional<User> user = getUser(authorization);
-        Board board = boardRepository.findAllById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NullPointerException("존재하지 않는 게시글입니다"));
         if (user.get().getId().equals(board.getUser().getId())) {
             boardRepository.delete(board);
             return new Message(true, "게시글을 삭제하였습니다");
