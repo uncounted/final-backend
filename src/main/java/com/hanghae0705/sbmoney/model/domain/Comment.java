@@ -53,7 +53,6 @@ public class Comment extends BaseEntity {
         }
     }
 
-
     public Comment(Request request, Board board, User user){
         this.comment = request.getComment();
         this.board = board;
