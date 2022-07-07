@@ -3,7 +3,6 @@ package com.hanghae0705.sbmoney.service;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRequestException;
-import com.hanghae0705.sbmoney.model.domain.Category;
 import com.hanghae0705.sbmoney.model.domain.Favorite;
 import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.User;
@@ -75,19 +74,17 @@ public class FavoriteService {
 
     @Transactional
     public Message updateFavorite(Long favoriteItemId, Favorite.UpdateFavorite request) {
-        Favorite favorite = favoriteRepository.findById(favoriteItemId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 즐겨찾기"));
-        compareUsername(getUser().getUsername(), favorite.getUser().getUsername());
-        favorite.updateFavorite(request);
+        getFavoriteById(favoriteItemId);
+        compareUsername(getUser().getUsername(), getFavoriteById(favoriteItemId).getUser().getUsername());
+        getFavoriteById(favoriteItemId).updateFavorite(request);
         return new Message(true, "수정에 성공했습니다");
     }
 
     @Transactional
     public Message deleteFavorite(Long favoriteItemId) {
-        Favorite favorite = favoriteRepository.findById(favoriteItemId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 즐겨찾기"));
-        compareUsername(getUser().getUsername(), favorite.getUser().getUsername());
-        favoriteRepository.deleteById(favorite.getId());
+        getFavoriteById(favoriteItemId);
+        compareUsername(getUser().getUsername(), getFavoriteById(favoriteItemId).getUser().getUsername());
+        favoriteRepository.deleteById(getFavoriteById(favoriteItemId).getId());
         return new Message(true, "삭제에 성공했습니다");
     }
 
@@ -108,6 +105,11 @@ public class FavoriteService {
         return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(
                 () -> new ApiRequestException(ApiException.NOT_EXIST_USER)
         );
+    }
+
+    public Favorite getFavoriteById(Long id) {
+        return favoriteRepository.findById(id).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 즐겨찾기"));
     }
 
     public void compareUsername(String Username1, String Username2) {
