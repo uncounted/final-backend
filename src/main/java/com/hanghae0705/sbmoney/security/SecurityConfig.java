@@ -119,6 +119,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] AUTH_WHITELIST = {
             "/",
+            "/api/*", // 추후 삭제
             "/h2-console/**",
             "/api/user/**",
             "/test",
