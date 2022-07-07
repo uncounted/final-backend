@@ -62,7 +62,8 @@ public class BoardService {
 
     @Transactional
     public Message getDetailBoard(Long boardId, String authorization) {
-        Board board = boardRepository.findAllById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NullPointerException("존재하지 않는 게시글입니다"));
         boolean checkLike = likeService.checkLike(board.getId(), authorization);
         Long likeCount = likeService.likeCount(board.getId());
         board.likeBoard(checkLike, likeCount);
@@ -73,7 +74,8 @@ public class BoardService {
 
     @Transactional
     public Message getSaveBoard(Long boardId) {
-        Board board = boardRepository.findAllById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NullPointerException("존재하지 않는 게시글입니다"));
         int length = board.getGoalItem().getSavedItems().size();
         int total = 0;
 
@@ -89,7 +91,8 @@ public class BoardService {
     @Transactional
     public Message postBoard(Board.Request request, String authorization, MultipartFile multipartFile) throws IOException {
         Optional<User> user = getUser(authorization);
-        GoalItem goalItem = goalItemRepository.findAllById(request.getGoalItemId());
+        GoalItem goalItem = goalItemRepository.findById(request.getGoalItemId()).orElseThrow(
+                () -> new NullPointerException("존재하지 태산입니다"));
         Board board = new Board(request, goalItem, user);
         if (multipartFile != null) {
             String url = s3Uploader.upload(multipartFile, "static");
@@ -102,7 +105,8 @@ public class BoardService {
     @Transactional
     public Message putBoard(Board.Update request, Long boardId, String authorization, MultipartFile multipartFile) throws IOException {
         Optional<User> user = getUser(authorization);
-        Board board = boardRepository.findAllById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NullPointerException("존재하지 않는 게시글입니다"));
         if (user.get().getId().equals(board.getUser().getId())) {
             board.updateBoard(request);
             if (multipartFile != null) {
@@ -119,7 +123,8 @@ public class BoardService {
     @Transactional
     public Message deleteBoard(Long boardId, String authorization) {
         Optional<User> user = getUser(authorization);
-        Board board = boardRepository.findAllById(boardId);
+        Board board = boardRepository.findById(boardId).orElseThrow(
+                () -> new NullPointerException("존재하지 않는 게시글입니다"));
         if (user.get().getId().equals(board.getUser().getId())) {
             boardRepository.delete(board);
             return new Message(true, "게시글을 삭제하였습니다");
