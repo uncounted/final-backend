@@ -73,15 +73,15 @@ public class Board extends BaseEntity {
         this.likeCount = likeCount;
     }
 
-    public void commentCount(Long commentCount){
+    public void commentCount(Long commentCount) {
         this.commentCount = commentCount;
     }
 
-    public void viewCount(Long viewCount){
+    public void viewCount(Long viewCount) {
         this.viewCount = viewCount;
     }
 
-    public void changeImage(String image){
+    public void changeImage(String image) {
         this.image = image;
     }
 
@@ -138,7 +138,7 @@ public class Board extends BaseEntity {
             this.categoryName = board.goalItem.getItem().getCategory().getName();
             this.goalItemId = board.goalItem.getId();
             this.goalItemName = board.goalItem.getItem().getName();
-            this.goalPercent =board.goalItem.getGoalPercent();
+            this.goalPercent = board.goalItem.getGoalPercent();
             this.commentCount = board.commentCount;
             this.viewCount = board.viewCount;
             this.likeCount = board.likeCount;
@@ -151,7 +151,7 @@ public class Board extends BaseEntity {
 
     @Getter
     @AllArgsConstructor
-    public static class SaveItemResponse{
+    public static class SaveItemResponse {
         private Long boardId;
         private String userId;
         private int price;
@@ -161,11 +161,11 @@ public class Board extends BaseEntity {
         private int savedItemTotalPrice;
         private List<SavedItem> savedItemList;
 
-        public SaveItemResponse(Board board, int savedItemTotalPrice){
+        public SaveItemResponse(Board board, int savedItemTotalPrice) {
             this.boardId = board.getId();
             this.userId = board.getUser().getUsername();
             this.totalPrice = board.getGoalItem().getTotal();
-            this.price = this.totalPrice/board.getGoalItem().getCount();
+            this.price = this.totalPrice / board.getGoalItem().getCount();
             this.createdAt = board.getGoalItem().getCreatedDate();
             this.modifiedAt = board.getGoalItem().getModifiedDate();
             this.savedItemList = board.getGoalItem().getSavedItems();

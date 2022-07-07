@@ -40,15 +40,15 @@ public class BoardService {
     }
 
     @Transactional
-    public Message GetBoard(String authorization) {
+    public Message getBoard(String authorization) {
         List<Board> boardList = boardRepository.findAll();
         List<Board.Response> responseList = new ArrayList<>();
         for (Board board : boardList) {
-            if(authorization == null){
+            if (authorization == null) {
                 Long likeCount = likeService.likeCount(board.getId());
                 board.likeBoard(false, likeCount);
 
-            }else {
+            } else {
                 boolean checkLike = likeService.checkLike(board.getId(), authorization);
                 Long likeCount = likeService.likeCount(board.getId());
                 board.likeBoard(checkLike, likeCount);
@@ -61,27 +61,27 @@ public class BoardService {
     }
 
     @Transactional
-    public Message GetDetailBoard(Long boardId, String authorization){
+    public Message getDetailBoard(Long boardId, String authorization) {
         Board board = boardRepository.findAllById(boardId);
         boolean checkLike = likeService.checkLike(board.getId(), authorization);
         Long likeCount = likeService.likeCount(board.getId());
         board.likeBoard(checkLike, likeCount);
-        board.viewCount(board.getViewCount()+1);
+        board.viewCount(board.getViewCount() + 1);
         Board.Response response = new Board.Response(board);
         return new Message(true, "게시판을 조회하였습니다.", response);
     }
 
     @Transactional
-    public Message GetSaveBoard(Long boardId){
+    public Message getSaveBoard(Long boardId) {
         Board board = boardRepository.findAllById(boardId);
         int length = board.getGoalItem().getSavedItems().size();
         int total = 0;
-       
+
         List<SavedItem> savedItem = board.getGoalItem().getSavedItems();
-        for (int i = 0; i<length;i++){
-            total = total+savedItem.get(i).getPrice();
+        for (int i = 0; i < length; i++) {
+            total = total + savedItem.get(i).getPrice();
         }
-        Board.SaveItemResponse response = new Board.SaveItemResponse(board,total);
+        Board.SaveItemResponse response = new Board.SaveItemResponse(board, total);
         return new Message(true, "게시판을 조회하였습니다.", response);
     }
 
@@ -91,7 +91,7 @@ public class BoardService {
         Optional<User> user = getUser(authorization);
         GoalItem goalItem = goalItemRepository.findAllById(request.getGoalItemId());
         Board board = new Board(request, goalItem, user);
-        if(multipartFile != null) {
+        if (multipartFile != null) {
             String url = s3Uploader.upload(multipartFile, "static");
             board.changeImage(url);
         }
@@ -105,7 +105,7 @@ public class BoardService {
         Board board = boardRepository.findAllById(boardId);
         if (user.get().getId().equals(board.getUser().getId())) {
             board.updateBoard(request);
-            if(multipartFile != null) {
+            if (multipartFile != null) {
                 String url = s3Uploader.upload(multipartFile, "static");
                 board.changeImage(url);
             }
