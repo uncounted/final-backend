@@ -26,9 +26,9 @@ public class ItemService {
         Category category = categoryRepository.findById(itemRequest.getCategoryId()).orElseThrow(
                 () -> new ItemException(Constants.ExceptionClass.CATEGORY, HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
         );
-        Item item = new Item(itemRequest, category);
-        itemRepository.save(item);
-        return new Message(true, "아이템 추가를 성공했습니다.", item);
+        Item item = itemRepository.save(new Item(itemRequest, category));
+        Item.Response itemResponse = new Item.Response(item);
+        return new Message(true, "아이템 추가를 성공했습니다.", itemResponse);
     }
 
     public Message getItems() {
