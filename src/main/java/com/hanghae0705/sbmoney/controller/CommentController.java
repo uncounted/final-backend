@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value="/api/board")
+@RequestMapping(value = "/api/board")
 public class CommentController {
 
     private final CommentService commentService;
@@ -31,13 +31,13 @@ public class CommentController {
     }
 
     @PutMapping("/{boardId}/comment/{commentId}")
-    public ResponseEntity<Message> updateComment(@PathVariable Long boardId, @PathVariable Long commentId, @RequestBody Comment.Request request){
+    public ResponseEntity<Message> updateComment(@PathVariable Long boardId, @PathVariable Long commentId, @RequestBody Comment.Request request) {
         Message message = commentService.updateComment(request, commentId, boardId);
         return ResponseEntity.ok(message);
     }
 
     @DeleteMapping("/{boardId}/comment/{commentId}")
-    public ResponseEntity<Message> deleteComment(@PathVariable Long boardId, @PathVariable Long commentId){
+    public ResponseEntity<Message> deleteComment(@PathVariable Long boardId, @PathVariable Long commentId) {
         Message message = commentService.deleteComment(boardId, commentId);
         return ResponseEntity.ok(message);
     }
