@@ -74,6 +74,7 @@ public class SavedItem extends BaseEntity {
     @Getter
     @AllArgsConstructor
     public static class Response {
+        private Long savedItemId;
         private Long categoryId;
         private String categoryName;
         private Long itemId;
