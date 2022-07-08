@@ -70,7 +70,7 @@ public class SavedItemService {
             String itemName = savedItem.getItem().getName();
             int price = savedItem.getPrice();
 
-            SavedItem.Response savedItemResponse = new SavedItem.Response(categoryId, categoryName, itemId, itemName, price);
+            SavedItem.Response savedItemResponse = new SavedItem.Response(savedItem.getId(), categoryId, categoryName, itemId, itemName, price);
             savedItemResponseList.add(savedItemResponse);
         }
         return new Message(true, "티끌 조회에 성공했습니다.", savedItemResponseList);
