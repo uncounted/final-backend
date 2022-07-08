@@ -126,6 +126,7 @@ public class GoalItem extends BaseEntity {
         private int savedItemCount;
         private LocalDateTime createdAt;
         private LocalDateTime reachedAt;
+        private String image;
 
         public Response(GoalItem goalItem){
             this.categoryId = goalItem.getItem().getCategory().getId();
@@ -140,7 +141,7 @@ public class GoalItem extends BaseEntity {
             this.savedItemCount = (goalItem.getSavedItems() == null) ? 0 : goalItem.getSavedItems().size();
             this.createdAt = goalItem.getCreatedDate();
             this.reachedAt = goalItem.getReachedAt();
-
+            this.image = goalItem.getImage();
         }
     }
 
