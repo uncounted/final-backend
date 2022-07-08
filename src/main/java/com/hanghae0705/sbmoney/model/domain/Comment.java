@@ -42,11 +42,13 @@ public class Comment extends BaseEntity {
     @Getter
     @AllArgsConstructor
     public static class Response {
+        private Long commentId;
         private String comment;
         private LocalDateTime createdAt;
         private LocalDateTime modifiedAt;
 
         public Response(Comment comment){
+            this.commentId = comment.getId();
             this.comment = comment.getComment();
             this.createdAt = comment.getCreatedDate();
             this.modifiedAt = comment.getModifiedDate();
