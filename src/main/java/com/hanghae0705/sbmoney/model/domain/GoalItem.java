@@ -114,6 +114,7 @@ public class GoalItem extends BaseEntity {
     @Getter
     @RequiredArgsConstructor
     public static class Response {
+        private Long goalItemId;
         private Long categoryId;
         private String categoryName;
         private Long itemId;
@@ -129,6 +130,7 @@ public class GoalItem extends BaseEntity {
         private String image;
 
         public Response(GoalItem goalItem){
+            this.goalItemId = goalItem.getId();
             this.categoryId = goalItem.getItem().getCategory().getId();
             this.categoryName = goalItem.getItem().getCategory().getName();
             this.itemId = goalItem.getItem().getId();
