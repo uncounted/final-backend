@@ -25,29 +25,30 @@ public class MyPageController {
         this.favoriteService = favoriteService;
     }
 
+    @GetMapping("/profile")
+    ResponseEntity<Message> getProfile() {
+        return ResponseEntity.ok(myProfileService.getProfile());
+    }
+
     @PutMapping("/profile")
     public ResponseEntity<Message> updateProfile(@RequestPart User.RequestProfile requestProfile,
                                                  @RequestPart(value = "image", required = false) MultipartFile profileImg) throws IOException {
-        Message message = myProfileService.updateProfile(requestProfile, profileImg);
-        return ResponseEntity.ok(message);
+    return ResponseEntity.ok(myProfileService.updateProfile(requestProfile, profileImg));
     }
 
     @GetMapping("/favorite")
     public ResponseEntity<Message> getFavorite() {
-        Message message = favoriteService.getFavorite();
-        return ResponseEntity.ok(message);
+        return ResponseEntity.ok(favoriteService.getFavorite());
     }
 
     @PostMapping("/favorite")
     public ResponseEntity<Message> createFavorite(@RequestBody Item.Request request) {
-        Message message = favoriteService.createFavorite(request);
-        return ResponseEntity.ok(message);
+        return ResponseEntity.ok(favoriteService.createFavorite(request));
     }
 
     @PutMapping("/favorite/{favoriteItemId}")
     public ResponseEntity<Message> updateFavorite(@PathVariable Long favoriteItemId, @RequestBody Favorite.UpdateFavorite request) {
-        Message message = favoriteService.updateFavorite(favoriteItemId, request);
-        return ResponseEntity.ok(message);
+        return ResponseEntity.ok(favoriteService.updateFavorite(favoriteItemId, request));
     }
 
     @PostMapping("/favorite/{favoriteItemId}")
@@ -58,7 +59,6 @@ public class MyPageController {
 
     @DeleteMapping("/favorite/{favoriteItemId}")
     public ResponseEntity<Message> deleteFavorite(@PathVariable Long favoriteItemId) {
-        Message message = favoriteService.deleteFavorite(favoriteItemId);
-        return ResponseEntity.ok(message);
+        return ResponseEntity.ok(favoriteService.deleteFavorite(favoriteItemId));
     }
 }
