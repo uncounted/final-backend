@@ -24,6 +24,7 @@ public class MyProfileService {
 
     public Message getProfile() {
         User.ResponseProfile responseProfile = new User.ResponseProfile();
+        responseProfile.setUsername(getUser().getUsername());
         responseProfile.setNickname(getUser().getNickname());
         responseProfile.setProfileImg(getUser().getProfileImg());
         responseProfile.setEmail(getUser().getEmail());
