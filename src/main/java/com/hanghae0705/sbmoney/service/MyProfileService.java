@@ -40,12 +40,7 @@ public class MyProfileService {
         } else {
             getUser().updateProfile(requestProfile);
         }
-        User.ResponseProfile responseProfile = new User.ResponseProfile();
-        responseProfile.setEmail(getUser().getEmail());
-        responseProfile.setProfileImg(imgUrl);
-        responseProfile.setIntroDesc(getUser().getIntroDesc());
-        responseProfile.setNickname(getUser().getNickname());
-        return new Message(true, "프로필이 변경되었습니다", responseProfile);
+        return new Message(true, "프로필이 변경되었습니다");
     }
 
     public User getUser() {
