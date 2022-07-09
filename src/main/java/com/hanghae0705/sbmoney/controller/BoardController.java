@@ -24,7 +24,7 @@ public class BoardController {
     }
 
     @GetMapping("/api/board/detail/{boardId}")
-    public ResponseEntity<Message> getDetailBoard(@PathVariable Long boardId, @RequestHeader("Authorization") String authorization) {
+    public ResponseEntity<Message> getDetailBoard(@PathVariable Long boardId, @RequestHeader(required = false,name="Authorization") String authorization) {
         Message message = boardService.getDetailBoard(boardId, authorization);
         return ResponseEntity.ok(message);
     }
