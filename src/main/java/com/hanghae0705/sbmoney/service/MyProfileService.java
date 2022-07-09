@@ -22,23 +22,35 @@ public class MyProfileService {
         this.s3Uploader = s3Uploader;
     }
 
+    public Message getProfile() {
+        User.ResponseProfile responseProfile = new User.ResponseProfile();
+        responseProfile.setNickname(getUser().getNickname());
+        responseProfile.setProfileImg(getUser().getProfileImg());
+        responseProfile.setEmail(getUser().getEmail());
+        responseProfile.setNickname(getUser().getNickname());
+        return new Message(true, "조회에 성공했습니다", responseProfile);
+    }
+
     @Transactional
     public Message updateProfile(User.RequestProfile requestProfile, MultipartFile profileImg) throws IOException {
-        User user = userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(
-                () -> new ApiRequestException(ApiException.NOT_EXIST_USER));
         String imgUrl = null;
-        if(profileImg != null){
+        if (profileImg != null) {
             imgUrl = s3Uploader.upload(profileImg, "static");
-            user.updateProfile(requestProfile, imgUrl);
+            getUser().updateProfile(requestProfile, imgUrl);
         } else {
-            user.updateProfile(requestProfile);
+            getUser().updateProfile(requestProfile);
         }
         User.ResponseProfile responseProfile = new User.ResponseProfile();
-        responseProfile.setEmail(user.getEmail());
+        responseProfile.setEmail(getUser().getEmail());
         responseProfile.setProfileImg(imgUrl);
-        responseProfile.setIntroDesc(user.getIntroDesc());
-        responseProfile.setNickname(user.getNickname());
+        responseProfile.setIntroDesc(getUser().getIntroDesc());
+        responseProfile.setNickname(getUser().getNickname());
         return new Message(true, "프로필이 변경되었습니다", responseProfile);
+    }
+
+    public User getUser() {
+        return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(
+                () -> new ApiRequestException(ApiException.NOT_EXIST_USER));
     }
 
 //    public void checkValueIsEmpty(Object target) {

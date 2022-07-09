@@ -25,6 +25,12 @@ public class MyPageController {
         this.favoriteService = favoriteService;
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<Message> getProfile() {
+        Message message = myProfileService.getProfile();
+        return ResponseEntity.ok(message);
+    }
+
     @PutMapping("/profile")
     public ResponseEntity<Message> updateProfile(@RequestPart User.RequestProfile requestProfile,
                                                  @RequestPart(value = "image", required = false) MultipartFile profileImg) throws IOException {
