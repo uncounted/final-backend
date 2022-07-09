@@ -65,15 +65,14 @@ public class BoardService {
         Board board = boardRepository.findById(boardId).orElseThrow(
                 () -> new NullPointerException("존재하지 않는 게시글입니다"));
         boolean checkLike = false;
+        Long likeCount = likeService.likeCount(board.getId());
         if (authorization == null) {
-            Long likeCount = likeService.likeCount(board.getId());
             board.likeBoard(false, likeCount);
 
         }else {
            checkLike = likeService.checkLike(board.getId(), authorization);
         }
 
-        Long likeCount = likeService.likeCount(board.getId());
         board.likeBoard(checkLike, likeCount);
         board.viewCount(board.getViewCount() + 1);
         Board.Response response = new Board.Response(board);
