@@ -151,6 +151,8 @@ public class User extends BaseEntity {
     @Setter
     @RequiredArgsConstructor
     public static class ResponseProfile{
+
+        private String username;
         private String nickname;
         private String email;
         private String profileImg;
