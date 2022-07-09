@@ -98,8 +98,7 @@ public class BoardService {
     @Transactional
     public Message postBoard(Board.Request request, String authorization, MultipartFile multipartFile) throws IOException {
         Optional<User> user = getUser(authorization);
-        GoalItem goalItem = goalItemRepository.findById(request.getGoalItemId()).orElseThrow(
-                () -> new NullPointerException("존재하지 태산입니다"));
+        GoalItem goalItem = goalItemRepository.findByUserAndAndCheckReachedIsFalse(user.get());
         Board board = new Board(request, goalItem, user);
         if (multipartFile != null) {
             String url = s3Uploader.upload(multipartFile, "static");
