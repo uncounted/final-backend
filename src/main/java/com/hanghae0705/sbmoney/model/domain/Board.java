@@ -91,7 +91,6 @@ public class Board extends BaseEntity {
     @NoArgsConstructor
     public static class Request {
 
-        private Long goalItemId;
         private String title;
         private String contents;
     }
