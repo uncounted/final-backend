@@ -43,7 +43,7 @@ public class BoardController {
     }
 
     @PutMapping("/api/board/{boardId}")
-    public ResponseEntity<Message> putBoard(@RequestBody Board.Update request, @PathVariable Long boardId, @RequestHeader("Authorization") String authorization, @RequestPart(required = false, value = "file") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<Message> putBoard(@RequestPart(value = "request") Board.Update request, @PathVariable Long boardId, @RequestHeader("Authorization") String authorization, @RequestPart(required = false, value = "file") MultipartFile multipartFile) throws IOException {
         Message message = boardService.putBoard(request, boardId, authorization, multipartFile);
         return ResponseEntity.ok(message);
     }
