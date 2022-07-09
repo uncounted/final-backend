@@ -18,6 +18,7 @@ public class Item {
     private Long id;
 
     @NotNull
+    @Column(unique = true)
     private String name;
 
     @NotNull
