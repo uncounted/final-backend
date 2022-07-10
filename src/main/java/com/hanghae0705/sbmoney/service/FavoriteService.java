@@ -43,31 +43,21 @@ public class FavoriteService {
     }
 
     @Transactional
-    public Message createFavorite(Item.Request request) {
-        if (checkValueIsEmptyByRepo("category", request.getCategoryId())) {
-            Item item = new Item(request, categoryRepository.findById(request.getCategoryId()).orElseThrow(
-                    () -> new IllegalArgumentException("존재하지 않는 아이템")));
+    public Message addFavorite(Favorite.Request request) {
+        if(!checkValueIsEmptyByRepo("category", request.getCategoryId())) {
+            throw new ApiRequestException(ApiException.NOT_EXIST_DATA);
+        }
+        // DB에 없는 아이템을 추가할 경우 request.getitemId == -1
+        if(request.getItemId() == -1) {
+            Item item = new Item(request, categoryRepository.findById(request.getCategoryId()).orElseThrow());
             Favorite favorite = new Favorite(request, getUser(), item);
             itemRepository.save(item);
             favoriteRepository.save(favorite);
         } else {
-            throw new NullPointerException("존재하지 않는 카테고리");
-        }
-        return new Message(true, "추가에 성공했습니다");
-    }
-
-    @Transactional
-    public Message addFavorite(Long favoriteItemId, Favorite.Request request) {
-        if (checkValueIsEmptyByRepo("favorite", favoriteItemId)
-                && checkValueIsEmptyByRepo("item", request.getItemId())
-                && checkValueIsEmptyByRepo("category", request.getCategoryId())
-        ) {
             Item item = itemRepository.findById(request.getItemId()).orElseThrow(
-                    () -> new IllegalArgumentException("존재하지 않는 아이템")
+                    () -> new ApiRequestException(ApiException.NOT_EXIST_DATA)
             );
             favoriteRepository.save(new Favorite(request, getUser(), item));
-        } else {
-            throw new IllegalArgumentException("잘못된 입력값");
         }
         return new Message(true, "추가에 성공했습니다.");
     }
@@ -109,7 +99,7 @@ public class FavoriteService {
 
     public Favorite getFavoriteById(Long id) {
         return favoriteRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 즐겨찾기"));
+                () -> new ApiRequestException(ApiException.NOT_EXIST_DATA));
     }
 
     public void compareUsername(String Username1, String Username2) {
