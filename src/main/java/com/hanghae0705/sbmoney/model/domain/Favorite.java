@@ -61,6 +61,7 @@ public class Favorite {
     @Getter
     @NoArgsConstructor
     public static class Response {
+        private Long favoriteItemId;
         private Long itemId;
         private String itemName;
         private int price;
@@ -68,6 +69,7 @@ public class Favorite {
         private String categoryName;
 
         public Response(Favorite favorite){
+            this.favoriteItemId = favorite.getId();
             Item item = favorite.getItem();
             this.itemId = favorite.getItem().getId();
             this.itemName = favorite.getItem().getName();
