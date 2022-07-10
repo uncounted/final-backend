@@ -27,6 +27,7 @@ public class MyProfileService {
         responseProfile.setUsername(getUser().getUsername());
         responseProfile.setNickname(getUser().getNickname());
         responseProfile.setProfileImg(getUser().getProfileImg());
+        responseProfile.setIntroDesc(getUser().getIntroDesc());
         responseProfile.setEmail(getUser().getEmail());
         responseProfile.setNickname(getUser().getNickname());
         return new Message(true, "조회에 성공했습니다", responseProfile);
@@ -49,9 +50,4 @@ public class MyProfileService {
                 () -> new ApiRequestException(ApiException.NOT_EXIST_USER));
     }
 
-//    public void checkValueIsEmpty(Object target) {
-//        if (target == null) {
-//            throw new NullPointerException("내용이 없음");
-//        }
-//    }
 }
