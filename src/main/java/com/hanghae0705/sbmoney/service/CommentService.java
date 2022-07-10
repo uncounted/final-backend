@@ -41,7 +41,9 @@ public class CommentService {
 
     @Transactional
     public Message postComment(Long boardId, Comment.Request request) {
+
         checkValueIsEmpty(request.getComment());
+        checkCommentLength(request.getComment());
         Comment comment = new Comment(request, getBoardById(boardId), getUsername());
         commentRepository.save(comment);
         return new Message(true, "댓글을 등록하였습니다.");
@@ -52,6 +54,7 @@ public class CommentService {
         getBoardById(boardId);
         checkCommentUserAndCurrentUser(getCommentById(commentId));
         checkValueIsEmpty(request.getComment());
+        checkCommentLength(request.getComment());
         getCommentById(commentId).updateComment(request);
         return new Message(true, "댓글을 수정하였습니다.");
     }
@@ -81,6 +84,12 @@ public class CommentService {
                 () -> new NullPointerException("존재하지 않는 댓글")
         );
         return comment;
+    }
+
+    public void checkCommentLength(String target) {
+        if(target.length() > 200) {
+            throw new IllegalArgumentException("댓글은 200자 내외로 작성해야합니다");
+        }
     }
 
     public void checkCommentUserAndCurrentUser(Comment comment) {
