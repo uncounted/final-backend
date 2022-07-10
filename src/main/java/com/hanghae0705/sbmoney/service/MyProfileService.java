@@ -33,13 +33,13 @@ public class MyProfileService {
     }
 
     @Transactional
-    public Message updateProfile(User.RequestProfile requestProfile, MultipartFile profileImg) throws IOException {
+    public Message updateProfile(User.RequestProfile changeInfo, MultipartFile profileImg) throws IOException {
         String imgUrl = null;
         if (profileImg != null) {
             imgUrl = s3Uploader.upload(profileImg, "static");
-            getUser().updateProfile(requestProfile, imgUrl);
+            getUser().updateProfile(changeInfo, imgUrl);
         } else {
-            getUser().updateProfile(requestProfile);
+            getUser().updateProfile(changeInfo);
         }
         return new Message(true, "프로필이 변경되었습니다");
     }

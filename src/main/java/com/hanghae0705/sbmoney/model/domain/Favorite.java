@@ -52,6 +52,7 @@ public class Favorite {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Request {
+        private String itemName;
         private Long itemId;
         private int price;
         private Long categoryId;

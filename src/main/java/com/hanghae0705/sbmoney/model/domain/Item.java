@@ -61,6 +61,12 @@ public class Item {
         this.defaultPrice = request.getDefaultPrice();
     }
 
+    public Item(Favorite.Request favoriteRequest, Category category) {
+        this.name = favoriteRequest.getItemName();
+        this.category = category;
+        this.defaultPrice = favoriteRequest.getPrice();
+    }
+
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
