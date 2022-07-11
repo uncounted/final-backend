@@ -24,7 +24,7 @@ public class BoardController {
     }
 
     @GetMapping("/api/board/detail/{boardId}")
-    public ResponseEntity<Message> getDetailBoard(@PathVariable Long boardId, @RequestHeader(required = false,name="Authorization") String authorization) {
+    public ResponseEntity<Message> getDetailBoard(@PathVariable Long boardId, @RequestHeader(required = false, name = "Authorization") String authorization) {
         Message message = boardService.getDetailBoard(boardId, authorization);
         return ResponseEntity.ok(message);
     }
@@ -37,7 +37,9 @@ public class BoardController {
 
 
     @PostMapping("/api/post/board")
-    public ResponseEntity<Message> postBoard(@RequestPart(value = "request") Board.Request request, @RequestHeader("Authorization") String authorization, @RequestPart(required = false, value = "file") MultipartFile multipartFile) throws IOException {
+    public ResponseEntity<Message> postBoard(@RequestPart(value = "request") Board.Request request,
+                                             @RequestHeader("Authorization") String authorization,
+                                             @RequestPart(required = false, value = "file") MultipartFile multipartFile) throws IOException {
         Message message = boardService.postBoard(request, authorization, multipartFile);
         return ResponseEntity.ok(message);
     }
@@ -53,4 +55,6 @@ public class BoardController {
         Message message = boardService.deleteBoard(boardId, authorization);
         return ResponseEntity.ok(message);
     }
+
+
 }
