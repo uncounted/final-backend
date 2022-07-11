@@ -41,7 +41,6 @@ public class CommentService {
 
     @Transactional
     public Message postComment(Long boardId, Comment.Request request) {
-
         checkValueIsEmpty(request.getComment());
         checkCommentLength(request.getComment());
         Comment comment = new Comment(request, getBoardById(boardId), getUsername());
