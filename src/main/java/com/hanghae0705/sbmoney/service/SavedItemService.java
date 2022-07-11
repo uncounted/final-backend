@@ -56,9 +56,7 @@ public class SavedItemService {
         return new Message(true, "티끌 등록에 성공했습니다.");
     }
 
-    public Message getSavedItems(SavedItem.getRequest getRequest, User user) throws ItemException {
-        //Request에서 goalItem을 던져준다.
-        Long goalItemId = getRequest.getGoalItemId();
+    public Message getSavedItems(Long goalItemId, User user) throws ItemException {
         GoalItem goalItem = itemValidator.isValidGoalItem(goalItemId, user);
 
         List<SavedItem> savedItemList = goalItem.getSavedItems();
