@@ -2,10 +2,12 @@ package com.hanghae0705.sbmoney.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
+import com.hanghae0705.sbmoney.service.SavedItemService;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -52,17 +54,12 @@ public class SavedItem extends BaseEntity {
 
 
     @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Request {
         private Long itemId;
         private Long goalItemId;
         private int price;
-    }
-
-    @Getter
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class getRequest {
-        private Long goalItemId;
     }
     @Getter
     @AllArgsConstructor
@@ -74,12 +71,23 @@ public class SavedItem extends BaseEntity {
     @Getter
     @AllArgsConstructor
     public static class Response {
+        private LocalDateTime modifiedDate;
         private Long savedItemId;
         private Long categoryId;
         private String categoryName;
         private Long itemId;
         private String itemName;
         private int price;
+
+        public Response(SavedItem savedItem) {
+            this.modifiedDate = savedItem.getModifiedDate();
+            this.savedItemId = savedItem.getId();
+            this.categoryId = savedItem.getItem().getCategory().getId();
+            this.categoryName = savedItem.getItem().getCategory().getName();
+            this.itemId = savedItem.getItem().getId();
+            this.itemName = savedItem.getItem().getName();
+            this.price = savedItem.getPrice();
+        }
     }
 
 }
