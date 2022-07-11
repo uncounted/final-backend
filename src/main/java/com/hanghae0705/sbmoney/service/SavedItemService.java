@@ -7,6 +7,7 @@ import com.hanghae0705.sbmoney.model.domain.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.SavedItem;
 import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.repository.GoalItemRepository;
 import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.util.MathFloor;
 import com.hanghae0705.sbmoney.validator.ItemValidator;
@@ -23,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SavedItemService {
     private final SavedItemRepository savedItemRepository;
+    private final GoalItemRepository goalItemRepository;
     private final ItemValidator itemValidator;
 
     @Transactional
@@ -45,6 +47,11 @@ public class SavedItemService {
             LocalDateTime reachedAt = LocalDateTime.now();
             goalItem.setCheckReached(true, 100.0, reachedAt);
             savedItemRepository.save(new SavedItem(item, price, user, goalItem));
+
+            Item noItem = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
+            GoalItem noGoalItem = new GoalItem(user, 0, 0, noItem);
+            goalItemRepository.save(noGoalItem);
+
         } else if (goalItem.getItem().getId() == -1L) {
             savedItemRepository.save(new SavedItem(item, price, user, goalItem));
         } else{ // GoalItem이 목표 금액을 달성하지 못했을 때
@@ -62,13 +69,7 @@ public class SavedItemService {
         List<SavedItem> savedItemList = goalItem.getSavedItems();
         List<SavedItem.Response> savedItemResponseList = new ArrayList<>();
         for (SavedItem savedItem : savedItemList) {
-            Long categoryId = savedItem.getItem().getCategory().getId();
-            String categoryName = savedItem.getItem().getCategory().getName();
-            Long itemId = savedItem.getItem().getId();
-            String itemName = savedItem.getItem().getName();
-            int price = savedItem.getPrice();
-
-            SavedItem.Response savedItemResponse = new SavedItem.Response(savedItem.getId(), categoryId, categoryName, itemId, itemName, price);
+            SavedItem.Response savedItemResponse = new SavedItem.Response(savedItem);
             savedItemResponseList.add(savedItemResponse);
         }
         return new Message(true, "티끌 조회에 성공했습니다.", savedItemResponseList);

@@ -60,6 +60,8 @@ public class GoalItemService {
             for (GoalItem goalItem : goalItemList){
                 if(!goalItem.isCheckReached() && goalItem.getItem().getId() != -1){
                     throw new ItemException(Constants.ExceptionClass.GOAL_ITEM, HttpStatus.BAD_REQUEST, "이미 태산으로 등록된 상품이 존재합니다.");
+                } else if(goalItem.getSavedItems().isEmpty()) { // 티끌이 존재하지 않은 목표는 삭제
+                    goalItemRepository.deleteById(goalItem.getId());
                 } else { // 태산 없음으로 등록된 goalItem을 히스토리에 추가
                     LocalDateTime reachedDateTime = LocalDateTime.now();
                     goalItem.setCheckReached(true, reachedDateTime);
@@ -151,9 +153,8 @@ public class GoalItemService {
         for (SavedItem savedItem : savedItemList) {
                 savedItem.setGoalItem(noGoalItem);
         }
-        LocalDateTime nowDate = LocalDateTime.now();
-        noGoalItem.setCheckReached(true, 100.0, nowDate);
         goalItemRepository.deleteById(goalItemId);
+        goalItemRepository.save(noGoalItem);
         return new Message(true, "목표 항목을 삭제하였습니다.");
     }
 

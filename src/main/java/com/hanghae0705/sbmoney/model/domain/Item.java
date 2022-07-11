@@ -33,6 +33,7 @@ public class Item {
     @Getter
     @NoArgsConstructor
     public static class Request {
+        private Long goalItemId;
         private Long categoryId;
         private String itemName;
         private int defaultPrice;
