@@ -35,9 +35,27 @@ public class Board extends BaseEntity {
     @Column
     private String image;
 
-    @OneToOne
-    @JoinColumn(name = "GOAL_ITEM")
-    private GoalItem goalItem;
+    @NotNull
+    private Long goalItemId;
+
+    @NotNull
+    private Long categoryId;
+
+    @NotNull
+    private String categoryName;
+
+
+    @NotNull
+    private String goalItemName;
+
+    @NotNull
+    private int goalItemCount;
+
+    @NotNull
+    private int goalItemPrice;
+
+    @NotNull
+    private double goalPercent;
 
     @NotNull
     private Long commentCount;
@@ -52,7 +70,13 @@ public class Board extends BaseEntity {
     private boolean checkLike;
 
     public Board(Request request, GoalItem goalItem, Optional<User> user) {
-        this.goalItem = goalItem;
+        this.categoryId = goalItem.getItem().getCategory().getId();
+        this.categoryName = goalItem.getItem().getCategory().getName();
+        this.goalItemId = goalItem.getId();
+        this.goalItemName = goalItem.getItem().getName();
+        this.goalPercent = goalItem.getGoalPercent();
+        this.goalItemCount = goalItem.getCount();
+        this.goalItemPrice = goalItem.getItem().getDefaultPrice();
         this.image = goalItem.getImage();
         this.title = request.title;
         this.contents = request.contents;
@@ -127,24 +151,24 @@ public class Board extends BaseEntity {
 
         public Response(Board board) {
             this.boardId = board.getId();
-            this.UserId = board.user.getUsername();
-            this.nickname = board.user.getNickname();
-            this.profileImg = board.user.getProfileImg();
-            this.title = board.title;
-            this.contents = board.contents;
-            this.image = board.image;
-            this.categoryId = board.goalItem.getItem().getCategory().getId();
-            this.categoryName = board.goalItem.getItem().getCategory().getName();
-            this.goalItemId = board.goalItem.getId();
-            this.goalItemName = board.goalItem.getItem().getName();
-            this.goalPercent = board.goalItem.getGoalPercent();
-            this.commentCount = board.commentCount;
-            this.viewCount = board.viewCount;
-            this.likeCount = board.likeCount;
+            this.UserId = board.getUser().getUsername();
+            this.nickname = board.getUser().getNickname();
+            this.profileImg = board.getUser().getProfileImg();
+            this.title = board.getTitle();
+            this.contents = board.getContents();
+            this.image = board.getImage();
+            this.categoryId = board.getCategoryId();
+            this.categoryName = board.getCategoryName();
+            this.goalItemId = board.getGoalItemId();
+            this.goalItemName = board.getGoalItemName();
+            this.goalPercent = board.getGoalPercent();
+            this.commentCount = board.getCommentCount();
+            this.viewCount = board.getViewCount();
+            this.likeCount = board.getLikeCount();
             this.createdAt = board.getCreatedDate();
             this.modifiedAt = board.getModifiedDate();
-            this.likeCount = board.likeCount;
-            this.checkLike = board.checkLike;
+            this.likeCount = board.getLikeCount();
+            this.checkLike = board.isCheckLike();
         }
     }
 
@@ -158,17 +182,39 @@ public class Board extends BaseEntity {
         private LocalDateTime createdAt;
         private LocalDateTime modifiedAt;
         private int savedItemTotalPrice;
-        private List<SavedItem> savedItemList;
+        private List<Board.SaveItem> savedItemList;
 
-        public SaveItemResponse(Board board, int savedItemTotalPrice) {
+        public SaveItemResponse(Board board, List<Board.SaveItem> saveItemList, int savedItemTotalPrice) {
             this.boardId = board.getId();
             this.userId = board.getUser().getUsername();
-            this.totalPrice = board.getGoalItem().getTotal();
-            this.price = this.totalPrice / board.getGoalItem().getCount();
-            this.createdAt = board.getGoalItem().getCreatedDate();
-            this.modifiedAt = board.getGoalItem().getModifiedDate();
-            this.savedItemList = board.getGoalItem().getSavedItems();
+            this.totalPrice = board.goalItemPrice * board.goalItemCount;
+            this.price = board.goalItemPrice;
+            this.createdAt = board.getCreatedDate();
+            this.modifiedAt = board.getModifiedDate();
+            this.savedItemList = saveItemList;
             this.savedItemTotalPrice = savedItemTotalPrice;
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class SaveItem {
+        private Long saveItemId;
+        private String saveItemName;
+        private LocalDateTime createdDate;
+        private LocalDateTime modifiedDate;
+        private int price;
+        private Long categoryId;
+        private String categoryName;
+
+        public SaveItem(SavedItem savedItem) {
+            this.saveItemId = savedItem.getItem().getId();
+            this.saveItemName = savedItem.getItem().getName();
+            this.price = savedItem.getPrice();
+            this.categoryId = savedItem.getItem().getCategory().getId();
+            this.categoryName = savedItem.getItem().getCategory().getName();
+            this.createdDate = savedItem.getCreatedDate();
+            this.modifiedDate = savedItem.getModifiedDate();
         }
     }
 }
