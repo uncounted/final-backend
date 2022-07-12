@@ -27,7 +27,7 @@ public class CorsFilter implements Filter {
                 || origin.startsWith("https://www.tikkeeul.com")){
             response.setHeader("Access-Control-Allow-Origin", origin); //허용대상 도메인
         }
-        //response.setHeader("Access-Control-Allow-Origin", origin);
+        //response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
         //response.setHeader("Access-Control-Allow-Origin", "https://accounts.google.com");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, DELETE, PUT, PATCH, OPTIONS");
         response.setHeader("Access-Control-Max-Age", "3600");
