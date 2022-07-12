@@ -21,7 +21,7 @@ public class GoalItemController {
     private final CommonService commonService;
 
     @GetMapping("/api/goalItem")
-    public ResponseEntity<Message> getGoalItem() throws ItemException {
+    public ResponseEntity<Message> getGoalItem() {
         User user = commonService.getUser();
         Message message = goalItemService.getGoalItem(user);
         return ResponseEntity.ok(message);
