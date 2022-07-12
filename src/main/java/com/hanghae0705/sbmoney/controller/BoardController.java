@@ -18,8 +18,9 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/api/board")
-    public ResponseEntity<Message> getBoard(@RequestHeader(required = false, name = "Authorization") String authorization) {
-        Message message = boardService.getBoard(authorization);
+    public ResponseEntity<Message> getBoard(@RequestParam Long lastBoardId, @RequestParam int size,
+                                            @RequestHeader(required = false, name = "Authorization") String authorization) {
+        Message message = boardService.getBoard(lastBoardId, size, authorization);
         return ResponseEntity.ok(message);
     }
 

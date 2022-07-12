@@ -5,6 +5,8 @@ import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.*;
 import com.hanghae0705.sbmoney.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +28,8 @@ public class BoardService {
     private final SavedItemRepository savedItemRepository;
     private final S3Uploader s3Uploader;
 
+    private static final int DEFAULT_PAGE_NUM = 0;
+
 
     private Optional<User> getUser(String authorization) {
         String token = authorization.substring(7);
@@ -40,8 +44,9 @@ public class BoardService {
     }
 
     @Transactional
-    public Message getBoard(String authorization) {
-        List<Board> boardList = boardRepository.findAll();
+    public Message getBoard(Long lastBoardId, int size, String authorization) {
+        PageRequest pageRequest = PageRequest.of(DEFAULT_PAGE_NUM, size);
+        Page<Board> boardList = boardRepository.findByIdLessThanOrderByIdDesc(lastBoardId, pageRequest);
         List<Board.Response> responseList = new ArrayList<>();
         for (Board board : boardList) {
             if (authorization == null) {
