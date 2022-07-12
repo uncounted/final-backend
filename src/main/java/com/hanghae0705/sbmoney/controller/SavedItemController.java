@@ -1,7 +1,6 @@
 package com.hanghae0705.sbmoney.controller;
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.exception.Constants;
 import com.hanghae0705.sbmoney.exception.ItemException;
 import com.hanghae0705.sbmoney.model.domain.SavedItem;
 import com.hanghae0705.sbmoney.model.domain.User;
@@ -9,7 +8,6 @@ import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.service.CommonService;
 import com.hanghae0705.sbmoney.service.SavedItemService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,20 +32,16 @@ public class SavedItemController {
         return ResponseEntity.ok(message);
     }
 
-    @PutMapping("/api/savedItem/{savedItemId}")
-    private ResponseEntity<Message> updateSavedItem(@PathVariable Long savedItemId, @RequestBody SavedItem.Update price) throws ItemException {
+    @PutMapping("/api/savedItem/{itemId}")
+    private ResponseEntity<Message> updateSavedItem(@PathVariable Long itemId, @RequestBody SavedItem.Update price) throws ItemException {
         User user = commonService.getUser();
-        Message message = savedItemService.updateSavedItem(savedItemId, price, user);
+        Message message = savedItemService.updateSavedItem(itemId, price, user);
         return ResponseEntity.ok(message);
     }
 
-    @DeleteMapping("/api/savedItem/{savedItemId}")
-    private ResponseEntity<Message> deleteSavedItem(@PathVariable Long savedItemId) throws ItemException {
-        SavedItem savedItem = savedItemRepository.findById(savedItemId).orElseThrow(
-                () -> new ItemException(Constants.ExceptionClass.SAVED_ITEM, HttpStatus.BAD_REQUEST, "존재하지 않는 티끌입니다.")
-        );
-        savedItem.setGoalItem(null);
-        savedItemRepository.deleteById(savedItemId);
+    @DeleteMapping("/api/savedItem/{itemId}")
+    private ResponseEntity<Message> deleteSavedItem(@PathVariable Long itemId){
+        savedItemRepository.deleteById(itemId);
         Message message = new Message(true, "티끌 삭제에 성공했습니다.");
         return ResponseEntity.ok(message);
     }
