@@ -60,38 +60,38 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
     private User createUser(OAuth2UserInfo userInfo, String provider) {
         System.out.println("소셜 로그인 최초 시도");
 
-//        String nickname;
-//        if(userInfo.getFirstName() != null) {
-//            nickname = userInfo.getFirstName() + userInfo.getLastName();
-//        } else {
-//            nickname = userInfo.getName();
-//        }
-
-//        User newUser = User.builder()
-//                .id(null)
-//                .username(provider + "_" + userInfo.getId())
-//                .password(new BCryptPasswordEncoder().encode("social-login-password-google-" + userInfo.getId()))
-//                .nickname(nickname)
-//                .email(userInfo.getEmail())
-//                .profileImg(userInfo.getImageUrl())
-//                .introDesc("티끌모아 태산!")
-//                .provider(provider)
-//                .role(UserRoleEnum.USER)
-//                .lastEntered(LocalDateTime.now())
-//                .build();
+        String nickname;
+        if(userInfo.getFirstName() != null) {
+            nickname = userInfo.getFirstName() + userInfo.getLastName();
+        } else {
+            nickname = userInfo.getName();
+        }
 
         User newUser = User.builder()
                 .id(null)
                 .username(provider + "_" + userInfo.getId())
-                .password(new BCryptPasswordEncoder().encode("social-login-password-google-" + userInfo.getId()))
-                .nickname("")
-                .email("")
+                .password(new BCryptPasswordEncoder().encode("social-login-password" + userInfo.getId()))
+                .nickname(nickname)
+                .email(userInfo.getEmail())
                 .profileImg(userInfo.getImageUrl())
                 .introDesc("티끌모아 태산!")
                 .provider(provider)
                 .role(UserRoleEnum.USER)
                 .lastEntered(LocalDateTime.now())
                 .build();
+
+//        User newUser = User.builder()
+//                .id(null)
+//                .username(provider + "_" + userInfo.getId())
+//                .password(new BCryptPasswordEncoder().encode("social-login-password-google-" + userInfo.getId()))
+//                .nickname("")
+//                .email("")
+//                .profileImg(userInfo.getImageUrl())
+//                .introDesc("티끌모아 태산!")
+//                .provider(provider)
+//                .role(UserRoleEnum.USER)
+//                .lastEntered(LocalDateTime.now())
+//                .build();
 
         return userRepository.save(newUser);
     }
