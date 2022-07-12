@@ -29,24 +29,28 @@ public class GoalItemService {
     private final ItemValidator itemValidator;
 
 
-    public Message getGoalItem(User user) {
+    public Message getGoalItem(User user) throws ItemException {
         List<GoalItem> goalItemList = user.getGoalItems();
         GoalItem.Response goalItemResponse = null;
-        if(goalItemList != null){ // 서비스를 처음 이용하는 사용자는 티끌도 태산도 존재하지 않음
-            for(GoalItem goalItem : goalItemList){
-                if(!goalItem.isCheckReached()){
+        if (goalItemList.size() != 0) {
+            for (GoalItem goalItem : goalItemList) {
+                if (!goalItem.isCheckReached()) {
                     goalItemResponse = new GoalItem.Response(goalItem);
                 }
             }
+        } else { // 서비스를 처음 이용하는 사용자는 티끌도 태산도 존재하지 않으므로 목표 없음 생성
+            Item item = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
+            GoalItem noGoalItem = new GoalItem(user, 0, 0, item);
+            goalItemResponse = new GoalItem.Response(goalItemRepository.save(noGoalItem));
         }
         return new Message(true, "목표 항목을 조회하였습니다.", goalItemResponse);
     }
 
-    public Message getHistory(User user){
+    public Message getHistory(User user) {
         List<GoalItem> goalItemList = user.getGoalItems();
         List<GoalItem.Response> reachedGoalItemList = new ArrayList<>();
-        for(GoalItem goalItem : goalItemList){
-            if(goalItem.isCheckReached()){
+        for (GoalItem goalItem : goalItemList) {
+            if (goalItem.isCheckReached()) {
                 reachedGoalItemList.add(new GoalItem.Response(goalItem));
             }
         }
@@ -56,11 +60,11 @@ public class GoalItemService {
     @Transactional
     public Message postGoalItem(GoalItem.Request goalItemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
         List<GoalItem> goalItemList = user.getGoalItems();
-        if(goalItemList != null){
-            for (GoalItem goalItem : goalItemList){
-                if(!goalItem.isCheckReached() && goalItem.getItem().getId() != -1){
+        if (goalItemList != null) {
+            for (GoalItem goalItem : goalItemList) {
+                if (!goalItem.isCheckReached() && goalItem.getItem().getId() != -1) {
                     throw new ItemException(Constants.ExceptionClass.GOAL_ITEM, HttpStatus.BAD_REQUEST, "이미 태산으로 등록된 상품이 존재합니다.");
-                } else if(goalItem.getSavedItems().isEmpty()) { // 티끌이 존재하지 않은 목표는 삭제
+                } else if (goalItem.getSavedItems().isEmpty()) { // 티끌이 존재하지 않은 목표는 삭제
                     goalItemRepository.deleteById(goalItem.getId());
                 } else { // 태산 없음으로 등록된 goalItem을 히스토리에 추가
                     LocalDateTime reachedDateTime = LocalDateTime.now();
@@ -151,7 +155,7 @@ public class GoalItemService {
         Item item = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
         GoalItem noGoalItem = new GoalItem(user, 0, 0, item);
         for (SavedItem savedItem : savedItemList) {
-                savedItem.setGoalItem(noGoalItem);
+            savedItem.setGoalItem(noGoalItem);
         }
         goalItemRepository.deleteById(goalItemId);
         goalItemRepository.save(noGoalItem);
