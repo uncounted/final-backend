@@ -123,13 +123,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/user/**",
             "/test",
             "/oauth2/**",
-            "/login/oauth2/code/google",
+            "/login/oauth2/code/**",
             "/user/login",
             "/user/changePassword/**",
-            "/user/kakao/callback",
             "/api/board",
             "/api/board/detail/**",
             "/api/board/save/**",
+            "/oauth2/redirect"
             //"/api/goalItem"
     };
 
