@@ -3,9 +3,7 @@ package com.hanghae0705.sbmoney.service;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.*;
-import com.hanghae0705.sbmoney.repository.BoardRepository;
-import com.hanghae0705.sbmoney.repository.GoalItemRepository;
-import com.hanghae0705.sbmoney.repository.UserRepository;
+import com.hanghae0705.sbmoney.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +23,9 @@ public class BoardService {
     private final LikeService likeService;
     private final GoalItemRepository goalItemRepository;
     private final UserRepository userRepository;
+    private final SavedItemRepository savedItemRepository;
     private final S3Uploader s3Uploader;
+
 
     private Optional<User> getUser(String authorization) {
         String token = authorization.substring(7);
@@ -69,8 +69,8 @@ public class BoardService {
         if (authorization == null) {
             board.likeBoard(false, likeCount);
 
-        }else {
-           checkLike = likeService.checkLike(board.getId(), authorization);
+        } else {
+            checkLike = likeService.checkLike(board.getId(), authorization);
         }
 
         board.likeBoard(checkLike, likeCount);
@@ -83,15 +83,21 @@ public class BoardService {
     public Message getSaveBoard(Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(
                 () -> new NullPointerException("존재하지 않는 게시글입니다"));
-        int length = board.getGoalItem().getSavedItems().size();
+        GoalItem goalItem = goalItemRepository.findById(board.getGoalItemId()).orElseThrow(
+                () -> new NullPointerException("존재하지 않는 태산입니다"));
+        List<SavedItem> savedItemList = savedItemRepository.findAllByGoalItemAndAndCreatedAtIsBefore(goalItem, board.getCreatedDate());
+        int length = savedItemList.size();
         int total = 0;
 
-        List<SavedItem> savedItem = board.getGoalItem().getSavedItems();
+        List<Board.SaveItem> saveItemList = new ArrayList<>();
+
         for (int i = 0; i < length; i++) {
-            total = total + savedItem.get(i).getPrice();
+            total = total + savedItemList.get(i).getPrice();
+            Board.SaveItem dto = new Board.SaveItem(savedItemList.get(i));
+            saveItemList.add(dto);
         }
-        Board.SaveItemResponse response = new Board.SaveItemResponse(board, total);
-        return new Message(true, "게시판을 조회하였습니다.", response);
+        Board.SaveItemResponse response = new Board.SaveItemResponse(board, saveItemList, total);
+        return new Message(true, "티끌을 조회하였습니다.", response);
     }
 
 
