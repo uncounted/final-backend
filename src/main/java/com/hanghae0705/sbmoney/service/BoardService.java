@@ -108,6 +108,10 @@ public class BoardService {
 
     @Transactional
     public Message postBoard(Board.Request request, String authorization, MultipartFile multipartFile) throws IOException {
+
+        if(request.getContents().length() > 500){
+            return new Message(false, "500자 이하로 작성해주세요");
+        }
         Optional<User> user = getUser(authorization);
         GoalItem goalItem = goalItemRepository.findByUserAndAndCheckReachedIsFalse(user.get());
         Board board = new Board(request, goalItem, user);
@@ -121,6 +125,9 @@ public class BoardService {
 
     @Transactional
     public Message putBoard(Board.Update request, Long boardId, String authorization, MultipartFile multipartFile) throws IOException {
+        if(request.getContents().length() > 500){
+            return new Message(false, "500자 이하로 작성해주세요");
+        }
         Optional<User> user = getUser(authorization);
         Board board = boardRepository.findById(boardId).orElseThrow(
                 () -> new NullPointerException("존재하지 않는 게시글입니다"));
