@@ -32,15 +32,6 @@ public class Item {
 
     @Getter
     @NoArgsConstructor
-    public static class Request {
-        private Long goalItemId;
-        private Long categoryId;
-        private String itemName;
-        private int defaultPrice;
-    }
-
-    @Getter
-    @NoArgsConstructor
     public static class Response {
         private Long categoryId;
         private String categoryName;
@@ -56,7 +47,40 @@ public class Item {
         }
     }
 
-    public Item(Request request, Category category) {
+    @Getter
+    @NoArgsConstructor
+    public static class Request {
+        private Long goalItemId;
+        private Long categoryId;
+        private String itemName;
+        private int defaultPrice;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class goalItemRequest {
+        private int goalItemCount;
+        private Long categoryId;
+        private String itemName;
+        private int defaultPrice;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class savedItemRequest {
+        private Long goalItemId;
+        private Long categoryId;
+        private String itemName;
+        private int defaultPrice;
+    }
+
+    public Item(savedItemRequest request, Category category) {
+        this.name = request.getItemName();
+        this.category = category;
+        this.defaultPrice = request.getDefaultPrice();
+    }
+
+    public Item(goalItemRequest request, Category category) {
         this.name = request.getItemName();
         this.category = category;
         this.defaultPrice = request.getDefaultPrice();
