@@ -129,7 +129,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/board",
             "/api/board/detail/**",
             "/api/board/save/**",
-            "/oauth2/redirect"
+            "/oauth2/redirect",
+            "/api/statistics/**"
             //"/api/goalItem"
     };
 

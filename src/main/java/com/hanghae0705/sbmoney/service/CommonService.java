@@ -13,6 +13,11 @@ import org.springframework.stereotype.Service;
 public class CommonService {
     private final UserRepository userRepository;
 
+    public static String getUsername(){
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userDetails.getUsername();
+    }
+
     public User getUser(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
