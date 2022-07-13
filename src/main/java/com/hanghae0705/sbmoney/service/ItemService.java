@@ -30,12 +30,10 @@ public class ItemService {
                 () -> new ItemException(Constants.ExceptionClass.CATEGORY, HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
         );
         Item item = itemRepository.save(new Item(itemRequest, category));
-        Item.Response itemResponse = new Item.Response(item);
         
-        //아이템 등록 후 티끌 저장
+        //아이템 등록 후 티끌 등록
         SavedItem.Request savedItemRequest = new SavedItem.Request(item.getId(), itemRequest.getGoalItemId(), item.getDefaultPrice());
-        savedItemService.postSavedItem(savedItemRequest, user);
-        return new Message(true, "아이템 추가와 티끌 등록을 성공했습니다.", itemResponse);
+        return savedItemService.postSavedItem(savedItemRequest, user);
     }
 
     public Message postNewGoalItem(Item.goalItemRequest itemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
@@ -44,12 +42,10 @@ public class ItemService {
                 () -> new ItemException(Constants.ExceptionClass.CATEGORY, HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
         );
         Item item = itemRepository.save(new Item(itemRequest, category));
-        Item.Response itemResponse = new Item.Response(item);
 
         //아이템 등록 후 태산 등록
         GoalItem.Request goalItemRequest = new GoalItem.Request(category.getId(), item.getId(), itemRequest.getGoalItemCount(), item.getDefaultPrice());
-        goalItemService.postGoalItem(goalItemRequest, multipartFile, user);
-        return new Message(true, "아이템 추가와 태산 등록을 성공했습니다.", itemResponse);
+        return goalItemService.postGoalItem(goalItemRequest, multipartFile, user);
     }
 
     public Message getItems() {
@@ -60,7 +56,6 @@ public class ItemService {
                 Item.Response itemResponse = new Item.Response(item);
                 itemResponses.add(itemResponse);
             }
-
         }
         return new Message(true, "아이템 전체 조회를 성공했습니다.", itemResponses);
     }
