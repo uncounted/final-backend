@@ -73,8 +73,8 @@ public class StatisticsService {
 
     // 나의 일일 가격순 코드 불러오기
     public List<StatisticsMyDay.MyDailyByPrice> getMyDailyByUserIdAndPrice(String day){
-        //Long userId = getUserId();
-        Long userId = 76L;
+        Long userId = getUserId();
+        //Long userId = 76L;
 
         List<StatisticsMyDay> result = statisticsRepository.findMyDailyByUserIdAndPrice(userId, day);
         return result.stream()
@@ -88,8 +88,8 @@ public class StatisticsService {
     }
 
     public List<StatisticsMyDay.MyDailyByCount> getMyDailyByUserIdAndCount(String day){
-        //Long userId = getUserId();
-        Long userId = 76L;
+        Long userId = getUserId();
+        //Long userId = 76L;
 
         List<StatisticsMyDay> result = statisticsRepository.findMyDailyByUserIdAndCount(userId, day);
         return result.stream()
