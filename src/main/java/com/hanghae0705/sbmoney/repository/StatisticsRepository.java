@@ -4,7 +4,6 @@ import com.hanghae0705.sbmoney.model.domain.QSavedItem;
 import com.hanghae0705.sbmoney.model.domain.QStatisticsMyDay;
 import com.hanghae0705.sbmoney.model.domain.StatisticsMyDay;
 import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsDto;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberPath;
