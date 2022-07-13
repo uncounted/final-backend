@@ -28,7 +28,7 @@ public class StatisticsRepository {
     }
 
     // userId 기반으로 시작일, 종료일로 끊어서 데이터 받아오기
-    public List<SavedItemForStatisticsDto> findByUserIdAndDate(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public List<SavedItemForStatisticsDto> findByUserIdAndDate(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         QSavedItem savedItem = QSavedItem.savedItem;
         NumberPath<Integer> aliasOrderType = Expressions.numberPath(Integer.class, "totalPrice");
 
@@ -41,7 +41,7 @@ public class StatisticsRepository {
                 ))
                 .from(savedItem)
                 .where(savedItem.createdAt.between(startDateTime, endDateTime),
-                        savedItem.user.id.eq(76L))
+                        savedItem.user.id.eq(userId))
                 .groupBy(savedItem.item.id)
                 .orderBy(aliasOrderType.desc())
                 .limit(5)
