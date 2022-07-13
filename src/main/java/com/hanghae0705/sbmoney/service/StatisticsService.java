@@ -2,50 +2,110 @@ package com.hanghae0705.sbmoney.service;
 
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRuntimeException;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.StatisticsMyDay;
+import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsDto;
+import com.hanghae0705.sbmoney.repository.StatisticsRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class StaticticsService {
+public class StatisticsService {
 
     private final UserRepository userRepository;
+    private final StatisticsRepository statisticsRepository;
 
     // 가결별/일별 나의 아낀 내역 저장하기
-    public void createMyDailySaveByPrice(){
-        // userId 받아오기
-//        Long userId = userRepository.findByUsername(CommonService.getUsername()).orElseThrow(
-//                () -> new ApiRuntimeException(ApiException.NOT_EXIST_USER)
-//        ).getId();
+    public void createMyDailySave(){
+        // username, userId 받아오기
+        Long userId = getUserId();
 
         // 날짜 구하기
-        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
-        System.out.println(yesterday);
+        LocalDate yesterday = LocalDate.now().minusDays(1); // 2022-07-12
+        LocalDateTime startDateTime = yesterday.atTime(LocalTime.MIDNIGHT); // 2022-07-12T00:00
+        LocalDateTime endDateTime = yesterday.atTime(LocalTime.MAX); // 2022-07-12T23:59:59.999999999
 
-        // username으로 savedItem 일별 리스트를 높은 가격순으로 구해오기
+        // userId로 savedItem 일별 리스트를 높은 가격순으로 구해오기
+        List<SavedItemForStatisticsDto> savedItemList = statisticsRepository.findByUserIdAndDate(startDateTime, endDateTime);
 
+        // 받아온 savedItem 의 순서대로 price 랭킹을 매겨 List 에 저장
+        List<StatisticsMyDay> statisticsMyDayList = savedItemList.stream()
+                .map(savedItem -> StatisticsMyDay.builder()
+                        .userId(savedItem.getUserId())
+                        .standardDate(yesterday.format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+                        .itemName(savedItem.getItemName())
+                        .totalPrice(savedItem.getTotalPrice())
+                        .totalCount(savedItem.getTotalCount())
+                        .rankPrice(savedItemList.indexOf(savedItem)+1)
+                        .build())
+                .collect(Collectors.toList());
+
+
+
+        // 받아온 savedItem 을 count 기준으로 정렬하여 List 에 추가
+        List<SavedItemForStatisticsDto> savedItemListOrderedByCount = savedItemList.stream().sorted(Comparator.comparing(SavedItemForStatisticsDto::getTotalCount).reversed())
+                .collect(Collectors.toList());
+        for(SavedItemForStatisticsDto savedItemDto : savedItemListOrderedByCount) {
+            for(StatisticsMyDay savedItemStatistics : statisticsMyDayList) {
+                if (savedItemDto.getItemName().equals(savedItemStatistics.getItemName())) {
+                    savedItemStatistics.changeRankCount(savedItemListOrderedByCount.indexOf(savedItemDto)+1);
+                    System.out.println(savedItemStatistics.getRankCount()+" "+savedItemStatistics.getRankPrice()+" "+savedItemStatistics.getItemName());
+                }
+            }
+        }
+
+        // List 를 DB에 추가
+        for(StatisticsMyDay savedItemStatistics : statisticsMyDayList) {
+            statisticsRepository.saveStatisticsMyDay(savedItemStatistics);
+        }
     }
 
+    // 나의 일일 가격순 코드 불러오기
+    public List<StatisticsMyDay.MyDailyByPrice> getMyDailyByUserIdAndPrice(String day){
+        //Long userId = getUserId();
+        Long userId = 76L;
 
-//    Table saved_item {
-//        id long [pk]
-//        user_id long [ref: > U.id]
-//        price int
-//        item_id long [ref: > item.id]
-//        created_at timestamp //사용자가 변경 불가
-//        goal_item_id long [ref: > goal_item.id] //check_reached 변경 시점에 업데이트
-//        //saved_desc varchar
-//    }
+        List<StatisticsMyDay> result = statisticsRepository.findMyDailyByUserIdAndPrice(userId, day);
+        return result.stream()
+                .map(myDaily -> StatisticsMyDay.MyDailyByPrice.builder()
+                        .userId(myDaily.getUserId())
+                        .rankPrice(myDaily.getRankPrice())
+                        .itemName(myDaily.getItemName())
+                        .totalPrice(myDaily.getTotalPrice())
+                        .build())
+                .collect(Collectors.toList());
+    }
 
-    //SELECT *
-    //FROM test
-    //WHERE date BETWEEN '2022-07-01 00:00:00' AND '2022-07-31 23:59:59';
+    public List<StatisticsMyDay.MyDailyByCount> getMyDailyByUserIdAndCount(String day){
+        //Long userId = getUserId();
+        Long userId = 76L;
 
-   // SELECT * FROM table_a WHERE create_dt BETWEEN DATE_ADD(NOW(), INTERVAL -1 DAY ) AND NOW();
+        List<StatisticsMyDay> result = statisticsRepository.findMyDailyByUserIdAndCount(userId, day);
+        return result.stream()
+                .map(myDaily -> StatisticsMyDay.MyDailyByCount.builder()
+                        .userId(myDaily.getUserId())
+                        .rankCount(myDaily.getRankCount())
+                        .itemName(myDaily.getItemName())
+                        .totalCount(myDaily.getTotalCount())
+                        .build())
+                .collect(Collectors.toList());
+    }
 
+    public Long getUserId() {
+        String username = CommonService.getUsername();
+        return userRepository.findByUsername(username).orElseThrow(
+                () -> new ApiRuntimeException(ApiException.NOT_EXIST_USER)
+        ).getId();
+    }
 }
