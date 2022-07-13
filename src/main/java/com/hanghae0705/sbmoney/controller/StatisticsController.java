@@ -1,5 +1,6 @@
 package com.hanghae0705.sbmoney.controller;
 
+import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.StatisticsMyDay;
 import com.hanghae0705.sbmoney.service.StatisticsService;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +21,12 @@ public class StatisticsController {
 
     // 프론트에서 요청하는 API
     @GetMapping("/api/statistics/mysave/{day}/price")
-    public List<StatisticsMyDay.MyDailyByPrice> getMyDailySaveByPrice(@PathVariable String day){
+    public Message getMyDailySaveByPrice(@PathVariable String day){
         return statisticsService.getMyDailyByUserIdAndPrice(day);
     }
 
     @GetMapping("/api/statistics/mysave/{day}/count")
-    public List<StatisticsMyDay.MyDailyByCount> getMyDailySaveByCount(@PathVariable String day){
+    public Message getMyDailySaveByCount(@PathVariable String day){
         return statisticsService.getMyDailyByUserIdAndCount(day);
     }
 
