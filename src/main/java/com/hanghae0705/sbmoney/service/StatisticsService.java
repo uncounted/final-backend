@@ -38,7 +38,7 @@ public class StatisticsService {
         LocalDateTime endDateTime = yesterday.atTime(LocalTime.MAX); // 2022-07-12T23:59:59.999999999
 
         // userId로 savedItem 일별 리스트를 높은 가격순으로 구해오기
-        List<SavedItemForStatisticsDto> savedItemList = statisticsRepository.findByUserIdAndDate(startDateTime, endDateTime);
+        List<SavedItemForStatisticsDto> savedItemList = statisticsRepository.findByUserIdAndDate(userId, startDateTime, endDateTime);
 
         // 받아온 savedItem 의 순서대로 price 랭킹을 매겨 List 에 저장
         List<StatisticsMyDay> statisticsMyDayList = savedItemList.stream()
