@@ -3,17 +3,16 @@ package com.hanghae0705.sbmoney.service;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.Constants;
 import com.hanghae0705.sbmoney.exception.ItemException;
-import com.hanghae0705.sbmoney.model.domain.Category;
-import com.hanghae0705.sbmoney.model.domain.Item;
-import com.hanghae0705.sbmoney.model.domain.SavedItem;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.*;
 import com.hanghae0705.sbmoney.repository.CategoryRepository;
 import com.hanghae0705.sbmoney.repository.ItemRepository;
 import com.hanghae0705.sbmoney.validator.ItemValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +23,8 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
     private final SavedItemService savedItemService;
-    public Message postItem(Item.Request itemRequest, User user) throws ItemException {
+    private final GoalItemService goalItemService;
+    public Message postNewSavedItem(Item.savedItemRequest itemRequest, User user) throws ItemException {
         itemValidator.isExistItem(itemRequest.getItemName());
         Category category = categoryRepository.findById(itemRequest.getCategoryId()).orElseThrow(
                 () -> new ItemException(Constants.ExceptionClass.CATEGORY, HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
@@ -36,6 +36,20 @@ public class ItemService {
         SavedItem.Request savedItemRequest = new SavedItem.Request(item.getId(), itemRequest.getGoalItemId(), item.getDefaultPrice());
         savedItemService.postSavedItem(savedItemRequest, user);
         return new Message(true, "아이템 추가와 티끌 등록을 성공했습니다.", itemResponse);
+    }
+
+    public Message postNewGoalItem(Item.goalItemRequest itemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
+        itemValidator.isExistItem(itemRequest.getItemName());
+        Category category = categoryRepository.findById(itemRequest.getCategoryId()).orElseThrow(
+                () -> new ItemException(Constants.ExceptionClass.CATEGORY, HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
+        );
+        Item item = itemRepository.save(new Item(itemRequest, category));
+        Item.Response itemResponse = new Item.Response(item);
+
+        //아이템 등록 후 태산 등록
+        GoalItem.Request goalItemRequest = new GoalItem.Request(category.getId(), item.getId(), itemRequest.getGoalItemCount(), item.getDefaultPrice());
+        goalItemService.postGoalItem(goalItemRequest, multipartFile, user);
+        return new Message(true, "아이템 추가와 태산 등록을 성공했습니다.", itemResponse);
     }
 
     public Message getItems() {
