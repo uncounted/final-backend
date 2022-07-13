@@ -1,5 +1,6 @@
 package com.hanghae0705.sbmoney.service;
 
+import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRuntimeException;
 import com.hanghae0705.sbmoney.model.domain.StatisticsMyDay;
@@ -72,12 +73,12 @@ public class StatisticsService {
     }
 
     // 나의 일일 가격순 코드 불러오기
-    public List<StatisticsMyDay.MyDailyByPrice> getMyDailyByUserIdAndPrice(String day){
+    public Message getMyDailyByUserIdAndPrice(String day){
         Long userId = getUserId();
         //Long userId = 76L;
 
         List<StatisticsMyDay> result = statisticsRepository.findMyDailyByUserIdAndPrice(userId, day);
-        return result.stream()
+        List<StatisticsMyDay.MyDailyByPrice> myDailyByPriceList = result.stream()
                 .map(myDaily -> StatisticsMyDay.MyDailyByPrice.builder()
                         .userId(myDaily.getUserId())
                         .rankPrice(myDaily.getRankPrice())
@@ -85,14 +86,20 @@ public class StatisticsService {
                         .totalPrice(myDaily.getTotalPrice())
                         .build())
                 .collect(Collectors.toList());
+
+        return Message.builder()
+                .result(true)
+                .respMsg("나의 아낀 항목 일일 금액별 통계 조회에 성공했습니다.")
+                .data(myDailyByPriceList)
+                .build();
     }
 
-    public List<StatisticsMyDay.MyDailyByCount> getMyDailyByUserIdAndCount(String day){
+    public Message getMyDailyByUserIdAndCount(String day){
         Long userId = getUserId();
         //Long userId = 76L;
 
         List<StatisticsMyDay> result = statisticsRepository.findMyDailyByUserIdAndCount(userId, day);
-        return result.stream()
+        List<StatisticsMyDay.MyDailyByCount> myDailyByCountList = result.stream()
                 .map(myDaily -> StatisticsMyDay.MyDailyByCount.builder()
                         .userId(myDaily.getUserId())
                         .rankCount(myDaily.getRankCount())
@@ -100,6 +107,12 @@ public class StatisticsService {
                         .totalCount(myDaily.getTotalCount())
                         .build())
                 .collect(Collectors.toList());
+
+        return Message.builder()
+                .result(true)
+                .respMsg("나의 아낀 항목 일일 횟수별 통계 조회에 성공했습니다.")
+                .data(myDailyByCountList)
+                .build();
     }
 
     public Long getUserId() {
