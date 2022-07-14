@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface LikeRepository extends JpaRepository<BoardLike, Long> {
-    List<BoardLike> findAllByBoardAndLikeIsTrue(Board board);
+    List<BoardLike> findByBoardAndLikeIsTrue(Board board);
 
     BoardLike findByBoardAndUser(Board board, User user);
 }
