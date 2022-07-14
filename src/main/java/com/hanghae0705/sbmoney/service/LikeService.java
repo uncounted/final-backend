@@ -79,7 +79,7 @@ public class LikeService {
     public Long likeCount(Long boardId) {
         Board board = boardRepository.findById(boardId).orElseThrow(
                 () -> new NullPointerException("존재하지 않는 게시글입니다"));
-        return (long) likeRepository.findAllByBoardAndLikeIsTrue(board).size();
+        return (long) likeRepository.findByBoardAndLikeIsTrue(board).size();
     }
 
 
