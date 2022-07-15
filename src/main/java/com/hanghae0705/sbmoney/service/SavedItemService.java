@@ -3,10 +3,8 @@ package com.hanghae0705.sbmoney.service;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.Constants;
 import com.hanghae0705.sbmoney.exception.ItemException;
-import com.hanghae0705.sbmoney.model.domain.GoalItem;
-import com.hanghae0705.sbmoney.model.domain.Item;
-import com.hanghae0705.sbmoney.model.domain.SavedItem;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.*;
+import com.hanghae0705.sbmoney.repository.FavoriteRepository;
 import com.hanghae0705.sbmoney.repository.GoalItemRepository;
 import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.util.MathFloor;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -25,6 +24,7 @@ import java.util.List;
 public class SavedItemService {
     private final SavedItemRepository savedItemRepository;
     private final GoalItemRepository goalItemRepository;
+    private final FavoriteRepository favoriteRepository;
     private final ItemValidator itemValidator;
 
     @Transactional
@@ -67,11 +67,14 @@ public class SavedItemService {
         GoalItem goalItem = itemValidator.isValidGoalItem(goalItemId, user);
 
         List<SavedItem> savedItemList = goalItem.getSavedItems();
+        List<Favorite> favorites = favoriteRepository.findByUserId(user.getId());
         List<SavedItem.Response> savedItemResponseList = new ArrayList<>();
         for (SavedItem savedItem : savedItemList) {
-            SavedItem.Response savedItemResponse = new SavedItem.Response(savedItem);
+            Boolean favorite = itemValidator.isFavoriteItem(favorites, savedItem.getItem(), savedItem.getPrice());
+            SavedItem.Response savedItemResponse = new SavedItem.Response(savedItem, favorite);
             savedItemResponseList.add(savedItemResponse);
         }
+        Collections.reverse(savedItemResponseList); //id 내림차순 정렬
         return new Message(true, "티끌 조회에 성공했습니다.", savedItemResponseList);
     }
 

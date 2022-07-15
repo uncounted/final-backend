@@ -78,8 +78,9 @@ public class SavedItem extends BaseEntity {
         private Long itemId;
         private String itemName;
         private int price;
+        private Boolean favorite;
 
-        public Response(SavedItem savedItem) {
+        public Response(SavedItem savedItem, Boolean favorite) {
             this.modifiedDate = savedItem.getModifiedDate();
             this.savedItemId = savedItem.getId();
             this.categoryId = savedItem.getItem().getCategory().getId();
@@ -87,6 +88,7 @@ public class SavedItem extends BaseEntity {
             this.itemId = savedItem.getItem().getId();
             this.itemName = savedItem.getItem().getName();
             this.price = savedItem.getPrice();
+            this.favorite = favorite;
         }
     }
 

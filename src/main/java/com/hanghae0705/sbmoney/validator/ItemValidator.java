@@ -2,10 +2,7 @@ package com.hanghae0705.sbmoney.validator;
 
 import com.hanghae0705.sbmoney.exception.Constants;
 import com.hanghae0705.sbmoney.exception.ItemException;
-import com.hanghae0705.sbmoney.model.domain.GoalItem;
-import com.hanghae0705.sbmoney.model.domain.Item;
-import com.hanghae0705.sbmoney.model.domain.SavedItem;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.*;
 import com.hanghae0705.sbmoney.repository.GoalItemRepository;
 import com.hanghae0705.sbmoney.repository.ItemRepository;
 import com.hanghae0705.sbmoney.repository.SavedItemRepository;
@@ -13,12 +10,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class ItemValidator {
     private final GoalItemRepository goalItemRepository;
     private final SavedItemRepository savedItemRepository;
     private final ItemRepository itemRepository;
+
+    public Boolean isFavoriteItem(List<Favorite> favorites, Item item, int price){
+        for(Favorite favorite : favorites){
+            if(favorite.getItem().equals(item) && favorite.getPrice() == price){
+                return true;
+            }
+        }
+        return false;
+    }
 
     public GoalItem isValidGoalItem(Long goalItemId, User user) throws ItemException {
         GoalItem goalItem = goalItemRepository.findById(goalItemId).orElseThrow(
