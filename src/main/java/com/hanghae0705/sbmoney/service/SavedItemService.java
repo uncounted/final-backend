@@ -76,14 +76,44 @@ public class SavedItemService {
     }
 
     @Transactional
-    public Message updateSavedItem(Long itemId, SavedItem.Update price, User user) throws ItemException {
-        SavedItem savedItem = savedItemRepository.findById(itemId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 티끌입니다.")
-        );
-        if(!user.equals(savedItem.getUser())){
-            throw new ItemException(Constants.ExceptionClass.SAVED_ITEM, HttpStatus.BAD_REQUEST, "유저 아이디가 일치하지 않습니다.");
+    public Message updateSavedItem(Long savedItemId, SavedItem.Update price, User user) throws ItemException {
+        SavedItem savedItem = itemValidator.isValidSavedItem(savedItemId, user);
+
+        //달성율 갱신
+        GoalItem goalItem = savedItem.getGoalItem();
+        int savedItemTotal = 0;
+        for (SavedItem tempSavedItem : goalItem.getSavedItems()) {
+            savedItemTotal += tempSavedItem.getPrice();
         }
+        int updatePrice = savedItemTotal + price.getPrice();
+
+        double decimal = ((double) updatePrice / goalItem.getTotal());
+        double updateGoalPercent = MathFloor.PercentTenths(decimal);
+        goalItem.setGoalPercent(updateGoalPercent);
         savedItem.update(price.getPrice());
+
         return new Message(true, "티끌 수정에 성공했습니다.");
+    }
+
+    @Transactional
+    public Message deleteSavedItem(Long savedItemId, User user) throws ItemException {
+        SavedItem savedItem = itemValidator.isValidSavedItem(savedItemId, user);
+
+        //달성율 갱신
+        GoalItem goalItem = savedItem.getGoalItem();
+        int savedItemTotal = 0;
+        for (SavedItem tempSavedItem : goalItem.getSavedItems()) {
+            savedItemTotal += tempSavedItem.getPrice();
+        }
+        int updatePrice = savedItemTotal - savedItem.getPrice();
+        double decimal = ((double) updatePrice / goalItem.getTotal());
+        double updateGoalPercent = MathFloor.PercentTenths(decimal);
+
+        savedItem.setGoalItem(null);
+        savedItemRepository.deleteById(savedItemId);
+
+        goalItem.setGoalPercent(updateGoalPercent);
+
+        return new Message(true, "티끌 삭제에 성공했습니다.");
     }
 }
