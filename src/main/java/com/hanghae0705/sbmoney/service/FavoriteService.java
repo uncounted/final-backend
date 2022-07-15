@@ -3,6 +3,7 @@ package com.hanghae0705.sbmoney.service;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRequestException;
+import com.hanghae0705.sbmoney.model.domain.Category;
 import com.hanghae0705.sbmoney.model.domain.Favorite;
 import com.hanghae0705.sbmoney.model.domain.Item;
 import com.hanghae0705.sbmoney.model.domain.User;
@@ -44,67 +45,68 @@ public class FavoriteService {
 
     @Transactional
     public Message addFavorite(Favorite.Request request) {
-        if(!checkValueIsEmptyByRepo("category", request.getCategoryId())) {
+        if(getValueFromRepoById("category", request.getCategoryId()) == null) {
             throw new ApiRequestException(ApiException.NOT_EXIST_DATA);
         }
         // DB에 없는 아이템을 추가할 경우 request.getitemId == -1
         if(request.getItemId() == -1) {
-            Item item = new Item(request, categoryRepository.findById(request.getCategoryId()).orElseThrow());
+            Item item = new Item(request, (Category) getValueFromRepoById("category", request.getCategoryId()));
             Favorite favorite = new Favorite(request, getUser(), item);
             itemRepository.save(item);
             favoriteRepository.save(favorite);
         } else {
-            Item item = itemRepository.findById(request.getItemId()).orElseThrow(
-                    () -> new ApiRequestException(ApiException.NOT_EXIST_DATA)
-            );
-            favoriteRepository.save(new Favorite(request, getUser(), item));
+            favoriteRepository.save(new Favorite(request, getUser(), (Item) getValueFromRepoById("item", request.getItemId())));
         }
         return new Message(true, "추가에 성공했습니다.");
     }
 
+    // Method로 찾은 data 사용 시 우선적으로 비교되야할 Username이 뒤로 밀린다..
     @Transactional
     public Message updateFavorite(Long favoriteItemId, Favorite.UpdateFavorite request) {
-        getFavoriteById(favoriteItemId);
-        compareUsername(getUser().getUsername(), getFavoriteById(favoriteItemId).getUser().getUsername());
-        getFavoriteById(favoriteItemId).updateFavorite(request);
+        Favorite favorite = (Favorite) getValueFromRepoById("favorite", favoriteItemId);
+        compareTwoObjectsIsEqual(getUser().getUsername(), favorite.getUser().getUsername());
+        compareTwoObjectsIsNotEqual(request.getPrice(), favorite.getPrice());
+        favorite.updateFavorite(request);
         return new Message(true, "수정에 성공했습니다");
     }
 
     @Transactional
     public Message deleteFavorite(Long favoriteItemId) {
-        getFavoriteById(favoriteItemId);
-        compareUsername(getUser().getUsername(), getFavoriteById(favoriteItemId).getUser().getUsername());
-        favoriteRepository.deleteById(getFavoriteById(favoriteItemId).getId());
+        Favorite favorite = (Favorite) getValueFromRepoById("favorite", favoriteItemId);
+        compareTwoObjectsIsEqual(getUser().getUsername(), favorite.getUser().getUsername());
+        favoriteRepository.deleteById(favorite.getId());
         return new Message(true, "삭제에 성공했습니다");
     }
 
-    // 어떻게 return object로 바꿔서 안되나...
-    public boolean checkValueIsEmptyByRepo(String repoName, Long id) {
+    public Object getValueFromRepoById(String repoName, Long id) {
         switch (repoName) {
             case "category":
-                return categoryRepository.findById(id).isPresent();
+                return categoryRepository.findById(id).orElseThrow(
+                        () -> new ApiRequestException(ApiException.NOT_EXIST_DATA));
             case "favorite":
-                return favoriteRepository.findById(id).isPresent();
+                return favoriteRepository.findById(id).orElseThrow(
+                        () -> new ApiRequestException(ApiException.NOT_EXIST_DATA));
             case "item":
-                return itemRepository.findById(id).isPresent();
+                return itemRepository.findById(id).orElseThrow(
+                        () -> new ApiRequestException(ApiException.NOT_EXIST_DATA));
         }
         return false;
     }
 
     public User getUser() {
         return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(
-                () -> new ApiRequestException(ApiException.NOT_EXIST_USER)
-        );
+                () -> new ApiRequestException(ApiException.NOT_EXIST_USER));
     }
 
-    public Favorite getFavoriteById(Long id) {
-        return favoriteRepository.findById(id).orElseThrow(
-                () -> new ApiRequestException(ApiException.NOT_EXIST_DATA));
+    public void compareTwoObjectsIsEqual(Object target1, Object target2) {
+        if (!target1.equals(target2)) {
+            throw new IllegalArgumentException("두 인자가 일치하지 않습니다.");
+        }
     }
 
-    public void compareUsername(String Username1, String Username2) {
-        if (!Username1.equals(Username2)) {
-            throw new ApiRequestException(ApiException.NOT_MATCH_USER);
+    public void compareTwoObjectsIsNotEqual(Object target1, Object target2) {
+        if (target1.equals(target2)) {
+            throw new IllegalArgumentException("두 인자가 일치합니다.");
         }
     }
 
