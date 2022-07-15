@@ -19,13 +19,18 @@ public class ItemValidator {
     private final SavedItemRepository savedItemRepository;
     private final ItemRepository itemRepository;
 
-    public Boolean isFavoriteItem(List<Favorite> favorites, Item item, int price){
+    public Favorite.SavedItemResponse isFavoriteItem(List<Favorite> favorites, Item item, int price){
+        Favorite.SavedItemResponse savedItemResponse = new Favorite.SavedItemResponse();
         for(Favorite favorite : favorites){
             if(favorite.getItem().equals(item) && favorite.getPrice() == price){
-                return true;
+                savedItemResponse.setFavorite(true);
+                savedItemResponse.setId(favorite.getId());
+                return savedItemResponse;
             }
         }
-        return false;
+        savedItemResponse.setFavorite(false);
+        savedItemResponse.setId(null);
+        return savedItemResponse;
     }
 
     public GoalItem isValidGoalItem(Long goalItemId, User user) throws ItemException {

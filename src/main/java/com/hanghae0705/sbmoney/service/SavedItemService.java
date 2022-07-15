@@ -70,7 +70,7 @@ public class SavedItemService {
         List<Favorite> favorites = favoriteRepository.findByUserId(user.getId());
         List<SavedItem.Response> savedItemResponseList = new ArrayList<>();
         for (SavedItem savedItem : savedItemList) {
-            Boolean favorite = itemValidator.isFavoriteItem(favorites, savedItem.getItem(), savedItem.getPrice());
+            Favorite.SavedItemResponse favorite = itemValidator.isFavoriteItem(favorites, savedItem.getItem(), savedItem.getPrice());
             SavedItem.Response savedItemResponse = new SavedItem.Response(savedItem, favorite);
             savedItemResponseList.add(savedItemResponse);
         }
