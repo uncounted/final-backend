@@ -32,7 +32,7 @@ public class MailService {
 
         // 메일 내용
         simpleMailMessage.setText("비밀번호 변경 링크: "
-                + "http://localhost:3000/user/changePassword/"
+                + "https://www.tikkeeul.com/user/changePassword/"
                 + accessToken
                 + "&"
                 + username);
