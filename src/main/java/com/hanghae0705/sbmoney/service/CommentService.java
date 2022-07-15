@@ -43,46 +43,33 @@ public class CommentService {
     public Message postComment(Long boardId, Comment.Request request) {
         checkValueIsEmpty(request.getComment());
         checkCommentLength(request.getComment());
-        Comment comment = new Comment(request, getBoardById(boardId), getUsername());
+        Comment comment = new Comment(request, (Board) getValueByIdFromRepo("board", boardId), getUser());
         commentRepository.save(comment);
         return new Message(true, "댓글을 등록하였습니다.");
     }
 
     @Transactional
     public Message updateComment(Comment.Request request, Long commentId, Long boardId) {
-        getBoardById(boardId);
-        checkCommentUserAndCurrentUser(getCommentById(commentId));
+        getValueByIdFromRepo("board", boardId);
+        Comment comment = (Comment) getValueByIdFromRepo("comment", commentId);
+        checkCommentUserAndCurrentUser(comment);
         checkValueIsEmpty(request.getComment());
         checkCommentLength(request.getComment());
-        getCommentById(commentId).updateComment(request);
+        comment.updateComment(request);
         return new Message(true, "댓글을 수정하였습니다.");
     }
 
     @Transactional
     public Message deleteComment(Long boardId, Long commentId){
-        getBoardById(boardId);
-        checkCommentUserAndCurrentUser(getCommentById(commentId));
+        getValueByIdFromRepo("board", boardId);
+        checkCommentUserAndCurrentUser((Comment) getValueByIdFromRepo("comment", commentId));
         commentRepository.deleteById(commentId);
         return new Message(true, "댓글을 삭제하였습니다.");
     }
 
-    public User getUsername() {
-        User user = userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(
-                () -> new ApiRequestException(ApiException.NOT_EXIST_USER)
-        );
-        return user;
-    }
-    public Board getBoardById(Long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(
-                () -> new NullPointerException("존재하지 않는 게시글"));
-        return board;
-    }
-
-    public Comment getCommentById(Long commentId) {
-        Comment comment = commentRepository.findById(commentId).orElseThrow(
-                () -> new NullPointerException("존재하지 않는 댓글")
-        );
-        return comment;
+    public User getUser() {
+        return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(
+                () -> new ApiRequestException(ApiException.NOT_EXIST_USER));
     }
 
     public void checkCommentLength(String target) {
@@ -92,7 +79,8 @@ public class CommentService {
     }
 
     public void checkCommentUserAndCurrentUser(Comment comment) {
-        if(!getCommentById(comment.getId()).getUser().equals(getUsername())){
+        Comment target = (Comment) getValueByIdFromRepo("comment", comment.getId());
+        if(!target.getUser().equals(getUser())){
             throw new ApiRequestException(ApiException.NOT_MATCH_USER);
         }
     }
@@ -101,5 +89,18 @@ public class CommentService {
         if (target.trim().isEmpty()) {
             throw new NullPointerException("내용이 없음");
         }
+    }
+
+    // AOP를 적용하면 얘를 다른 곳에서 쓸 수 있게 한다 이건데...
+    public Object getValueByIdFromRepo(String repo, Long id) {
+        switch (repo) {
+            case "comment":
+                return commentRepository.findById(id).orElseThrow(
+                        () -> new ApiRequestException(ApiException.NOT_EXIST_DATA));
+            case "board":
+                return boardRepository.findById(id).orElseThrow(
+                        () -> new ApiRequestException(ApiException.NOT_EXIST_DATA));
+        }
+        return false;
     }
 }
