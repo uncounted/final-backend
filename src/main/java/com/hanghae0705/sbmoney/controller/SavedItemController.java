@@ -43,12 +43,8 @@ public class SavedItemController {
 
     @DeleteMapping("/api/savedItem/{savedItemId}")
     private ResponseEntity<Message> deleteSavedItem(@PathVariable Long savedItemId) throws ItemException {
-        SavedItem savedItem = savedItemRepository.findById(savedItemId).orElseThrow(
-                () -> new ItemException(Constants.ExceptionClass.SAVED_ITEM, HttpStatus.BAD_REQUEST, "존재하지 않는 티끌입니다.")
-        );
-        savedItem.setGoalItem(null);
-        savedItemRepository.deleteById(savedItemId);
-        Message message = new Message(true, "티끌 삭제에 성공했습니다.");
+        User user = commonService.getUser();
+        Message message = savedItemService.deleteSavedItem(savedItemId, user);
         return ResponseEntity.ok(message);
     }
 }
