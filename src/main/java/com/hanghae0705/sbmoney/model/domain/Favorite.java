@@ -3,6 +3,7 @@ package com.hanghae0705.sbmoney.model.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -56,6 +57,14 @@ public class Favorite {
         private Long itemId;
         private int price;
         private Long categoryId;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @Setter
+    public static class SavedItemResponse {
+        private Long id;
+        private Boolean favorite;
     }
 
     @Getter

@@ -64,7 +64,7 @@ public class GoalItemService {
             for (GoalItem goalItem : goalItemList) {
                 if (!goalItem.isCheckReached() && goalItem.getItem().getId() != -1) {
                     throw new ItemException(Constants.ExceptionClass.GOAL_ITEM, HttpStatus.BAD_REQUEST, "이미 태산으로 등록된 상품이 존재합니다.");
-                } else if (goalItem.getSavedItems().isEmpty()) { // 티끌이 존재하지 않은 목표는 삭제
+                } else if (goalItem.getSavedItems().size() == 0) { // 티끌이 존재하지 않은 목표는 삭제
                     goalItemRepository.deleteById(goalItem.getId());
                 } else { // 태산 없음으로 등록된 goalItem을 히스토리에 추가
                     LocalDateTime reachedDateTime = LocalDateTime.now();
@@ -113,8 +113,10 @@ public class GoalItemService {
             double decimal = (double) savedItemTotal / total;
             goalPercent = MathFloor.PercentTenths(decimal);
 
-            String url = s3Uploader.upload(multipartFile, "static");
-            goalItem.setImage(url);
+            if(!multipartFile.isEmpty()){
+                String url = s3Uploader.upload(multipartFile, "static");
+                goalItem.setImage(url);
+            }
 
             if (savedItemTotal >= total) { // 변경한 품목이 달성률 100%를 넘은 지점
                 LocalDateTime reachedAt = LocalDateTime.now();
@@ -142,8 +144,10 @@ public class GoalItemService {
             double goalPercent = MathFloor.PercentTenths(decimal);
             goalItem.updateGoalItem(count, total, goalPercent);
 
-            String url = s3Uploader.upload(multipartFile, "static");
-            goalItem.setImage(url);
+            if(!multipartFile.isEmpty()){
+                String url = s3Uploader.upload(multipartFile, "static");
+                goalItem.setImage(url);
+            }
         }
         return new Message(true, "목표 항목을 수정하였습니다.");
     }

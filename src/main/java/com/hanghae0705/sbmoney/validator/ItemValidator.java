@@ -2,20 +2,36 @@ package com.hanghae0705.sbmoney.validator;
 
 import com.hanghae0705.sbmoney.exception.Constants;
 import com.hanghae0705.sbmoney.exception.ItemException;
-import com.hanghae0705.sbmoney.model.domain.GoalItem;
-import com.hanghae0705.sbmoney.model.domain.Item;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.*;
 import com.hanghae0705.sbmoney.repository.GoalItemRepository;
 import com.hanghae0705.sbmoney.repository.ItemRepository;
+import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
 public class ItemValidator {
     private final GoalItemRepository goalItemRepository;
+    private final SavedItemRepository savedItemRepository;
     private final ItemRepository itemRepository;
+
+    public Favorite.SavedItemResponse isFavoriteItem(List<Favorite> favorites, Item item, int price){
+        Favorite.SavedItemResponse savedItemResponse = new Favorite.SavedItemResponse();
+        for(Favorite favorite : favorites){
+            if(favorite.getItem().equals(item) && favorite.getPrice() == price){
+                savedItemResponse.setFavorite(true);
+                savedItemResponse.setId(favorite.getId());
+                return savedItemResponse;
+            }
+        }
+        savedItemResponse.setFavorite(false);
+        savedItemResponse.setId(null);
+        return savedItemResponse;
+    }
 
     public GoalItem isValidGoalItem(Long goalItemId, User user) throws ItemException {
         GoalItem goalItem = goalItemRepository.findById(goalItemId).orElseThrow(
@@ -25,6 +41,16 @@ public class ItemValidator {
             throw new ItemException(Constants.ExceptionClass.GOAL_ITEM, HttpStatus.BAD_REQUEST, "태산과 유저정보가 일치하지 않습니다");
         }
         return goalItem;
+    }
+
+    public SavedItem isValidSavedItem(Long savedItemId, User user) throws ItemException {
+        SavedItem savedItem = savedItemRepository.findById(savedItemId).orElseThrow(
+                () -> new ItemException(Constants.ExceptionClass.SAVED_ITEM, HttpStatus.BAD_REQUEST, "존재하지 않는 티끌입니다.")
+        );
+        if(!user.equals(savedItem.getUser())){
+            throw new ItemException(Constants.ExceptionClass.SAVED_ITEM, HttpStatus.BAD_REQUEST, "유저 아이디가 일치하지 않습니다.");
+        }
+        return savedItem;
     }
 
     public void isExistItem(String itemName) throws ItemException {
