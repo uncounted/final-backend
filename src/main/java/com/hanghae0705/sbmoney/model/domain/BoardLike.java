@@ -2,6 +2,8 @@ package com.hanghae0705.sbmoney.model.domain;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -25,6 +27,7 @@ public class BoardLike {
 
     @ManyToOne
     @JoinColumn(name = "BOARD_ID")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Board board;
 
     public BoardLike(Board board, User user) {
