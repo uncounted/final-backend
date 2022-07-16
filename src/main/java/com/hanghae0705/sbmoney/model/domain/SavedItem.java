@@ -2,7 +2,6 @@ package com.hanghae0705.sbmoney.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
-import com.hanghae0705.sbmoney.service.SavedItemService;
 import lombok.*;
 
 import javax.persistence.*;

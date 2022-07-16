@@ -6,7 +6,7 @@
 //import com.hanghae0705.sbmoney.model.domain.StatisticsAllUserDay;
 //import com.hanghae0705.sbmoney.model.domain.StatisticsMyDay;
 //import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsDto;
-//import com.hanghae0705.sbmoney.model.dto.SaverdItemForStatisticsAllUserDto;
+//import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsAllUserDto;
 //import com.hanghae0705.sbmoney.repository.StatisticsRepository;
 //import com.hanghae0705.sbmoney.repository.UserRepository;
 //import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@
 //public class StatisticsAllUserDayService {
 //
 //
-//    private final SaverdItemForStatisticsAllUserDto saverdItemForStatisticsAllUserDto;
+//    private final SavedItemForStatisticsAllUserDto saverdItemForStatisticsAllUserDto;
 //
 //    // 가결별/일별 나의 아낀 내역 저장하기
 //    public void createMyDailySave(){
@@ -43,7 +43,7 @@
 //        LocalDateTime endDateTime = yesterday.atTime(LocalTime.MAX); // 2022-07-12T23:59:59.999999999
 //
 //        // userId로 savedItem 일별 리스트를 높은 가격순으로 구해오기
-//        List<SaverdItemForStatisticsAllUserDto> savedItemList = saverdItemForStatisticsAllUserDto.findByDate( startDateTime, endDateTime);
+//        List<SavedItemForStatisticsAllUserDto> savedItemList = saverdItemForStatisticsAllUserDto.findByDate( startDateTime, endDateTime);
 //
 //        // 받아온 savedItem 의 순서대로 price 랭킹을 매겨 List 에 저장
 //        List<StatisticsAllUserDay> statisticsMyDayList = savedItemList.stream()

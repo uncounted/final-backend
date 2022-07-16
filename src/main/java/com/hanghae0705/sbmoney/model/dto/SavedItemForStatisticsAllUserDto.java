@@ -5,8 +5,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class SaverdItemForStatisticsAllUserDto {
-
+public class SavedItemForStatisticsAllUserDto {
     private String itemName;
     private int totalPrice;
     private Long totalCount;

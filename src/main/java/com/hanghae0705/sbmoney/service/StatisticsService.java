@@ -1,8 +1,6 @@
 package com.hanghae0705.sbmoney.service;
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.exception.ApiException;
-import com.hanghae0705.sbmoney.exception.ApiRuntimeException;
 import com.hanghae0705.sbmoney.model.domain.StatisticsMyDay;
 import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsDto;
 import com.hanghae0705.sbmoney.repository.StatisticsRepository;
@@ -26,11 +24,12 @@ public class StatisticsService {
 
     private final UserRepository userRepository;
     private final StatisticsRepository statisticsRepository;
+    private final CommonService commonService;
 
     // 가결별/일별 나의 아낀 내역 저장하기
     public void createMyDailySave(){
         // username, userId 받아오기
-        Long userId = getUserId();
+        Long userId = commonService.getUserId();
 
         // 날짜 구하기
         LocalDate yesterday = LocalDate.now().minusDays(1); // 2022-07-12
@@ -74,7 +73,7 @@ public class StatisticsService {
 
     // 나의 일일 가격순 코드 불러오기
     public Message getMyDailyByUserIdAndPrice(String day){
-        Long userId = getUserId();
+        Long userId = commonService.getUserId();
         //Long userId = 76L;
 
         List<StatisticsMyDay> result = statisticsRepository.findMyDailyByUserIdAndPrice(userId, day);
@@ -95,7 +94,7 @@ public class StatisticsService {
     }
 
     public Message getMyDailyByUserIdAndCount(String day){
-        Long userId = getUserId();
+        Long userId = commonService.getUserId();
         //Long userId = 76L;
 
         List<StatisticsMyDay> result = statisticsRepository.findMyDailyByUserIdAndCount(userId, day);
@@ -113,12 +112,5 @@ public class StatisticsService {
                 .respMsg("나의 아낀 항목 일일 횟수별 통계 조회에 성공했습니다.")
                 .data(myDailyByCountList)
                 .build();
-    }
-
-    public Long getUserId() {
-        String username = CommonService.getUsername();
-        return userRepository.findByUsername(username).orElseThrow(
-                () -> new ApiRuntimeException(ApiException.NOT_EXIST_USER)
-        ).getId();
     }
 }
