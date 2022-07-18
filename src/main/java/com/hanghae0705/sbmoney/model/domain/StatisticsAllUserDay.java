@@ -2,12 +2,16 @@ package com.hanghae0705.sbmoney.model.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
-
+@Entity
+@Getter
+@RequiredArgsConstructor
 public class StatisticsAllUserDay {
 
     @Id
@@ -45,14 +49,14 @@ public class StatisticsAllUserDay {
     }
 
     @Getter
-    public static class AllDailyByPrice {
+    public static class AllUserDailyByPrice {
 
         private String itemName;
         private int totalPrice;
         private int rankPrice;
 
         @Builder
-        public AllDailyByPrice( String itemName, int totalPrice, int rankPrice) {
+        public AllUserDailyByPrice( String itemName, int totalPrice, int rankPrice) {
 
             this.itemName = itemName;
             this.totalPrice = totalPrice;
@@ -61,14 +65,14 @@ public class StatisticsAllUserDay {
     }
 
     @Getter
-    public static class AllDailyByCount {
+    public static class AllUserDailyByCount {
 
         private String itemName;
         private Long totalCount;
         private int rankCount;
 
         @Builder
-        public AllDailyByCount( String itemName, Long totalCount, int rankCount) {
+        public AllUserDailyByCount( String itemName, Long totalCount, int rankCount) {
             this.itemName = itemName;
             this.totalCount = totalCount;
             this.rankCount = rankCount;
