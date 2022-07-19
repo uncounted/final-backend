@@ -18,12 +18,12 @@ public class StatisticsMyMonthController {
 
     private final StatisticsMyMonthlyService myMonthlyService;
 
-    @GetMapping("/{month}/price")
+    @GetMapping("/month/{month}/price")
     public Message getMyMonthlyStatisticsByPriceAsc(@PathVariable String month) {
         return myMonthlyService.getMyDailyByUserIdAndPrice(month);
     }
 
-    @GetMapping("/{month}/count")
+    @GetMapping("/month/{month}/count")
     public Message getMyMonthlyStatisticsByCntAsc(@PathVariable String month) {
         return myMonthlyService.getMyDailyByUserIdAndCount(month);
     }
@@ -33,7 +33,5 @@ public class StatisticsMyMonthController {
     public void updateMyMonthlyStatistics(){
         myMonthlyService.updateMyMonthlyStatistics();
     }
-
-
     // 매달 통계는 매달 1일에 01시에 집계한다.
 }

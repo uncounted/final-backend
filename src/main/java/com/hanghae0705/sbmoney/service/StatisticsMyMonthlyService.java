@@ -3,14 +3,12 @@ package com.hanghae0705.sbmoney.service;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRequestException;
-import com.hanghae0705.sbmoney.model.domain.StatisticsMyDay;
 import com.hanghae0705.sbmoney.model.domain.StatisticsMyMonth;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsDto;
 import com.hanghae0705.sbmoney.repository.ItemRepository;
 import com.hanghae0705.sbmoney.repository.StatisticsMyMonthRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;
-import com.hanghae0705.sbmoney.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,7 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,10 +29,11 @@ public class StatisticsMyMonthlyService {
     private final StatisticsMyMonthRepository myMonthRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final CommonService commonService;
     private String errorMsg;
 
     public void updateMyMonthlyStatistics() {
-
+        Long userId = commonService.getUserId();
         try {
             // 로직 순서 - 날짜 구하기 - statistics 테이블 업데이트 - dto에 담기
             // 날짜 구하기 - 서울 시간대 ZoneId
@@ -47,16 +45,17 @@ public class StatisticsMyMonthlyService {
             LocalDateTime collectEndTime = collectStartTime.plusMonths(1).minusSeconds(1);
 
             // savedItem table 에서 select query 실행
-            List<SavedItemForStatisticsDto> tempList = myMonthRepository.createStatisticByUsername(getUser().getUsername(), collectStartTime, collectEndTime);
+            List<SavedItemForStatisticsDto> tempList = myMonthRepository.createStatisticByUsername(userId, collectStartTime, collectEndTime);
 
             // tempList에서 priceRank, cntRank 정렬해서 순위값을 정하고 DB에 넣어야함
             List<StatisticsMyMonth> statisticsMyMonthList = tempList.stream()
                     .map(savedItem -> StatisticsMyMonth.builder()
-                            .username(savedItem.getUsername())
-                            .standardDate(collectStartTime.format(DateTimeFormatter.ofPattern("yyyyMMdd")))
+                            .userId(savedItem.getUserId())
+                            .standardDate(collectStartTime.format(DateTimeFormatter.ofPattern("yyyyMM")))
                             .itemName(savedItem.getItemName())
                             .totalPrice(savedItem.getTotalPrice())
                             .totalCnt(savedItem.getTotalCount())
+                            .categoryId(savedItem.getCategoryId())
                             .rankPrice(tempList.indexOf(savedItem)+1)
                             .build())
                     .collect(Collectors.toList());
@@ -76,19 +75,21 @@ public class StatisticsMyMonthlyService {
                 myMonthRepository.saveMyMonthlyStatistics(savedItemStatistics);
             }
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.info(e.getMessage() + "|" +" 월별 통계 service 에서 에러 발생");
         }
     }
 
     public Message getMyDailyByUserIdAndPrice(String month){
+        Long userId = commonService.getUserId();
+
         try {
-            List<StatisticsMyMonth> result = myMonthRepository.findMyMonthlyStatisticsByUsernameAndPrice(getUser().getUsername(), month);
+            List<StatisticsMyMonth> result = myMonthRepository.findMyMonthlyStatisticsByUserIdAndPrice(userId, month);
             List<StatisticsMyMonth.StatisticsMonthByPrice> myMonthlyByPriceList = result.stream()
                     .map(myMonthly -> StatisticsMyMonth.StatisticsMonthByPrice.builder()
-                            .username(myMonthly.getUsername())
+                            .userId(myMonthly.getUserId())
                             .rankPrice(myMonthly.getRankPrice())
                             .itemName(myMonthly.getItemName())
-                            .totalPrice(myMonthly.getTotalPrice())
+                            .categoryId(myMonthly.getCategoryId())
                             .build())
                     .collect(Collectors.toList());
 
@@ -103,15 +104,16 @@ public class StatisticsMyMonthlyService {
     }
 
     public Message getMyDailyByUserIdAndCount(String month){
+        Long userId = commonService.getUserId();
+
         try {
-            List<StatisticsMyMonth> result = myMonthRepository.findMyMonthlyStatisticsByUsernameAndCount(getUser().getUsername(), month);
+            List<StatisticsMyMonth> result = myMonthRepository.findMyMonthlyStatisticsByUserIdAndCount(userId, month);
             List<StatisticsMyMonth.StatisticsMonthByCnt> myMonthlyByCntList = result.stream()
                     .map(myMonthly -> StatisticsMyMonth.StatisticsMonthByCnt.builder()
-                            .username(myMonthly.getUsername())
+                            .userId(myMonthly.getUserId())
                             .rankCnt(myMonthly.getRankCnt())
                             .itemName(myMonthly.getItemName())
-                            .totalCnt(myMonthly.getTotalCnt())
-                            .categoryName(getCategoryNameByItemName(myMonthly.getItemName()))
+                            .categoryId(myMonthly.getCategoryId())
                             .build())
                     .collect(Collectors.toList());
 
@@ -123,16 +125,5 @@ public class StatisticsMyMonthlyService {
         } catch (Exception e){
             return new Message(false, errorMsg);
         }
-    }
-
-    public User getUser() {
-        ApiRequestException e = new ApiRequestException(ApiException.NOT_MATCH_USER);
-        errorMsg = e.getMessage();
-        return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(() -> e);
-    }
-
-    public String getCategoryNameByItemName(String itemName) {
-        return itemRepository.findByName(itemName).orElseThrow(
-                () -> new IllegalArgumentException("잘못된 인자")).getCategory().getName();
     }
 }
