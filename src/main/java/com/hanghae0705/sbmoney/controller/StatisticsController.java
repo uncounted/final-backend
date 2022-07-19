@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -35,6 +36,6 @@ public class StatisticsController {
     @GetMapping("/api/statistics/mysave/day/price")
     public void createMyDailySave(){
         statisticsService.createMyDailySave();
-        log.info("createMyDailySave() 실행");
+        log.info(LocalDateTime.now()+" createMyDailySave() 실행");
     }
 }
