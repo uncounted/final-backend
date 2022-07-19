@@ -30,7 +30,7 @@ public class StatisticsService {
         // username, userId 받아오기
         Long userId = commonService.getUserId();
 
-        // userId 없이 저장이 가능해야 함
+        // userId 없이 저장이 가능해야 함.
 
         // 날짜 구하기
         LocalDate yesterday = LocalDate.now().minusDays(1); // 2022-07-12
