@@ -5,7 +5,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
-public class StatisticsAllUser {
+public class StatisticsAllUserDay {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

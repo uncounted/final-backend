@@ -19,6 +19,9 @@ public class StatisticsMyDay {
     private Long userId;
 
     @NotNull
+    private Long categoryId;
+
+    @NotNull
     private String standardDate;
 
     @NotNull
