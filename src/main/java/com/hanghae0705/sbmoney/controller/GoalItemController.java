@@ -34,7 +34,7 @@ public class GoalItemController {
     }
 
     @PostMapping("/api/goalItem")
-    public ResponseEntity<Message> postGoalItem(@RequestPart(value = "image",required = false) MultipartFile multipartFile,
+    public ResponseEntity<Message> postGoalItem(@RequestPart(value = "image", required = false) MultipartFile multipartFile,
                                                 @RequestPart(value = "goalItem") GoalItem.Request goalItemRequest) throws ItemException, IOException {
         User user = commonService.getUser();
         Message message = goalItemService.postGoalItem(goalItemRequest, multipartFile,  user);
