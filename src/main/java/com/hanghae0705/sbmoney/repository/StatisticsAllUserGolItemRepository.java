@@ -38,7 +38,8 @@ public class StatisticsAllUserGolItemRepository {
                         goalItem.count().as("totalCount")
                 ))
                 .from(goalItem)
-                .where(goalItem.createdAt.between(startDateTime, endDateTime))
+                .where(goalItem.createdAt.between(startDateTime, endDateTime),
+                        goalItem.item.name.notIn("이름 없음"))
                 .groupBy(goalItem.item.id)
                 .orderBy(goalItem.total.desc())
                 .limit(10)
