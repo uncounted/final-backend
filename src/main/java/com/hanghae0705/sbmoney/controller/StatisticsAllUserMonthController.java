@@ -19,12 +19,12 @@ public class StatisticsAllUserMonthController {
 
     // 프론트에서 요청하는 API
 
-    @GetMapping("/api/statistics/allUser/{month}/price")
+    @GetMapping("/api/statistics/allUser/month/{month}/price")
     public Message getAllUserMonthlySaveByPrice(@PathVariable String month){
         return statisticsAllUserMonthService.getAllUserMonthlySaveByPrice(month);
     }
 
-    @GetMapping("/api/statistics/allUser/{month}/count")
+    @GetMapping("/api/statistics/allUser/month/{month}/count")
     public Message getAllUserMonthlySaveByCount(@PathVariable String month){
         return statisticsAllUserMonthService.getAllUserMonthlySaveByCount(month);
     }

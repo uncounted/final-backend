@@ -30,13 +30,17 @@ public class StatisticsAllUserMonth {
     @NotNull
     private Long totalCount;
 
+    @NotNull
+    private Long categoryId;
+
     private int rankPrice;
     private int rankCount;
 
     @Builder
-    public StatisticsAllUserMonth(String standardDate, String itemName, int totalPrice, Long totalCount, int rankPrice, int rankCount) {
+    public StatisticsAllUserMonth(String standardDate, String itemName, Long categoryId, int totalPrice, Long totalCount, int rankPrice, int rankCount) {
         this.standardDate = standardDate;
         this.itemName = itemName;
+        this.categoryId = categoryId;
         this.totalPrice = totalPrice;
         this.totalCount = totalCount;
         this.rankPrice = rankPrice;
@@ -49,29 +53,29 @@ public class StatisticsAllUserMonth {
 
     @Getter
     public static class AllMonthlyByPrice {
-        private final String itemName;
-        private final int totalPrice;
         private final int rankPrice;
+        private final Long categoryId;
+        private final String itemName;
 
         @Builder
-        public AllMonthlyByPrice(String itemName, int totalPrice, int rankPrice) {
-            this.itemName = itemName;
-            this.totalPrice = totalPrice;
+        public AllMonthlyByPrice(int rankPrice, Long categoryId, String itemName) {
             this.rankPrice = rankPrice;
+            this.categoryId = categoryId;
+            this.itemName = itemName;
         }
     }
 
     @Getter
     public static class AllMonthlyByCount {
-        private String itemName;
-        private Long totalCount;
-        private int rankCount;
+        private final int rankCount;
+        private final Long categoryId;
+        private final String itemName;
 
         @Builder
-        public AllMonthlyByCount( String itemName, Long totalCount, int rankCount) {
-            this.itemName = itemName;
-            this.totalCount = totalCount;
+        public AllMonthlyByCount(int rankCount, Long categoryId, String itemName) {
             this.rankCount = rankCount;
+            this.categoryId = categoryId;
+            this.itemName = itemName;
         }
     }
 }
