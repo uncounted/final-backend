@@ -43,6 +43,7 @@ public class StatisticsAllUserDayService {
                 .map(savedItem -> StatisticsAllUserDay.builder()
                         .standardDate(yesterday.format(DateTimeFormatter.ofPattern("yyyyMMdd")))
                         .itemName(savedItem.getItemName())
+                        .categoryId(savedItem.getCategoryId())
                         .totalPrice(savedItem.getTotalPrice())
                         .totalCount(savedItem.getTotalCount())
                         .rankPrice(savedItemList.indexOf(savedItem)+1)
@@ -78,7 +79,7 @@ public class StatisticsAllUserDayService {
                 .map(AllUserDaily -> StatisticsAllUserDay.AllUserDailyByPrice.builder()
                         .rankPrice(AllUserDaily.getRankPrice())
                         .itemName(AllUserDaily.getItemName())
-                        .totalPrice(AllUserDaily.getTotalPrice())
+                        .categoryId(AllUserDaily.getCategoryId())
                         .build())
                 .collect(Collectors.toList());
 
@@ -97,7 +98,7 @@ public class StatisticsAllUserDayService {
                 .map(AllUserDaily -> StatisticsAllUserDay.AllUserDailyByCount.builder()
                         .rankCount(AllUserDaily.getRankCount())
                         .itemName(AllUserDaily.getItemName())
-                        .totalCount(AllUserDaily.getTotalCount())
+                        .categoryId(AllUserDaily.getCategoryId())
                         .build())
                 .collect(Collectors.toList());
 

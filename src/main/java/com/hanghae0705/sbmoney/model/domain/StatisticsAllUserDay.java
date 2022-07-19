@@ -31,13 +31,17 @@ public class StatisticsAllUserDay {
     @NotNull
     private Long totalCount;
 
+    @NotNull
+    private Long categoryId;
+
     private int rankPrice;
     private int rankCount;
 
     @Builder
-    public StatisticsAllUserDay( String standardDate, String itemName, int totalPrice, Long totalCount, int rankPrice, int rankCount) {
+    public StatisticsAllUserDay( Long categoryId, String standardDate, String itemName, int totalPrice, Long totalCount, int rankPrice, int rankCount) {
         this.standardDate = standardDate;
         this.itemName = itemName;
+        this.categoryId = categoryId;
         this.totalPrice = totalPrice;
         this.totalCount = totalCount;
         this.rankPrice = rankPrice;
@@ -52,14 +56,14 @@ public class StatisticsAllUserDay {
     public static class AllUserDailyByPrice {
 
         private String itemName;
-        private int totalPrice;
+        private final Long categoryId;
         private int rankPrice;
 
         @Builder
-        public AllUserDailyByPrice( String itemName, int totalPrice, int rankPrice) {
+        public AllUserDailyByPrice( String itemName, Long categoryId, int rankPrice) {
 
             this.itemName = itemName;
-            this.totalPrice = totalPrice;
+            this.categoryId = categoryId;
             this.rankPrice = rankPrice;
         }
     }
@@ -68,13 +72,13 @@ public class StatisticsAllUserDay {
     public static class AllUserDailyByCount {
 
         private String itemName;
-        private Long totalCount;
+        private final Long categoryId;
         private int rankCount;
 
         @Builder
-        public AllUserDailyByCount( String itemName, Long totalCount, int rankCount) {
+        public AllUserDailyByCount( String itemName, Long categoryId, int rankCount) {
             this.itemName = itemName;
-            this.totalCount = totalCount;
+            this.categoryId = categoryId;
             this.rankCount = rankCount;
         }
     }

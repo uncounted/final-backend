@@ -36,6 +36,7 @@ public class StatisticsAllUserDayRepository {
         List<SavedItemForStatisticsAllUserDto> result = queryFactory
                 .select(Projections.fields(SavedItemForStatisticsAllUserDto.class,
                         savedItem.item.name.as("itemName"),
+                        savedItem.item.category.id.as("categoryId"),
                         savedItem.price.sum().as("totalPrice"),
                         savedItem.count().as("totalCount")
                 ))
@@ -43,7 +44,7 @@ public class StatisticsAllUserDayRepository {
                 .where(savedItem.createdAt.between(startDateTime, endDateTime))
                 .groupBy(savedItem.item.id)
                 .orderBy(aliasOrderType.desc())
-                .limit(5)
+                .limit(10)
                 .fetch();
 
         // log
@@ -68,12 +69,11 @@ public class StatisticsAllUserDayRepository {
                         AllUserDayPrice.standardDate,
                         AllUserDayPrice.rankPrice,
                         AllUserDayPrice.itemName,
-                        AllUserDayPrice.totalPrice
+                        AllUserDayPrice.categoryId
 
                 ))
                 .from(AllUserDayPrice)
-                .where(
-                        AllUserDayPrice.standardDate.eq(standardDate))
+                .where(AllUserDayPrice.standardDate.eq(standardDate))
                 .orderBy(AllUserDayPrice.rankPrice.asc())
                 .fetch();
 
@@ -82,7 +82,7 @@ public class StatisticsAllUserDayRepository {
             log.info(StatisticsAllUserDay.getStandardDate() + " | "
                     + StatisticsAllUserDay.getRankPrice() + " | "
                     + StatisticsAllUserDay.getItemName() + " | "
-                    + StatisticsAllUserDay.getTotalPrice());
+                    + StatisticsAllUserDay.getCategoryId());
         });
 
         return result;
@@ -95,12 +95,11 @@ public class StatisticsAllUserDayRepository {
                         AllUserDayCount.standardDate,
                         AllUserDayCount.rankCount,
                         AllUserDayCount.itemName,
-                        AllUserDayCount.totalCount
+                        AllUserDayCount.categoryId
 
                 ))
                 .from(AllUserDayCount)
-                .where(
-                        AllUserDayCount.standardDate.eq(standardDate))
+                .where(AllUserDayCount.standardDate.eq(standardDate))
                 .orderBy(AllUserDayCount.rankCount.asc())
                 .fetch();
 
@@ -109,7 +108,7 @@ public class StatisticsAllUserDayRepository {
             log.info(StatisticsAllUserDay.getStandardDate() + " | "
                     + StatisticsAllUserDay.getRankCount() + " | "
                     + StatisticsAllUserDay.getItemName() + " | "
-                    + StatisticsAllUserDay.getRankCount() );
+                    + StatisticsAllUserDay.getCategoryId());
         });
 
         return result;
