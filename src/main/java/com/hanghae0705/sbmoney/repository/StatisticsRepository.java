@@ -35,6 +35,7 @@ public class StatisticsRepository {
         List<SavedItemForStatisticsDto> result = queryFactory
                 .select(Projections.fields(SavedItemForStatisticsDto.class,
                         savedItem.user.id.as("userId"),
+                        savedItem.item.category.id.as("categoryId"),
                         savedItem.item.name.as("itemName"),
                         savedItem.price.sum().as("totalPrice"),
                         savedItem.count().as("totalCount")
@@ -49,10 +50,11 @@ public class StatisticsRepository {
 
         // log
         result.forEach(SavedItemForStatisticsDto -> {
-                    log.info("userId: "+SavedItemForStatisticsDto.getUserId());
-                    log.info("itemName: "+SavedItemForStatisticsDto.getItemName());
-                    log.info("totalPrice: "+SavedItemForStatisticsDto.getTotalPrice());
-                    log.info("totalCount: "+SavedItemForStatisticsDto.getTotalCount());
+                    log.info("userId: "+SavedItemForStatisticsDto.getUserId() + " | "
+                            + "categoryId: "+SavedItemForStatisticsDto.getCategoryId() + " | "
+                            + "itemName: "+SavedItemForStatisticsDto.getItemName() + " | "
+                            + "totalPrice: "+SavedItemForStatisticsDto.getTotalPrice() + " | "
+                            + "totalCount: "+SavedItemForStatisticsDto.getTotalCount());
                 });
         return result;
     }
