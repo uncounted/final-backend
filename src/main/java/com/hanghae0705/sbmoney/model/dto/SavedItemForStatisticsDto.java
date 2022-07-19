@@ -10,4 +10,5 @@ public class SavedItemForStatisticsDto { // repository에서 static 메소드를
     private String itemName;
     private int totalPrice;
     private Long totalCount;
+    private String username;
 }
