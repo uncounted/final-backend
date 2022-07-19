@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value="/api/statistics/mysave")
+@RequestMapping(value="/api/statistics/mysave/month")
 @RequiredArgsConstructor
 public class StatisticsMyMonthController {
 
@@ -29,7 +29,7 @@ public class StatisticsMyMonthController {
     }
 
     @Scheduled(cron = "0 0 1 1 * *")
-    @GetMapping("/month/price")
+    @GetMapping("/price")
     public void updateMyMonthlyStatistics(){
         myMonthlyService.updateMyMonthlyStatistics();
     }
