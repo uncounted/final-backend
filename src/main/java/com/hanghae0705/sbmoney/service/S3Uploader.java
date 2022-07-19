@@ -1,7 +1,9 @@
 package com.hanghae0705.sbmoney.service;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -20,6 +24,7 @@ import java.util.UUID;
 @Component
 public class S3Uploader {
     private final AmazonS3Client amazonS3Client;
+    private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;  // S3 버킷 이름
@@ -52,6 +57,21 @@ public class S3Uploader {
             return;
         }
         log.info("File delete fail");
+    }
+
+    // S3에 저장된 이미지 지우기
+    private void deleteS3(String bucketName, String fileName) {
+        amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
+    }
+
+    //S3 파일 이름 받아오기
+    public void deleteImages(String bucketName, String fileName) {
+        try {
+            String source = URLDecoder.decode(fileName.replace("https://final-project-day-keep.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8");
+            deleteS3(bucketName, source);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
 
     // 로컬에 파일 업로드 하기

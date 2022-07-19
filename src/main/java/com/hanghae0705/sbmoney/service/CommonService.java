@@ -1,5 +1,7 @@
 package com.hanghae0705.sbmoney.service;
 
+import com.hanghae0705.sbmoney.exception.ApiException;
+import com.hanghae0705.sbmoney.exception.ApiRuntimeException;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.repository.UserRepository;
 import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
@@ -16,6 +18,15 @@ public class CommonService {
     public static String getUsername(){
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userDetails.getUsername();
+    }
+
+    public Long getUserId(){
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+        User user =  userRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 유저입니다.")
+        );
+        return user.getId();
     }
 
     public User getUser(){

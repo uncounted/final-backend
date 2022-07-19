@@ -2,7 +2,6 @@ package com.hanghae0705.sbmoney.model.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
-import com.hanghae0705.sbmoney.service.SavedItemService;
 import lombok.*;
 
 import javax.persistence.*;
@@ -78,8 +77,10 @@ public class SavedItem extends BaseEntity {
         private Long itemId;
         private String itemName;
         private int price;
+        private Long favoriteId;
+        private Boolean favorite;
 
-        public Response(SavedItem savedItem) {
+        public Response(SavedItem savedItem, Favorite.SavedItemResponse savedItemResponse) {
             this.modifiedDate = savedItem.getModifiedDate();
             this.savedItemId = savedItem.getId();
             this.categoryId = savedItem.getItem().getCategory().getId();
@@ -87,6 +88,8 @@ public class SavedItem extends BaseEntity {
             this.itemId = savedItem.getItem().getId();
             this.itemName = savedItem.getItem().getName();
             this.price = savedItem.getPrice();
+            this.favoriteId = savedItemResponse.getId();
+            this.favorite = savedItemResponse.getFavorite();
         }
     }
 

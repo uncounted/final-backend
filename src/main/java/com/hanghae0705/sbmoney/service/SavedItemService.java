@@ -1,23 +1,20 @@
 package com.hanghae0705.sbmoney.service;
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.exception.Constants;
 import com.hanghae0705.sbmoney.exception.ItemException;
-import com.hanghae0705.sbmoney.model.domain.GoalItem;
-import com.hanghae0705.sbmoney.model.domain.Item;
-import com.hanghae0705.sbmoney.model.domain.SavedItem;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.*;
+import com.hanghae0705.sbmoney.repository.FavoriteRepository;
 import com.hanghae0705.sbmoney.repository.GoalItemRepository;
 import com.hanghae0705.sbmoney.repository.SavedItemRepository;
 import com.hanghae0705.sbmoney.util.MathFloor;
 import com.hanghae0705.sbmoney.validator.ItemValidator;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -25,6 +22,7 @@ import java.util.List;
 public class SavedItemService {
     private final SavedItemRepository savedItemRepository;
     private final GoalItemRepository goalItemRepository;
+    private final FavoriteRepository favoriteRepository;
     private final ItemValidator itemValidator;
 
     @Transactional
@@ -67,23 +65,56 @@ public class SavedItemService {
         GoalItem goalItem = itemValidator.isValidGoalItem(goalItemId, user);
 
         List<SavedItem> savedItemList = goalItem.getSavedItems();
+        List<Favorite> favorites = favoriteRepository.findByUserId(user.getId());
         List<SavedItem.Response> savedItemResponseList = new ArrayList<>();
         for (SavedItem savedItem : savedItemList) {
-            SavedItem.Response savedItemResponse = new SavedItem.Response(savedItem);
+            Favorite.SavedItemResponse favorite = itemValidator.isFavoriteItem(favorites, savedItem.getItem(), savedItem.getPrice());
+            SavedItem.Response savedItemResponse = new SavedItem.Response(savedItem, favorite);
             savedItemResponseList.add(savedItemResponse);
         }
+        Collections.reverse(savedItemResponseList); //id 내림차순 정렬
         return new Message(true, "티끌 조회에 성공했습니다.", savedItemResponseList);
     }
 
     @Transactional
-    public Message updateSavedItem(Long itemId, SavedItem.Update price, User user) throws ItemException {
-        SavedItem savedItem = savedItemRepository.findById(itemId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 티끌입니다.")
-        );
-        if(!user.equals(savedItem.getUser())){
-            throw new ItemException(Constants.ExceptionClass.SAVED_ITEM, HttpStatus.BAD_REQUEST, "유저 아이디가 일치하지 않습니다.");
+    public Message updateSavedItem(Long savedItemId, SavedItem.Update price, User user) throws ItemException {
+        SavedItem savedItem = itemValidator.isValidSavedItem(savedItemId, user);
+
+        //달성율 갱신
+        GoalItem goalItem = savedItem.getGoalItem();
+        int savedItemTotal = 0;
+        for (SavedItem tempSavedItem : goalItem.getSavedItems()) {
+            savedItemTotal += tempSavedItem.getPrice();
         }
+        int updatePrice = savedItemTotal + price.getPrice();
+
+        double decimal = ((double) updatePrice / goalItem.getTotal());
+        double updateGoalPercent = MathFloor.PercentTenths(decimal);
+        goalItem.setGoalPercent(updateGoalPercent);
         savedItem.update(price.getPrice());
+
         return new Message(true, "티끌 수정에 성공했습니다.");
+    }
+
+    @Transactional
+    public Message deleteSavedItem(Long savedItemId, User user) throws ItemException {
+        SavedItem savedItem = itemValidator.isValidSavedItem(savedItemId, user);
+
+        //달성율 갱신
+        GoalItem goalItem = savedItem.getGoalItem();
+        int savedItemTotal = 0;
+        for (SavedItem tempSavedItem : goalItem.getSavedItems()) {
+            savedItemTotal += tempSavedItem.getPrice();
+        }
+        int updatePrice = savedItemTotal - savedItem.getPrice();
+        double decimal = ((double) updatePrice / goalItem.getTotal());
+        double updateGoalPercent = MathFloor.PercentTenths(decimal);
+
+        savedItem.setGoalItem(null);
+        savedItemRepository.deleteById(savedItemId);
+
+        goalItem.setGoalPercent(updateGoalPercent);
+
+        return new Message(true, "티끌 삭제에 성공했습니다.");
     }
 }

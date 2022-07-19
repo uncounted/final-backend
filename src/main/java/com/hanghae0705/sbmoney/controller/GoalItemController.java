@@ -4,7 +4,6 @@ import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ItemException;
 import com.hanghae0705.sbmoney.model.domain.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.User;
-import com.hanghae0705.sbmoney.security.SecurityUtil;
 import com.hanghae0705.sbmoney.service.CommonService;
 import com.hanghae0705.sbmoney.service.GoalItemService;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +34,7 @@ public class GoalItemController {
     }
 
     @PostMapping("/api/goalItem")
-    public ResponseEntity<Message> postGoalItem(@RequestPart(value = "image",required = false) MultipartFile multipartFile,
+    public ResponseEntity<Message> postGoalItem(@RequestPart(value = "image", required = false) MultipartFile multipartFile,
                                                 @RequestPart(value = "goalItem") GoalItem.Request goalItemRequest) throws ItemException, IOException {
         User user = commonService.getUser();
         Message message = goalItemService.postGoalItem(goalItemRequest, multipartFile,  user);

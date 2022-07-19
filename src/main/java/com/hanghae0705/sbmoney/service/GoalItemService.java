@@ -28,7 +28,6 @@ public class GoalItemService {
     private final S3Uploader s3Uploader;
     private final ItemValidator itemValidator;
 
-
     public Message getGoalItem(User user) throws ItemException {
         List<GoalItem> goalItemList = user.getGoalItems();
         GoalItem.Response goalItemResponse = null;
@@ -38,9 +37,12 @@ public class GoalItemService {
                     goalItemResponse = new GoalItem.Response(goalItem);
                 }
             }
+            if(goalItemResponse == null) {
+                GoalItem noGoalItem = createNoGoalItem(user);
+                goalItemResponse = new GoalItem.Response(goalItemRepository.save(noGoalItem));
+            }
         } else { // 서비스를 처음 이용하는 사용자는 티끌도 태산도 존재하지 않으므로 목표 없음 생성
-            Item item = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
-            GoalItem noGoalItem = new GoalItem(user, 0, 0, item);
+            GoalItem noGoalItem = createNoGoalItem(user);
             goalItemResponse = new GoalItem.Response(goalItemRepository.save(noGoalItem));
         }
         return new Message(true, "목표 항목을 조회하였습니다.", goalItemResponse);
@@ -64,7 +66,7 @@ public class GoalItemService {
             for (GoalItem goalItem : goalItemList) {
                 if (!goalItem.isCheckReached() && goalItem.getItem().getId() != -1) {
                     throw new ItemException(Constants.ExceptionClass.GOAL_ITEM, HttpStatus.BAD_REQUEST, "이미 태산으로 등록된 상품이 존재합니다.");
-                } else if (goalItem.getSavedItems().isEmpty()) { // 티끌이 존재하지 않은 목표는 삭제
+                } else if (goalItem.getSavedItems().size() == 0) { // 티끌이 존재하지 않은 목표는 삭제
                     goalItemRepository.deleteById(goalItem.getId());
                 } else { // 태산 없음으로 등록된 goalItem을 히스토리에 추가
                     LocalDateTime reachedDateTime = LocalDateTime.now();
@@ -76,10 +78,8 @@ public class GoalItemService {
         Long categoryId = goalItemRequest.getCategoryId();
         Long itemId = goalItemRequest.getItemId();
         Item item = itemValidator.isValidCategoryAndItem(categoryId, itemId);
-
         int count = goalItemRequest.getGoalItemCount();
         int price = goalItemRequest.getPrice();
-
         int total = (price == 0) ? item.getDefaultPrice() * count : goalItemRequest.getPrice() * count;
 
         GoalItem goalItem = goalItemRepository.save(new GoalItem(user, count, total, item));
@@ -113,8 +113,10 @@ public class GoalItemService {
             double decimal = (double) savedItemTotal / total;
             goalPercent = MathFloor.PercentTenths(decimal);
 
-            String url = s3Uploader.upload(multipartFile, "static");
-            goalItem.setImage(url);
+            if(!multipartFile.isEmpty()){
+                String url = s3Uploader.upload(multipartFile, "static");
+                goalItem.setImage(url);
+            }
 
             if (savedItemTotal >= total) { // 변경한 품목이 달성률 100%를 넘은 지점
                 LocalDateTime reachedAt = LocalDateTime.now();
@@ -142,8 +144,10 @@ public class GoalItemService {
             double goalPercent = MathFloor.PercentTenths(decimal);
             goalItem.updateGoalItem(count, total, goalPercent);
 
-            String url = s3Uploader.upload(multipartFile, "static");
-            goalItem.setImage(url);
+            if(!multipartFile.isEmpty()){
+                String url = s3Uploader.upload(multipartFile, "static");
+                goalItem.setImage(url);
+            }
         }
         return new Message(true, "목표 항목을 수정하였습니다.");
     }
@@ -152,14 +156,20 @@ public class GoalItemService {
     public Message deleteGoalItem(Long goalItemId, User user) throws ItemException {
         GoalItem goalItem = itemValidator.isValidGoalItem(goalItemId, user);
         List<SavedItem> savedItemList = goalItem.getSavedItems();
-        Item item = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
-        GoalItem noGoalItem = new GoalItem(user, 0, 0, item);
+        //목표 없음 생성 후 히스토리에 저장
+        GoalItem noGoalItem = createNoGoalItem(user);
         for (SavedItem savedItem : savedItemList) {
             savedItem.setGoalItem(noGoalItem);
         }
         goalItemRepository.deleteById(goalItemId);
         goalItemRepository.save(noGoalItem);
+        LocalDateTime nowDate = LocalDateTime.now();
+        noGoalItem.setCheckReached(true, 100.0, nowDate);
         return new Message(true, "목표 항목을 삭제하였습니다.");
+    }
+    public GoalItem createNoGoalItem(User user) throws ItemException {
+        Item item = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
+        return new GoalItem(user, 0, 0, item);
     }
 
 

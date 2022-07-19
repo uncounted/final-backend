@@ -9,15 +9,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
+
 @Entity
 @Getter
 @RequiredArgsConstructor
-public class StatisticsAllUserDay {
-
+public class StatisticsAllUserMonth {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
 
     @NotNull
     private String standardDate;
@@ -35,7 +34,7 @@ public class StatisticsAllUserDay {
     private int rankCount;
 
     @Builder
-    public StatisticsAllUserDay( String standardDate, String itemName, int totalPrice, Long totalCount, int rankPrice, int rankCount) {
+    public StatisticsAllUserMonth(String standardDate, String itemName, int totalPrice, Long totalCount, int rankPrice, int rankCount) {
         this.standardDate = standardDate;
         this.itemName = itemName;
         this.totalPrice = totalPrice;
@@ -49,15 +48,13 @@ public class StatisticsAllUserDay {
     }
 
     @Getter
-    public static class AllUserDailyByPrice {
-
-        private String itemName;
-        private int totalPrice;
-        private int rankPrice;
+    public static class AllMonthlyByPrice {
+        private final String itemName;
+        private final int totalPrice;
+        private final int rankPrice;
 
         @Builder
-        public AllUserDailyByPrice( String itemName, int totalPrice, int rankPrice) {
-
+        public AllMonthlyByPrice(String itemName, int totalPrice, int rankPrice) {
             this.itemName = itemName;
             this.totalPrice = totalPrice;
             this.rankPrice = rankPrice;
@@ -65,19 +62,16 @@ public class StatisticsAllUserDay {
     }
 
     @Getter
-    public static class AllUserDailyByCount {
-
+    public static class AllMonthlyByCount {
         private String itemName;
         private Long totalCount;
         private int rankCount;
 
         @Builder
-        public AllUserDailyByCount( String itemName, Long totalCount, int rankCount) {
+        public AllMonthlyByCount( String itemName, Long totalCount, int rankCount) {
             this.itemName = itemName;
             this.totalCount = totalCount;
             this.rankCount = rankCount;
         }
     }
 }
-
-
