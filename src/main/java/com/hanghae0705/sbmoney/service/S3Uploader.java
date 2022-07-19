@@ -1,5 +1,6 @@
 package com.hanghae0705.sbmoney.service;
 
+import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
@@ -23,6 +24,7 @@ import java.util.UUID;
 @Component
 public class S3Uploader {
     private final AmazonS3Client amazonS3Client;
+    private final AmazonS3 amazonS3;
 
     @Value("${cloud.aws.s3.bucket}")
     public String bucket;  // S3 버킷 이름
@@ -59,7 +61,7 @@ public class S3Uploader {
 
     // S3에 저장된 이미지 지우기
     private void deleteS3(String bucketName, String fileName) {
-        amazonS3Client.deleteObject(bucketName, fileName);
+        amazonS3.deleteObject(new DeleteObjectRequest(bucketName, fileName));
     }
 
     //S3 파일 이름 받아오기

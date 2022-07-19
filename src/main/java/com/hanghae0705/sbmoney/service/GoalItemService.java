@@ -161,7 +161,6 @@ public class GoalItemService {
         for (SavedItem savedItem : savedItemList) {
             savedItem.setGoalItem(noGoalItem);
         }
-        s3Uploader.deleteImages("static", goalItem.getImage());
         goalItemRepository.deleteById(goalItemId);
         goalItemRepository.save(noGoalItem);
         LocalDateTime nowDate = LocalDateTime.now();
