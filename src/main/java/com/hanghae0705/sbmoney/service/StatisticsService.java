@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StatisticsService {
 
-    private final UserRepository userRepository;
     private final StatisticsRepository statisticsRepository;
     private final CommonService commonService;
 
@@ -43,6 +42,7 @@ public class StatisticsService {
         List<StatisticsMyDay> statisticsMyDayList = savedItemList.stream()
                 .map(savedItem -> StatisticsMyDay.builder()
                         .userId(savedItem.getUserId())
+                        .categoryId(savedItem.getCategoryId())
                         .standardDate(yesterday.format(DateTimeFormatter.ofPattern("yyyyMMdd")))
                         .itemName(savedItem.getItemName())
                         .totalPrice(savedItem.getTotalPrice())
@@ -50,8 +50,6 @@ public class StatisticsService {
                         .rankPrice(savedItemList.indexOf(savedItem)+1)
                         .build())
                 .collect(Collectors.toList());
-
-
 
         // 받아온 savedItem 을 count 기준으로 정렬하여 List 에 추가
         List<SavedItemForStatisticsDto> savedItemListOrderedByCount = savedItemList.stream().sorted(Comparator.comparing(SavedItemForStatisticsDto::getTotalCount).reversed())
@@ -81,8 +79,8 @@ public class StatisticsService {
                 .map(myDaily -> StatisticsMyDay.MyDailyByPrice.builder()
                         .userId(myDaily.getUserId())
                         .rankPrice(myDaily.getRankPrice())
+                        .categoryId(myDaily.getCategoryId())
                         .itemName(myDaily.getItemName())
-                        .totalPrice(myDaily.getTotalPrice())
                         .build())
                 .collect(Collectors.toList());
 
@@ -102,8 +100,8 @@ public class StatisticsService {
                 .map(myDaily -> StatisticsMyDay.MyDailyByCount.builder()
                         .userId(myDaily.getUserId())
                         .rankCount(myDaily.getRankCount())
+                        .categoryId(myDaily.getCategoryId())
                         .itemName(myDaily.getItemName())
-                        .totalCount(myDaily.getTotalCount())
                         .build())
                 .collect(Collectors.toList());
 

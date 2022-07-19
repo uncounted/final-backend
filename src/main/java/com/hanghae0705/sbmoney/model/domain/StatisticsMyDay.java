@@ -37,8 +37,9 @@ public class StatisticsMyDay {
     private int rankCount;
 
     @Builder
-    public StatisticsMyDay(Long userId, String standardDate, String itemName, int totalPrice, Long totalCount, int rankPrice, int rankCount) {
+    public StatisticsMyDay(Long userId, Long categoryId, String standardDate, String itemName, int totalPrice, Long totalCount, int rankPrice, int rankCount) {
         this.userId = userId;
+        this.categoryId = categoryId;
         this.standardDate = standardDate;
         this.itemName = itemName;
         this.totalPrice = totalPrice;
@@ -54,15 +55,15 @@ public class StatisticsMyDay {
     @Getter
     public static class MyDailyByPrice {
         private Long userId;
+        private Long categoryId;
         private String itemName;
-        private int totalPrice;
         private int rankPrice;
 
         @Builder
-        public MyDailyByPrice(Long userId, String itemName, int totalPrice, int rankPrice) {
+        public MyDailyByPrice(Long userId, String itemName, Long categoryId, int rankPrice) {
             this.userId = userId;
             this.itemName = itemName;
-            this.totalPrice = totalPrice;
+            this.categoryId = categoryId;
             this.rankPrice = rankPrice;
         }
     }
@@ -70,15 +71,15 @@ public class StatisticsMyDay {
     @Getter
     public static class MyDailyByCount {
         private Long userId;
+        private Long categoryId;
         private String itemName;
-        private Long totalCount;
         private int rankCount;
 
         @Builder
-        public MyDailyByCount(Long userId, String itemName, Long totalCount, int rankCount) {
+        public MyDailyByCount(Long userId, String itemName, Long categoryId, int rankCount) {
             this.userId = userId;
             this.itemName = itemName;
-            this.totalCount = totalCount;
+            this.categoryId = categoryId;
             this.rankCount = rankCount;
         }
     }
