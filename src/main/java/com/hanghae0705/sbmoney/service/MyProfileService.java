@@ -17,6 +17,8 @@ public class MyProfileService {
     private final UserRepository userRepository;
     private final S3Uploader s3Uploader;
 
+    private String errorMsg;
+
     public MyProfileService(UserRepository userRepository, S3Uploader s3Uploader) {
         this.userRepository = userRepository;
         this.s3Uploader = s3Uploader;
@@ -33,21 +35,45 @@ public class MyProfileService {
         return new Message(true, "조회에 성공했습니다", responseProfile);
     }
 
+    // 한글자 닉네임을 봐줘야하나
     @Transactional
     public Message updateProfile(User.RequestProfile changeInfo, MultipartFile profileImg) throws IOException {
-        String imgUrl = null;
-        if (profileImg != null) {
-            imgUrl = s3Uploader.upload(profileImg, "static");
-            getUser().updateProfile(changeInfo, imgUrl);
-        } else {
-            getUser().updateProfile(changeInfo);
+        String imgUrl;
+        try {
+            checkStrLengthIsValid(changeInfo.getNickname(), 12, false);
+            checkStrLengthIsValid(changeInfo.getIntroDesc(), 100, true);
+            checkStrLengthIsValid(changeInfo.getEmail(), 100, false);
+            if (profileImg != null) {
+                imgUrl = s3Uploader.upload(profileImg, "static");
+                getUser().updateProfile(changeInfo, imgUrl);
+            } else {
+                getUser().updateProfile(changeInfo);
+            }
+            return new Message(true, "프로필이 변경되었습니다");
+        } catch (Exception e) {
+            return new Message(false, errorMsg);
         }
-        return new Message(true, "프로필이 변경되었습니다");
     }
 
     public User getUser() {
-        return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(
-                () -> new ApiRequestException(ApiException.NOT_EXIST_USER));
+        ApiRequestException e = new ApiRequestException(ApiException.NOT_EXIST_USER);
+        errorMsg = e.getMessage();
+        return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(() -> e);
     }
 
+    public void checkStrLengthIsValid(String target, int max, boolean ableZero) {
+        if(!ableZero) {
+            if (target.trim().length() <= 0 || target.trim().length() > max) {
+                ApiRequestException e = new ApiRequestException(ApiException.NOT_VALID_DATA);
+                errorMsg = e.getMessage();
+                throw e;
+            }
+        } else {
+            if (target.trim().length() > max) {
+                ApiRequestException e = new ApiRequestException(ApiException.NOT_VALID_DATA);
+                errorMsg = e.getMessage();
+                throw e;
+            }
+        }
+    }
 }

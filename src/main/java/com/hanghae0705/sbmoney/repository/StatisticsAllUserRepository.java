@@ -35,6 +35,7 @@ public class StatisticsAllUserRepository {
         List<SavedItemForStatisticsAllUserDto> result = queryFactory
                 .select(Projections.fields(SavedItemForStatisticsAllUserDto.class,
                         savedItem.item.name.as("itemName"),
+                        savedItem.item.category.id.as("categoryId"),
                         savedItem.price.sum().as("totalPrice"),
                         savedItem.count().as("totalCount")
                 ))
@@ -66,7 +67,7 @@ public class StatisticsAllUserRepository {
                         AllMonthPrice.standardDate,
                         AllMonthPrice.rankPrice,
                         AllMonthPrice.itemName,
-                        AllMonthPrice.totalPrice
+                        AllMonthPrice.categoryId
                 ))
                 .from(AllMonthPrice)
                 .where(AllMonthPrice.standardDate.eq(standardDate))
@@ -74,11 +75,11 @@ public class StatisticsAllUserRepository {
                 .fetch();
 
         //log
-        result.forEach(StatisticsMyDay -> {
-            log.info(StatisticsMyDay.getStandardDate() + " | "
-                    + StatisticsMyDay.getRankPrice() + " | "
-                    + StatisticsMyDay.getItemName() + " | "
-                    + StatisticsMyDay.getTotalPrice());
+        result.forEach(statisticsAllUserMonth -> {
+            log.info(statisticsAllUserMonth.getStandardDate() + " | "
+                    + statisticsAllUserMonth.getRankPrice() + " | "
+                    + statisticsAllUserMonth.getItemName() + " | "
+                    + statisticsAllUserMonth.getCategoryId());
         });
 
         return result;
@@ -91,7 +92,7 @@ public class StatisticsAllUserRepository {
                         AllMonthCount.standardDate,
                         AllMonthCount.rankCount,
                         AllMonthCount.itemName,
-                        AllMonthCount.totalCount
+                        AllMonthCount.categoryId
                 ))
                 .from(AllMonthCount)
                 .where(AllMonthCount.standardDate.eq(standardDate))
@@ -99,11 +100,11 @@ public class StatisticsAllUserRepository {
                 .fetch();
 
         //log
-        result.forEach(StatisticsMyDay -> {
-            log.info(StatisticsMyDay.getStandardDate() + " | "
-                    + StatisticsMyDay.getRankCount() + " | "
-                    + StatisticsMyDay.getItemName() + " | "
-                    + StatisticsMyDay.getTotalCount());
+        result.forEach(statisticsAllUserMonth -> {
+            log.info(statisticsAllUserMonth.getStandardDate() + " | "
+                    + statisticsAllUserMonth.getRankCount() + " | "
+                    + statisticsAllUserMonth.getItemName() + " | "
+                    + statisticsAllUserMonth.getCategoryId());
         });
 
         return result;

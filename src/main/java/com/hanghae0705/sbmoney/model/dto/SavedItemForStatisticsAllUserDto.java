@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class SavedItemForStatisticsAllUserDto {
+    private Long categoryId;
     private String itemName;
     private int totalPrice;
     private Long totalCount;

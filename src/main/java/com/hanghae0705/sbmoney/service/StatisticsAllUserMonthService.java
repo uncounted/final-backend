@@ -39,6 +39,7 @@ public class StatisticsAllUserMonthService {
                 .map(savedItem -> StatisticsAllUserMonth.builder()
                         .standardDate(yesterday.format(DateTimeFormatter.ofPattern("yyyyMM")))
                         .itemName(savedItem.getItemName())
+                        .categoryId(savedItem.getCategoryId())
                         .totalPrice(savedItem.getTotalPrice())
                         .totalCount(savedItem.getTotalCount())
                         .rankPrice(savedItemList.indexOf(savedItem)+1)
@@ -71,7 +72,7 @@ public class StatisticsAllUserMonthService {
                 .map(allMonthly -> StatisticsAllUserMonth.AllMonthlyByPrice.builder()
                         .rankPrice(allMonthly.getRankPrice())
                         .itemName(allMonthly.getItemName())
-                        .totalPrice(allMonthly.getTotalPrice())
+                        .categoryId(allMonthly.getCategoryId())
                         .build())
                 .collect(Collectors.toList());
 
@@ -88,7 +89,7 @@ public class StatisticsAllUserMonthService {
                 .map(allMonthly -> StatisticsAllUserMonth.AllMonthlyByCount.builder()
                         .rankCount(allMonthly.getRankCount())
                         .itemName(allMonthly.getItemName())
-                        .totalCount(allMonthly.getTotalCount())
+                        .categoryId(allMonthly.getCategoryId())
                         .build())
                 .collect(Collectors.toList());
 
