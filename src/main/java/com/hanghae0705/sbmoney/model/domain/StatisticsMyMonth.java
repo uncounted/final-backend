@@ -35,52 +35,52 @@ public class StatisticsMyMonth {
     private String standardDate;
 
     @Column(nullable = false)
-    private String username;
+    private Long userId;
+
+    @Column(nullable = false)
+    private Long categoryId;
 
     @Builder
-    public StatisticsMyMonth(String itemName, int rankCnt, int rankPrice, Long totalCnt, int totalPrice, String standardDate, String username) {
-        this.username = username;
+    public StatisticsMyMonth(Long userId, String standardDate, String itemName, int totalPrice, Long totalCnt, int rankPrice, int rankCnt, Long categoryId) {
+        this.userId = userId;
         this.standardDate = standardDate;
         this.itemName = itemName;
         this.totalPrice = totalPrice;
         this.totalCnt = totalCnt;
         this.rankPrice = rankPrice;
         this.rankCnt = rankCnt;
+        this.categoryId = categoryId;
     }
 
     @Getter
     public static class StatisticsMonthByPrice {
-        private String username;
+        private Long userId;
         private String itemName;
-        private int totalPrice;
         private int rankPrice;
-        private String categoryName;
+        private Long categoryId;
 
         @Builder
-        public StatisticsMonthByPrice(String username, String itemName, int totalPrice, int rankPrice, String categoryName) {
-            this.username = username;
+        public StatisticsMonthByPrice(Long userId, String itemName, int rankPrice, Long categoryId) {
+            this.userId = userId;
             this.itemName = itemName;
-            this.totalPrice = totalPrice;
             this.rankPrice = rankPrice;
-            this.categoryName = categoryName;
+            this.categoryId = categoryId;
         }
     }
 
     @Getter
     public static class StatisticsMonthByCnt {
-        private String username;
+        private Long userId;
         private String itemName;
-        private Long totalCnt;
         private int rankCnt;
-        private String categoryName;
+        private Long categoryId;
 
         @Builder
-        public StatisticsMonthByCnt(String username, String itemName, Long totalCnt, int rankCnt, String categoryName) {
-            this.username = username;
+        public StatisticsMonthByCnt(Long userId, String itemName, int rankCnt, Long categoryId) {
+            this.userId = userId;
             this.itemName = itemName;
-            this.totalCnt = totalCnt;
             this.rankCnt = rankCnt;
-            this.categoryName = categoryName;
+            this.categoryId = categoryId;
         }
     }
     public void changeRankCount(int rank) {
