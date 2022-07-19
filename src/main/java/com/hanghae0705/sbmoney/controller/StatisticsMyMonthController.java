@@ -29,7 +29,7 @@ public class StatisticsMyMonthController {
     }
 
     @Scheduled(cron = "0 0 1 1 * *")
-    @GetMapping("/month/price")
+    @GetMapping("/price")
     public void updateMyMonthlyStatistics(){
         myMonthlyService.updateMyMonthlyStatistics();
     }
