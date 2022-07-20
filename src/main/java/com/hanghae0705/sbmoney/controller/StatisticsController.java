@@ -21,12 +21,12 @@ public class StatisticsController {
     private final StatisticsService statisticsService;
 
     // 프론트에서 요청하는 API
-    @GetMapping("/api/statistics/mysave/{day}/price")
+    @GetMapping("/api/statistics/mysave/day/{day}/price")
     public Message getMyDailySaveByPrice(@PathVariable String day){
         return statisticsService.getMyDailyByUserIdAndPrice(day);
     }
 
-    @GetMapping("/api/statistics/mysave/{day}/count")
+    @GetMapping("/api/statistics/mysave/day/{day}/count")
     public Message getMyDailySaveByCount(@PathVariable String day){
         return statisticsService.getMyDailyByUserIdAndCount(day);
     }

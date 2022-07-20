@@ -27,10 +27,7 @@ public class StatisticsService {
 
     // 가결별/일별 나의 아낀 내역 저장하기
     public void createMyDailySave(){
-        // username, userId 받아오기
-        Long userId = commonService.getUserId();
-
-        // userId 없이 저장이 가능해야 함.
+        // 전체 유저의 아낀 내역 저장
 
         // 날짜 구하기
         LocalDate yesterday = LocalDate.now().minusDays(1); // 2022-07-12
@@ -38,7 +35,7 @@ public class StatisticsService {
         LocalDateTime endDateTime = yesterday.atTime(LocalTime.MAX); // 2022-07-12T23:59:59.999999999
 
         // userId로 savedItem 일별 리스트를 높은 가격순으로 구해오기
-        List<SavedItemForStatisticsDto> savedItemList = statisticsRepository.findByUserIdAndDate(userId, startDateTime, endDateTime);
+        List<SavedItemForStatisticsDto> savedItemList = statisticsRepository.findByDate(startDateTime, endDateTime);
 
         // 받아온 savedItem 의 순서대로 price 랭킹을 매겨 List 에 저장
         List<StatisticsMyDay> statisticsMyDayList = savedItemList.stream()
