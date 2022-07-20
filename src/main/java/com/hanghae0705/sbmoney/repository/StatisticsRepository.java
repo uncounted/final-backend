@@ -27,8 +27,8 @@ public class StatisticsRepository {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
-    // userId 기반으로 시작일, 종료일로 끊어서 데이터 받아오기
-    public List<SavedItemForStatisticsDto> findByUserIdAndDate(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    // 시작일, 종료일로 끊어서 데이터 받아오기
+    public List<SavedItemForStatisticsDto> findByDate(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         QSavedItem savedItem = QSavedItem.savedItem;
         NumberPath<Integer> aliasOrderType = Expressions.numberPath(Integer.class, "totalPrice");
 
@@ -41,11 +41,9 @@ public class StatisticsRepository {
                         savedItem.count().as("totalCount")
                 ))
                 .from(savedItem)
-                .where(savedItem.createdAt.between(startDateTime, endDateTime),
-                        savedItem.user.id.eq(userId))
+                .where(savedItem.createdAt.between(startDateTime, endDateTime))
                 .groupBy(savedItem.item.id)
-                .orderBy(aliasOrderType.desc())
-                .limit(5)
+                .orderBy(savedItem.user.id.desc())
                 .fetch();
 
         // log
