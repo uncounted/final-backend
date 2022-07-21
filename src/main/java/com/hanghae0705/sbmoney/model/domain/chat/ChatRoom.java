@@ -9,8 +9,10 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,7 +23,7 @@ public class ChatRoom {
     @Id
     @GeneratedValue(generator = "hibernate-uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    @Column(name = "id", unique = true)
+    @Column(name = "CHATROOM_ID", unique = true)
     @Type(type = "uuid-binary")
     private UUID id;
 
@@ -39,6 +41,13 @@ public class ChatRoom {
     @OneToMany(mappedBy = "chatRoom")
     @JsonManagedReference(value = "chatRoom-fk")
     List<ChatRoomProsCons> chatRoomProsConsList;
+
+    @OneToMany (mappedBy = "chatRoom")
+    @JsonManagedReference(value = "chatLog-chatRoom-fk")
+    List<ChatLog> chatLogList;
+
+    @CreatedDate
+    private LocalDateTime createdAt;
 
     public ChatRoom(User user, String name) {
         this.user = user;
