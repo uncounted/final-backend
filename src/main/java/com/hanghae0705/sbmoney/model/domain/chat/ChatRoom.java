@@ -23,12 +23,12 @@ public class ChatRoom {
     @Id
     @GeneratedValue(generator = "hibernate-uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    @Column(name = "CHATROOM_ID", unique = true)
+    @Column(name = "CHATROOM_ID", unique = true, length = 16)
     @Type(type = "uuid-binary")
     private UUID id;
 
     @Column(nullable = false)
-    String name;
+    private String name;
 
 //    @Column(nullable = false)
 //    private Boolean proceeding;
@@ -36,15 +36,15 @@ public class ChatRoom {
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     @JsonIgnore
-    User user;
+    private User user;
 
     @OneToMany(mappedBy = "chatRoom")
     @JsonManagedReference(value = "chatRoom-fk")
-    List<ChatRoomProsCons> chatRoomProsConsList;
+    private List<ChatRoomProsCons> chatRoomProsConsList;
 
     @OneToMany (mappedBy = "chatRoom")
     @JsonManagedReference(value = "chatLog-chatRoom-fk")
-    List<ChatLog> chatLogList;
+    private List<ChatLog> chatLogList;
 
     @CreatedDate
     private LocalDateTime createdAt;
