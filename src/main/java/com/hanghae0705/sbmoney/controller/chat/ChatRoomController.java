@@ -51,6 +51,7 @@ public class ChatRoomController {
     @PostMapping("/room")
     public ChatRoom createRoom(@RequestBody ChatRoom.Request name) {
         User user = commonService.getUser();
+        System.out.println(user.getId() + user.getUsername());
         ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, name.getName()));;
         String redisChatRoomId = chatRoom.getId().toString();
         redisChatRoomRepository.createChatRoom(redisChatRoomId, name.getName());
