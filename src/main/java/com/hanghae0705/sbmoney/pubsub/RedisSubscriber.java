@@ -34,8 +34,8 @@ public class RedisSubscriber {
             // 기존 메시지 List에 넣기 - Redis에 넣을 때는 serialize가 필요함. 반대로 조회할 때는 deserialize
             redisTemplate.opsForList().rightPush(chatMessage.getRoomId(), publishMessage);
 
-            // 최대 시간 설정(10분)
-            redisTemplate.expireAt(chatMessage.getRoomId(), Date.from(ZonedDateTime.now().plusMinutes(10).toInstant()));
+            // 최대 시간 설정(30분)
+            redisTemplate.expireAt(chatMessage.getRoomId(), Date.from(ZonedDateTime.now().plusMinutes(30).toInstant()));
             RedisOperations<String, Object> operations = redisTemplate.opsForList().getOperations();
 
             // 최초 진입 시 기존 채팅 기록 출력
