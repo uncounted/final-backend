@@ -41,4 +41,11 @@ public class ChatService {
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
+    /**
+     * 채팅 종료 시 채팅 기록 저장
+     */
+    public void saveChatLog() {
+
+    }
+
 }
