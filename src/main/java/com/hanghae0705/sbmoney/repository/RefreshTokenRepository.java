@@ -1,6 +1,6 @@
 package com.hanghae0705.sbmoney.repository;
 
-import com.hanghae0705.sbmoney.model.domain.RefreshToken;
+import com.hanghae0705.sbmoney.model.domain.user.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

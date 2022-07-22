@@ -2,8 +2,6 @@ package com.hanghae0705.sbmoney.security;
 
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRuntimeException;
-import com.hanghae0705.sbmoney.model.domain.User;
-import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

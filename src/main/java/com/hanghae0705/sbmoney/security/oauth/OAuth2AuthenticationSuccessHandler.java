@@ -1,9 +1,8 @@
 package com.hanghae0705.sbmoney.security.oauth;
 
-import com.hanghae0705.sbmoney.model.domain.RefreshToken;
+import com.hanghae0705.sbmoney.model.domain.user.RefreshToken;
 import com.hanghae0705.sbmoney.model.dto.TokenDto;
 import com.hanghae0705.sbmoney.repository.RefreshTokenRepository;
-import com.hanghae0705.sbmoney.security.CookieUtils;
 import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;

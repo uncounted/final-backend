@@ -1,11 +1,9 @@
 package com.hanghae0705.sbmoney.repository;
 
 import com.hanghae0705.sbmoney.model.domain.*;
+import com.hanghae0705.sbmoney.model.domain.statistic.StatisticsAllUserGoal;
 import com.hanghae0705.sbmoney.model.dto.GoalItemForStatisticsAllUserDto;
-import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsDto;
 import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
