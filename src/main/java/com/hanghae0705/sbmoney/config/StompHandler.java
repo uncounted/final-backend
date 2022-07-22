@@ -1,5 +1,7 @@
 package com.hanghae0705.sbmoney.config;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
 import com.hanghae0705.sbmoney.repository.RedisChatRoomRepository;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
@@ -29,8 +31,12 @@ public class StompHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+        String jwtToken = accessor.getFirstNativeHeader("token");
+
+        DecodedJWT decodedJWT = JWT.decode(jwtToken);
+        String name = decodedJWT.getClaim("sub").toString();
+
         if (StompCommand.CONNECT == accessor.getCommand()) { // websocket 연결요청
-            String jwtToken = accessor.getFirstNativeHeader("token");
             log.info("CONNECT {}", jwtToken);
             // Header의 jwt token 검증
             tokenProvider.validateToken(jwtToken);
@@ -41,7 +47,7 @@ public class StompHandler implements ChannelInterceptor {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             redisChatRoomRepository.setUserEnterInfo(sessionId, roomId);
             // 클라이언트 입장 메시지를 채팅방에 발송한다.(redis publish)
-            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
+//            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
             chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(name).build());
             log.info("SUBSCRIBED {}, {}", name, roomId);
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) { // Websocket 연결 종료
@@ -49,7 +55,6 @@ public class StompHandler implements ChannelInterceptor {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = redisChatRoomRepository.getUserEnterRoomId(sessionId);
             // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
-            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
             chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.QUIT).roomId(roomId).sender(name).build());
             // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
             redisChatRoomRepository.removeUserEnterInfo(sessionId);

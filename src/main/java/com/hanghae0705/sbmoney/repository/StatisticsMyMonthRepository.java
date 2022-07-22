@@ -1,6 +1,8 @@
 package com.hanghae0705.sbmoney.repository;
 
-import com.hanghae0705.sbmoney.model.domain.*;
+import com.hanghae0705.sbmoney.model.domain.item.QSavedItem;
+import com.hanghae0705.sbmoney.model.domain.statistic.QStatisticsMyMonth;
+import com.hanghae0705.sbmoney.model.domain.statistic.StatisticsMyMonth;
 import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
@@ -11,9 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.transaction.Transaction;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository

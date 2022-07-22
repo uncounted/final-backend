@@ -33,6 +33,11 @@ public class ChatRoomProsCons {
         this.chatRoom = chatRoom;
     }
 
+    public Boolean update(Boolean prosCons){
+        this.prosCons = prosCons;
+        return prosCons;
+    }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
