@@ -47,6 +47,7 @@ public class ChatService {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에서 나갔습니다.");
             chatMessage.setSender("[알림]");
         }
+
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
@@ -66,6 +67,7 @@ public class ChatService {
                     .id(null)
                     .type(chatMessage.getType())
                     .nickname(chatMessage.getSender())
+                    .profileImg(chatMessage.getProfileImg())
                     .message(chatMessage.getMessage())
                     .chatRoom(chatRoom)
                     .build();

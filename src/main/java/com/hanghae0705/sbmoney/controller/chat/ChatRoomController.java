@@ -1,6 +1,7 @@
 package com.hanghae0705.sbmoney.controller.chat;
 
 
+import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.User;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoom;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoomProsCons;
@@ -74,8 +75,12 @@ public class ChatRoomController {
         return redisChatRoomRepository.findRoomById(roomId);
     }
 
-    @GetMapping("/api/room/{roomId}/save")
-    public void saveChatLog(@PathVariable String roomId) {
+    @GetMapping("/api/chat/room/{roomId}/save")
+    public Message saveChatLog(@PathVariable String roomId) {
         chatService.saveChatLog(roomId);
+        return Message.builder()
+                .result(true)
+                .respMsg("종료된 채팅 기록 저장에 성공했습니다.")
+                .build();
     }
 }

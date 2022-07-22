@@ -15,9 +15,14 @@ import org.springframework.stereotype.Service;
 public class CommonService {
     private final UserRepository userRepository;
 
-    public static String getUsername(){
+    public String getUsername(){
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return userDetails.getUsername();
+    }
+
+    public String getUserProfileImg(String username) {
+        return userRepository.findByUsername(username).orElseThrow(
+                    () -> new IllegalArgumentException("존재하지 않는 유저입니다.")).getProfileImg();
     }
 
     public Long getUserId(){
