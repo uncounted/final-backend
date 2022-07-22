@@ -261,6 +261,7 @@ public class UserService {
 
         // 3. 인증 정보를 기반으로 JWT 토큰 생성
         TokenDto tokenDto = tokenProvider.generateAccessToken(authentication);
+        System.out.println("=====login 리프레시 토큰: " + tokenDto.getRefreshToken());
 
         // 4. RefreshToken DB에 저장
         RefreshToken refreshToken = RefreshToken.builder()
@@ -291,7 +292,8 @@ public class UserService {
 //        }
 
         if (!tokenProvider.validateToken(request, tokenRequestDto.getRefreshToken())) {
-            throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
+            System.out.println("=========오류 발생 refreshToken=========: " + tokenRequestDto.getRefreshToken());
+            throw new ApiRequestException(ApiException.NOT_VALID_REFRESH_TOKEN);
         }
 
         // 2. Access Token 에서 username 가져오기
@@ -310,6 +312,7 @@ public class UserService {
 
         // 5. 새로운 토큰 생성
         TokenDto tokenDto = tokenProvider.generateAccessToken(authentication);
+        System.out.println("=====reissue 리프레시 토큰 생성: " + tokenDto.getRefreshToken());
 
         // 6. 저장소 정보 업데이트
         RefreshToken newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());

@@ -55,7 +55,7 @@ public class TokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public static TokenDto generateAccessToken(Authentication authentication) {
+    public TokenDto generateAccessToken(Authentication authentication) {
         String authority = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -96,8 +96,8 @@ public class TokenProvider {
     }
 
     //refreshToken 생성
-    static Date refreshTokenExpiresIn = new Date(System.currentTimeMillis() + JWT_REFRESH_TOKEN_VALID_MILLI_SEC);
-    public static String generateRefreshToken() {
+    public String generateRefreshToken() {
+        Date refreshTokenExpiresIn = new Date(System.currentTimeMillis() + JWT_REFRESH_TOKEN_VALID_MILLI_SEC);
         return Jwts.builder()
                 .setExpiration(refreshTokenExpiresIn)
                 .signWith(key, SignatureAlgorithm.HS512)
@@ -151,6 +151,7 @@ public class TokenProvider {
         } catch (io.jsonwebtoken.security.SecurityException e) {
             log.info("잘못된 JWT 서명입니다.");
         } catch (MalformedJwtException e) {
+            log.info("잘못된 형식의 JWT 토큰입니다.");
         } catch(ExpiredJwtException e) {
             log.info("만료된 JWT 토큰입니다.");
         } catch (UnsupportedJwtException e) {

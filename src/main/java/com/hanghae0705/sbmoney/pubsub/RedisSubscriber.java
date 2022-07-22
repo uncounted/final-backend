@@ -28,8 +28,6 @@ public class RedisSubscriber {
         try {
             // ChatMessage 객채로 맵핑
             ChatMessage chatMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
-            // 채팅방을 구독한 클라이언트에게 메시지 발송
-            messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getRoomId(), chatMessage);
 
             // 기존 메시지 List에 넣기 - Redis에 넣을 때는 serialize가 필요함. 반대로 조회할 때는 deserialize
             redisTemplate.opsForList().rightPush(chatMessage.getRoomId(), publishMessage);
@@ -43,6 +41,9 @@ public class RedisSubscriber {
                 messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getRoomId(),
                         operations.opsForList().range(chatMessage.getRoomId(), 0, -1));
             }
+
+            // 채팅방을 구독한 클라이언트에게 메시지 발송
+            messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getRoomId(), chatMessage);
 
         } catch (Exception e) {
             log.error("Exception {}", e);
