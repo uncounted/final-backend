@@ -16,10 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
-@RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/chat")
+@RequiredArgsConstructor
 public class ChatRoomController {
 
     private final RedisChatRoomRepository redisChatRoomRepository;
@@ -27,7 +25,7 @@ public class ChatRoomController {
     private final ChatRoomProsConsRepository chatRoomProsConsRepository;
     private final CommonService commonService;
 
-    @GetMapping("/rooms")
+    @GetMapping("/api/chat/rooms")
     public List<ChatRoom.Response> room() {
         Long userId = commonService.getUserId();
         List<ChatRoom> chatRooms = chatRoomRepository.findAll();
@@ -48,7 +46,7 @@ public class ChatRoomController {
         return chatRoomResponseList;
     }
 
-    @PostMapping("/room")
+    @PostMapping("/api/chat/room")
     public ChatRoom createRoom(@RequestBody ChatRoom.Request name) {
         User user = commonService.getUser();
         System.out.println(user.getId() + user.getUsername());
@@ -58,7 +56,7 @@ public class ChatRoomController {
         return chatRoom;
     }
 
-    @PostMapping("/room/{roomId}/vote")
+    @PostMapping("/api/chat/room/{roomId}/vote")
     public Boolean vote(@PathVariable String roomId, @RequestBody ChatRoomProsCons.Request chatRoomProsConsRequest){
         Long userId = commonService.getUserId();
         UUID uuid = UUID.fromString(roomId);
@@ -70,7 +68,7 @@ public class ChatRoomController {
         return chatRoomProsConsRequest.getProsCons();
     }
 
-    @GetMapping("/room/{roomId}")
+    @GetMapping("/api/chat/room/{roomId}")
     public RedisChatRoom roomInfo(@PathVariable String roomId) {
         return redisChatRoomRepository.findRoomById(roomId);
     }
