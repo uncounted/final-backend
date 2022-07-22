@@ -73,4 +73,11 @@ public class ChatService {
         }
     }
 
+    /**
+     * 채팅 종료
+     */
+    public void closeRoom() {
+
+    }
+
 }

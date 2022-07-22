@@ -75,7 +75,7 @@ public class ChatRoomController {
     }
 
     @GetMapping("/api/room/{roomId}/save")
-    public void closeRoom(@PathVariable String roomId) {
+    public void saveChatLog(@PathVariable String roomId) {
         chatService.saveChatLog(roomId);
     }
 }

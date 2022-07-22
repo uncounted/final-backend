@@ -19,6 +19,7 @@ public enum ApiException implements BaseExceptionType{
     NOT_VALID_TOKEN(3001, 500, "유효한 토큰이 아닙니다."),
     EXPIRED_TOKEN(3002, 500, "만료된 토큰입니다."),
     NO_AUTHORITY_KEY(3003, 500, "권한 정보가 없는 토큰입니다."),
+    NOT_VALID_REFRESH_TOKEN(3004, 500, "유효하지 않은 리프레시 토큰입니다"),
     NO_PROVIDER(3010, 500, "provider가 없습니다."),
     NO_COOKIE(4001, 500, "쿠키가 없습니다.");
 
