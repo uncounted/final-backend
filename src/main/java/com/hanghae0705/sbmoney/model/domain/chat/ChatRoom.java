@@ -3,31 +3,27 @@ package com.hanghae0705.sbmoney.model.domain.chat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hanghae0705.sbmoney.model.domain.User;
-import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Entity
 @Getter
 @RequiredArgsConstructor
 public class ChatRoom {
-
-    @Column(name = "ROOM_ID", length = 36)
-    private String id;
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
-    String name;
+    private String name;
+
+    @Column(nullable = false, unique = true)
+    String roomId;
 
 //    @Column(nullable = false)
 //    private Boolean proceeding;
@@ -35,19 +31,20 @@ public class ChatRoom {
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     @JsonIgnore
-    User user;
+    private User user;
 
     @OneToMany(mappedBy = "chatRoom")
     @JsonManagedReference(value = "chatRoom-fk")
-    List<ChatRoomProsCons> chatRoomProsConsList;
+    private List<ChatRoomProsCons> chatRoomProsConsList;
 
     @OneToMany (mappedBy = "chatRoom")
     @JsonManagedReference(value = "chatLog-chatRoom-fk")
-    List<ChatLog> chatLogList;
+    private List<ChatLog> chatLogList;
 
-    public ChatRoom(User user, String name) {
+    public ChatRoom(User user, String name, String roomId) {
         this.user = user;
         this.name = name;
+        this.roomId = roomId;
     }
 
     @Getter
