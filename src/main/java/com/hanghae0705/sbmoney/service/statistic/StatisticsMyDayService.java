@@ -3,7 +3,7 @@ package com.hanghae0705.sbmoney.service.statistic;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.statistic.StatisticsMyDay;
 import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsDto;
-import com.hanghae0705.sbmoney.repository.StatisticsRepository;
+import com.hanghae0705.sbmoney.repository.StatisticsMyDayRepository;
 import com.hanghae0705.sbmoney.service.CommonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +20,9 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class StatisticsService {
+public class StatisticsMyDayService {
 
-    private final StatisticsRepository statisticsRepository;
+    private final StatisticsMyDayRepository statisticsMyDayRepository;
     private final CommonService commonService;
 
     // 가결별/일별 나의 아낀 내역 저장하기
@@ -34,8 +34,8 @@ public class StatisticsService {
         LocalDateTime startDateTime = yesterday.atTime(LocalTime.MIDNIGHT); // 2022-07-12T00:00
         LocalDateTime endDateTime = yesterday.atTime(LocalTime.MAX); // 2022-07-12T23:59:59.999999999
 
-        // userId로 savedItem 일별 리스트를 높은 가격순으로 구해오기
-        List<SavedItemForStatisticsDto> savedItemList = statisticsRepository.findByDate(startDateTime, endDateTime);
+        // savedItem 일별 리스트를 구해오기
+        List<SavedItemForStatisticsDto> savedItemList = statisticsMyDayRepository.findByDate(startDateTime, endDateTime);
 
         // 받아온 savedItem 의 순서대로 price 랭킹을 매겨 List 에 저장
         List<StatisticsMyDay> statisticsMyDayList = savedItemList.stream()
@@ -48,10 +48,12 @@ public class StatisticsService {
                         .totalCount(savedItem.getTotalCount())
                         .rankPrice(savedItemList.indexOf(savedItem)+1)
                         .build())
+                .limit(5)
                 .collect(Collectors.toList());
 
         // 받아온 savedItem 을 count 기준으로 정렬하여 List 에 추가
         List<SavedItemForStatisticsDto> savedItemListOrderedByCount = savedItemList.stream().sorted(Comparator.comparing(SavedItemForStatisticsDto::getTotalCount).reversed())
+                .limit(5)
                 .collect(Collectors.toList());
         for(SavedItemForStatisticsDto savedItemDto : savedItemListOrderedByCount) {
             for(StatisticsMyDay savedItemStatistics : statisticsMyDayList) {
@@ -64,7 +66,7 @@ public class StatisticsService {
 
         // List 를 DB에 추가
         for(StatisticsMyDay savedItemStatistics : statisticsMyDayList) {
-            statisticsRepository.saveStatisticsMyDay(savedItemStatistics);
+            statisticsMyDayRepository.saveStatisticsMyDay(savedItemStatistics);
         }
     }
 
@@ -73,7 +75,7 @@ public class StatisticsService {
         Long userId = commonService.getUserId();
         //Long userId = 76L;
 
-        List<StatisticsMyDay> result = statisticsRepository.findMyDailyByUserIdAndPrice(userId, day);
+        List<StatisticsMyDay> result = statisticsMyDayRepository.findMyDailyByUserIdAndPrice(userId, day);
         List<StatisticsMyDay.MyDailyByPrice> myDailyByPriceList = result.stream()
                 .map(myDaily -> StatisticsMyDay.MyDailyByPrice.builder()
                         .userId(myDaily.getUserId())
@@ -94,7 +96,7 @@ public class StatisticsService {
         Long userId = commonService.getUserId();
         //Long userId = 76L;
 
-        List<StatisticsMyDay> result = statisticsRepository.findMyDailyByUserIdAndCount(userId, day);
+        List<StatisticsMyDay> result = statisticsMyDayRepository.findMyDailyByUserIdAndCount(userId, day);
         List<StatisticsMyDay.MyDailyByCount> myDailyByCountList = result.stream()
                 .map(myDaily -> StatisticsMyDay.MyDailyByCount.builder()
                         .userId(myDaily.getUserId())
