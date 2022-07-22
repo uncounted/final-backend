@@ -21,14 +21,13 @@ import java.util.UUID;
 @Getter
 @RequiredArgsConstructor
 public class ChatRoom {
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
+
     @Column(name = "ROOM_ID", length = 36)
     private String id;
 
+
     @Column(nullable = false)
-    private String name;
+    String name;
 
 //    @Column(nullable = false)
 //    private Boolean proceeding;
@@ -36,15 +35,15 @@ public class ChatRoom {
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     @JsonIgnore
-    private User user;
+    User user;
 
     @OneToMany(mappedBy = "chatRoom")
     @JsonManagedReference(value = "chatRoom-fk")
-    private List<ChatRoomProsCons> chatRoomProsConsList;
+    List<ChatRoomProsCons> chatRoomProsConsList;
 
     @OneToMany (mappedBy = "chatRoom")
     @JsonManagedReference(value = "chatLog-chatRoom-fk")
-    private List<ChatLog> chatLogList;
+    List<ChatLog> chatLogList;
 
     public ChatRoom(User user, String name) {
         this.user = user;

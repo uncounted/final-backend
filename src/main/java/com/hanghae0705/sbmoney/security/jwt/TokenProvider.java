@@ -70,10 +70,8 @@ public class TokenProvider {
                 .compact();
 
         return TokenDto.builder()
-                .grantType(TOKEN_TYPE)
                 .accessToken(accessToken)
                 .refreshToken(generateRefreshToken())
-                .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
                 .build();
     }
 
@@ -92,10 +90,8 @@ public class TokenProvider {
                 .compact();
 
         return TokenDto.builder()
-                .grantType(TOKEN_TYPE)
                 .accessToken(accessToken)
                 .refreshToken(generateRefreshToken())
-                .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
                 .build();
     }
 
