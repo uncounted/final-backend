@@ -72,5 +72,4 @@ public class ChatRoomController {
     public RedisChatRoom roomInfo(@PathVariable String roomId) {
         return redisChatRoomRepository.findRoomById(roomId);
     }
-
 }
