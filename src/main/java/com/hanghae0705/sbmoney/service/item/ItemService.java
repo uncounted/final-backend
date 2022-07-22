@@ -52,6 +52,18 @@ public class ItemService {
         return goalItemService.postGoalItem(goalItemRequest, multipartFile, user);
     }
 
+    public Message updateNewGoalItem(Long goalItemId, Item.goalItemRequest itemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
+        itemValidator.isExistItem(itemRequest.getItemName());
+        Category category = categoryRepository.findById(itemRequest.getCategoryId()).orElseThrow(
+                () -> new ItemException(Constants.ExceptionClass.CATEGORY, HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
+        );
+        Item item = itemRepository.save(new Item(itemRequest, category));
+
+        //아이템 등록 후 태산 등록
+        GoalItem.Request goalItemRequest = new GoalItem.Request(category.getId(), item.getId(), itemRequest.getGoalItemCount(), item.getDefaultPrice());
+        return goalItemService.updateGoalItem(goalItemId, goalItemRequest, multipartFile, user);
+    }
+
     public Message getItems() {
         List<Item> items = itemRepository.findAll();
         List<Item.Response> itemResponses = new ArrayList<>();
