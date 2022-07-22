@@ -24,6 +24,7 @@ public class ChatService {
     private final RedisTemplate redisTemplate;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatLogRepository chatLogRepository;
+    private final CommonService commonService;
 
     /**
      * destination정보에서 roomId 추출
@@ -66,6 +67,7 @@ public class ChatService {
                     .id(null)
                     .type(chatMessage.getType())
                     .nickname(chatMessage.getSender())
+                    .profileImg(chatMessage.getProfileImg())
                     .message(chatMessage.getMessage())
                     .chatRoom(chatRoom)
                     .build();

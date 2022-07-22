@@ -16,7 +16,6 @@ public class RedisChatRoomRepository {
     private static final String CHAT_ROOMS = "CHAT_ROOM"; // 채팅룸 저장
     public static final String PROS_CONS = "PROS_CONS"; // 채팅룸에 입장한 클라이언트수 저장
     public static final String ENTER_INFO = "ENTER_INFO"; // 채팅룸에 입장한 클라이언트의 sessionId와 채팅룸 id를 맵핑한 정보 저장
-    public static final String CHAT_TIME = "CHAT_TIME";
 
     @Resource(name = "redisTemplate")
     private HashOperations<String, String, RedisChatRoom> hashOpsChatRoom;

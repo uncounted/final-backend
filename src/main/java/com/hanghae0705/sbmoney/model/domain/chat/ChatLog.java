@@ -15,6 +15,7 @@ public class ChatLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nickname;
+    private String profileImg;
     private ChatMessage.MessageType type;
     private String message;
 
@@ -24,9 +25,10 @@ public class ChatLog {
     private ChatRoom chatRoom;
 
     @Builder
-    public ChatLog(Long id, String nickname, ChatMessage.MessageType type, String message, ChatRoom chatRoom) {
+    public ChatLog(Long id, String nickname, String profileImg, ChatMessage.MessageType type, String message, ChatRoom chatRoom) {
         this.id = id;
         this.nickname = nickname;
+        this.profileImg = profileImg;
         this.type = type;
         this.message = message;
         this.chatRoom = chatRoom;
