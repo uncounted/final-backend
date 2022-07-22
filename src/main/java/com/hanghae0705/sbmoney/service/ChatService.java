@@ -24,6 +24,7 @@ public class ChatService {
     private final RedisTemplate redisTemplate;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatLogRepository chatLogRepository;
+    private final CommonService commonService;
 
     /**
      * destination정보에서 roomId 추출
@@ -47,7 +48,6 @@ public class ChatService {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에서 나갔습니다.");
             chatMessage.setSender("[알림]");
         }
-
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
