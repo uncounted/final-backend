@@ -8,6 +8,7 @@ import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
 import com.hanghae0705.sbmoney.repository.ChatRoomProsConsRepository;
 import com.hanghae0705.sbmoney.repository.ChatRoomRepository;
 import com.hanghae0705.sbmoney.repository.RedisChatRoomRepository;
+import com.hanghae0705.sbmoney.service.ChatService;
 import com.hanghae0705.sbmoney.service.CommonService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ public class ChatRoomController {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomProsConsRepository chatRoomProsConsRepository;
     private final CommonService commonService;
+    private final ChatService chatService;
 
     @GetMapping("/api/chat/rooms")
     public List<ChatRoom.Response> room() {
@@ -71,5 +73,10 @@ public class ChatRoomController {
     @GetMapping("/api/chat/room/{roomId}")
     public RedisChatRoom roomInfo(@PathVariable String roomId) {
         return redisChatRoomRepository.findRoomById(roomId);
+    }
+
+    @GetMapping("/api/room/{roomId}/save")
+    public void closeRoom(@PathVariable String roomId) {
+        chatService.saveChatLog(roomId);
     }
 }
