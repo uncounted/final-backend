@@ -1,6 +1,7 @@
 package com.hanghae0705.sbmoney.repository;
 
-import com.hanghae0705.sbmoney.model.domain.*;
+import com.hanghae0705.sbmoney.model.domain.item.QGoalItem;
+import com.hanghae0705.sbmoney.model.domain.statistic.QStatisticsAllUserGoal;
 import com.hanghae0705.sbmoney.model.domain.statistic.StatisticsAllUserGoal;
 import com.hanghae0705.sbmoney.model.dto.GoalItemForStatisticsAllUserDto;
 import com.querydsl.core.types.Projections;

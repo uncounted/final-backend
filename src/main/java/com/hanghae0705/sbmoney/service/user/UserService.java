@@ -2,6 +2,7 @@ package com.hanghae0705.sbmoney.service.user;
 
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ApiException;
+import com.hanghae0705.sbmoney.exception.ApiRequestException;
 import com.hanghae0705.sbmoney.exception.ApiRuntimeException;
 import com.hanghae0705.sbmoney.model.domain.user.RefreshToken;
 import com.hanghae0705.sbmoney.model.domain.user.User;

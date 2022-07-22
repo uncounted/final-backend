@@ -1,7 +1,8 @@
 package com.hanghae0705.sbmoney.repository;
 
-import com.hanghae0705.sbmoney.model.domain.QSavedItem;
-import com.hanghae0705.sbmoney.model.domain.QStatisticsMyDay;
+
+import com.hanghae0705.sbmoney.model.domain.item.QSavedItem;
+import com.hanghae0705.sbmoney.model.domain.statistic.QStatisticsMyDay;
 import com.hanghae0705.sbmoney.model.domain.statistic.StatisticsMyDay;
 import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsDto;
 import com.querydsl.core.types.Projections;
