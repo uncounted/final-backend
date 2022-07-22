@@ -24,11 +24,11 @@ public class ChatController {
     @MessageMapping("/chat/message")
     public void message(ChatMessage message, @Header("token") String token) {
         DecodedJWT decodedJWT = JWT.decode(token);
-        String nickname = decodedJWT.getClaim("sub").toString();
+        String username = decodedJWT.getClaim("sub").toString();
 
         // 로그인 회원 정보로 대화명, 프로필 이미지 설정
-        message.setSender(nickname);
-        message.setProfileImg(commonService.getUserProfileImg());
+        message.setSender(commonService.getNickname(username));
+        message.setProfileImg(commonService.getUserProfileImg(username));
         // Websocket에 발행된 메시지를 redis로 발행(publish)
         chatService.sendChatMessage(message);
     }

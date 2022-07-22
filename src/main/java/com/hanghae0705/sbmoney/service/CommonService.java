@@ -18,9 +18,13 @@ public class CommonService {
         return userDetails.getUsername();
     }
 
-    public String getUserProfileImg() {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userRepository.findByUsername(userDetails.getUsername()).orElseThrow(
+    public String getNickname(String username){
+        return userRepository.findByUsername(username).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 유저입니다.")).getNickname();
+    }
+
+    public String getUserProfileImg(String username) {
+        return userRepository.findByUsername(username).orElseThrow(
                     () -> new IllegalArgumentException("존재하지 않는 유저입니다.")).getProfileImg();
     }
 
