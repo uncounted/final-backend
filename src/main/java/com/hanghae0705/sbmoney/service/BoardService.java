@@ -67,8 +67,11 @@ public class BoardService {
 
     @Transactional
     public Message getDetailBoard(Long boardId, String authorization) {
-        Board board = boardRepository.findById(boardId).orElseThrow(
-                () -> new NullPointerException("존재하지 않는 게시글입니다"));
+        if(boardRepository.findById(boardId).isEmpty()){
+            return new Message(false, "존재하지 않는 게시글입니다");
+        }
+        Board board = boardRepository.findAllById(boardId);
+
         boolean checkLike = false;
         Long likeCount = likeService.likeCount(board.getId());
         if (authorization == null) {
@@ -86,8 +89,16 @@ public class BoardService {
 
     @Transactional
     public Message getSaveBoard(Long boardId) {
-        Board board = boardRepository.findById(boardId).orElseThrow(
-                () -> new NullPointerException("존재하지 않는 게시글입니다"));
+        if(boardRepository.findById(boardId).isEmpty()){
+            return new Message(false, "존재하지 않는 게시글입니다");
+        }
+
+        Board board = boardRepository.findAllById(boardId);
+
+        if(goalItemRepository.findById(board.getGoalItemId()).isEmpty()){
+            return new Message(false, "존재하지 않는 태산입니다");
+        }
+
         GoalItem goalItem = goalItemRepository.findById(board.getGoalItemId()).orElseThrow(
                 () -> new NullPointerException("존재하지 않는 태산입니다"));
         List<SavedItem> savedItemList = savedItemRepository.findAllByGoalItemAndAndCreatedAtIsBefore(goalItem, board.getCreatedDate());
@@ -112,8 +123,14 @@ public class BoardService {
         if(request.getContents().length() > 500){
             return new Message(false, "500자 이하로 작성해주세요");
         }
+
         Optional<User> user = getUser(authorization);
+
         GoalItem goalItem = goalItemRepository.findByUserAndAndCheckReachedIsFalse(user.get());
+        if(goalItem.equals(null)){
+            return new Message(false, "태산을 등록 해주세요");
+        }
+
         Board board = new Board(request, goalItem, user);
         if (multipartFile != null) {
             String url = s3Uploader.upload(multipartFile, "static");
@@ -125,12 +142,19 @@ public class BoardService {
 
     @Transactional
     public Message putBoard(Board.Update request, Long boardId, String authorization, MultipartFile multipartFile) throws IOException {
+
         if(request.getContents().length() > 500){
             return new Message(false, "500자 이하로 작성해주세요");
         }
+
         Optional<User> user = getUser(authorization);
-        Board board = boardRepository.findById(boardId).orElseThrow(
-                () -> new NullPointerException("존재하지 않는 게시글입니다"));
+
+        if(boardRepository.findById(boardId).isEmpty()){
+            return new Message(false, "존재하지 않는 게시글입니다");
+        }
+
+        Board board = boardRepository.findAllById(boardId);
+
         if (user.get().getId().equals(board.getUser().getId())) {
             board.updateBoard(request);
             if (multipartFile != null) {
@@ -139,7 +163,7 @@ public class BoardService {
             }
             return new Message(true, "게시글을 수정하였습니다");
         } else {
-            return new Message(false, "게시글을 수정에 실패하였습니다");
+            return new Message(false, "유저 정보를 확인해주세요");
         }
 
     }
@@ -147,13 +171,18 @@ public class BoardService {
     @Transactional
     public Message deleteBoard(Long boardId, String authorization) {
         Optional<User> user = getUser(authorization);
-        Board board = boardRepository.findById(boardId).orElseThrow(
-                () -> new NullPointerException("존재하지 않는 게시글입니다"));
+
+        if(boardRepository.findById(boardId).isEmpty()){
+            return new Message(false, "존재하지 않는 게시글입니다");
+        }
+
+        Board board = boardRepository.findAllById(boardId);
+
         if (user.get().getId().equals(board.getUser().getId())) {
             boardRepository.delete(board);
             return new Message(true, "게시글을 삭제하였습니다");
         } else {
-            return new Message(false, "게시글을 삭제에 실패하였습니다");
+            return new Message(false, "유저 정보를 확인해주세요");
         }
     }
 

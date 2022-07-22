@@ -40,3 +40,4 @@ application.properties
 application-oauth.properties
 application-local.properties
 application-aws.yml
+application.yml
