@@ -53,7 +53,7 @@ public class ChatRoomController {
         User user = commonService.getUser();
         System.out.println(user.getId() + user.getUsername());
         ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, name.getName()));;
-        String redisChatRoomId = chatRoom.getId().toString();
+        String redisChatRoomId = chatRoom.getId();
         redisChatRoomRepository.createChatRoom(redisChatRoomId, name.getName());
         return chatRoom;
     }
@@ -61,8 +61,7 @@ public class ChatRoomController {
     @PostMapping("/api/chat/room/{roomId}/vote")
     public Boolean vote(@PathVariable String roomId, @RequestBody ChatRoomProsCons.Request chatRoomProsConsRequest){
         Long userId = commonService.getUserId();
-        UUID uuid = UUID.fromString(roomId);
-        ChatRoom chatRoom = chatRoomRepository.findById(uuid).orElseThrow(
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 방입니다.")
         );
         ChatRoomProsCons chatRoomProsCons = new ChatRoomProsCons(chatRoomProsConsRequest.getProsCons(), userId, chatRoom);

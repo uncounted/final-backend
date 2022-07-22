@@ -21,12 +21,10 @@ import java.util.UUID;
 @Getter
 @RequiredArgsConstructor
 public class ChatRoom {
-    @Id
-    @GeneratedValue(generator = "hibernate-uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    @Column(name = "CHATROOM_ID", unique = true)
-    @Type(type = "uuid-binary")
-    private UUID id;
+
+    @Column(name = "ROOM_ID", length = 36)
+    private String id;
+
 
     @Column(nullable = false)
     String name;

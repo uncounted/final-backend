@@ -57,7 +57,7 @@ public class ChatService {
         RedisOperations<String, ChatMessage> operations = redisTemplate.opsForList().getOperations();
         System.out.println((operations.opsForList().range(roomId, 0, -1)));
 
-        ChatRoom chatRoom = chatRoomRepository.findById(UUID.fromString(roomId)).orElseThrow(
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 방입니다.")
         );
         List<ChatMessage> chatMessageList = operations.opsForList().range(roomId, 0, -1);
