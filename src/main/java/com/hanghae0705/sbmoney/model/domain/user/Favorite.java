@@ -1,5 +1,6 @@
 package com.hanghae0705.sbmoney.model.domain;
 
+import com.hanghae0705.sbmoney.model.domain.item.Item;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

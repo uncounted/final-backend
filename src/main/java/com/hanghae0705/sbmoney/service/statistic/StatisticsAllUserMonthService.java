@@ -1,7 +1,7 @@
 package com.hanghae0705.sbmoney.service;
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.model.domain.StatisticsAllUserMonth;
+import com.hanghae0705.sbmoney.model.domain.statistic.StatisticsAllUserMonth;
 import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsAllUserDto;
 import com.hanghae0705.sbmoney.repository.StatisticsAllUserRepository;
 import lombok.RequiredArgsConstructor;

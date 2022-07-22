@@ -1,6 +1,8 @@
 package com.hanghae0705.sbmoney.model.domain;
 
 import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
+import com.hanghae0705.sbmoney.model.domain.item.GoalItem;
+import com.hanghae0705.sbmoney.model.domain.item.SavedItem;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

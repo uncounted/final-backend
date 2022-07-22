@@ -3,9 +3,9 @@ package com.hanghae0705.sbmoney.model.domain;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.UserRoleEnum;
+import com.hanghae0705.sbmoney.model.domain.item.GoalItem;
 import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

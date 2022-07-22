@@ -3,6 +3,8 @@ package com.hanghae0705.sbmoney.service;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.*;
+import com.hanghae0705.sbmoney.model.domain.item.GoalItem;
+import com.hanghae0705.sbmoney.model.domain.item.SavedItem;
 import com.hanghae0705.sbmoney.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

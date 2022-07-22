@@ -1,10 +1,7 @@
 package com.hanghae0705.sbmoney.service;
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.exception.ApiException;
-import com.hanghae0705.sbmoney.exception.ApiRequestException;
-import com.hanghae0705.sbmoney.model.domain.StatisticsMyMonth;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.statistic.StatisticsMyMonth;
 import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsDto;
 import com.hanghae0705.sbmoney.repository.ItemRepository;
 import com.hanghae0705.sbmoney.repository.StatisticsMyMonthRepository;

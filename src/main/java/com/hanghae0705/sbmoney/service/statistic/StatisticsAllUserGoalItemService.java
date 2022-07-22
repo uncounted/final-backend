@@ -1,12 +1,9 @@
 package com.hanghae0705.sbmoney.service;
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.model.domain.StatisticsAllUserGoal;
-import com.hanghae0705.sbmoney.model.domain.StatisticsMyDay;
+import com.hanghae0705.sbmoney.model.domain.statistic.StatisticsAllUserGoal;
 import com.hanghae0705.sbmoney.model.dto.GoalItemForStatisticsAllUserDto;
-import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsDto;
 import com.hanghae0705.sbmoney.repository.StatisticsAllUserGolItemRepository;
-import com.hanghae0705.sbmoney.repository.StatisticsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
