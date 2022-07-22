@@ -1,12 +1,12 @@
-package com.hanghae0705.sbmoney.service;
+package com.hanghae0705.sbmoney.service.user;
 
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRequestException;
 import com.hanghae0705.sbmoney.model.domain.item.Category;
-import com.hanghae0705.sbmoney.model.domain.Favorite;
+import com.hanghae0705.sbmoney.model.domain.user.Favorite;
 import com.hanghae0705.sbmoney.model.domain.item.Item;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.repository.CategoryRepository;
 import com.hanghae0705.sbmoney.repository.FavoriteRepository;
 import com.hanghae0705.sbmoney.repository.ItemRepository;

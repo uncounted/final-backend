@@ -1,4 +1,4 @@
-package com.hanghae0705.sbmoney.service;
+package com.hanghae0705.sbmoney.service.statistic;
 
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.statistic.StatisticsAllUserMonth;

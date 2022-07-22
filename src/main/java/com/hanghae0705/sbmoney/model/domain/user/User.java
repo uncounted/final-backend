@@ -1,4 +1,4 @@
-package com.hanghae0705.sbmoney.model.domain;
+package com.hanghae0705.sbmoney.model.domain.user;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;

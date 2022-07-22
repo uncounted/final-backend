@@ -1,4 +1,4 @@
-package com.hanghae0705.sbmoney.model.domain;
+package com.hanghae0705.sbmoney.model.domain.statistic;
 
 import lombok.Builder;
 import lombok.Getter;

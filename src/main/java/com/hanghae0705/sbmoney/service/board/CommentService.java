@@ -1,11 +1,11 @@
-package com.hanghae0705.sbmoney.service;
+package com.hanghae0705.sbmoney.service.board;
 
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRequestException;
-import com.hanghae0705.sbmoney.model.domain.Board;
-import com.hanghae0705.sbmoney.model.domain.Comment;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.board.Board;
+import com.hanghae0705.sbmoney.model.domain.board.Comment;
+import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.repository.BoardRepository;
 import com.hanghae0705.sbmoney.repository.CommentRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;

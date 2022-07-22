@@ -1,13 +1,11 @@
-package com.hanghae0705.sbmoney.controller;
+package com.hanghae0705.sbmoney.controller.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.model.dto.RespDto;
 import com.hanghae0705.sbmoney.model.dto.TokenDto;
 import com.hanghae0705.sbmoney.model.dto.TokenRequestDto;
-import com.hanghae0705.sbmoney.service.UserService;
-import lombok.NoArgsConstructor;
+import com.hanghae0705.sbmoney.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;

@@ -1,9 +1,9 @@
-package com.hanghae0705.sbmoney.controller;
+package com.hanghae0705.sbmoney.controller.board;
 
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.model.domain.Board;
-import com.hanghae0705.sbmoney.service.BoardService;
+import com.hanghae0705.sbmoney.model.domain.board.Board;
+import com.hanghae0705.sbmoney.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

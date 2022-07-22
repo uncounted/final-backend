@@ -1,13 +1,13 @@
-package com.hanghae0705.sbmoney.service;
+package com.hanghae0705.sbmoney.service.item;
 
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.Constants;
 import com.hanghae0705.sbmoney.exception.ItemException;
-import com.hanghae0705.sbmoney.model.domain.*;
 import com.hanghae0705.sbmoney.model.domain.item.Category;
 import com.hanghae0705.sbmoney.model.domain.item.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.item.Item;
 import com.hanghae0705.sbmoney.model.domain.item.SavedItem;
+import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.repository.CategoryRepository;
 import com.hanghae0705.sbmoney.repository.ItemRepository;
 import com.hanghae0705.sbmoney.validator.ItemValidator;

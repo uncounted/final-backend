@@ -1,10 +1,10 @@
-package com.hanghae0705.sbmoney.controller;
+package com.hanghae0705.sbmoney.controller.user;
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.model.domain.Favorite;
-import com.hanghae0705.sbmoney.model.domain.User;
-import com.hanghae0705.sbmoney.service.FavoriteService;
-import com.hanghae0705.sbmoney.service.MyProfileService;
+import com.hanghae0705.sbmoney.model.domain.user.Favorite;
+import com.hanghae0705.sbmoney.model.domain.user.User;
+import com.hanghae0705.sbmoney.service.user.FavoriteService;
+import com.hanghae0705.sbmoney.service.user.MyProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

@@ -1,4 +1,4 @@
-package com.hanghae0705.sbmoney.model.domain;
+package com.hanghae0705.sbmoney.model.domain.user;
 
 import com.hanghae0705.sbmoney.model.domain.item.Item;
 import lombok.AllArgsConstructor;

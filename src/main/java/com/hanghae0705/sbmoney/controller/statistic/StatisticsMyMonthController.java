@@ -1,9 +1,8 @@
-package com.hanghae0705.sbmoney.controller;
+package com.hanghae0705.sbmoney.controller.statistic;
 
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.repository.StatisticsMyMonthRepository;
-import com.hanghae0705.sbmoney.service.StatisticsMyMonthlyService;
+import com.hanghae0705.sbmoney.service.statistic.StatisticsMyMonthlyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,6 +1,6 @@
 package com.hanghae0705.sbmoney.repository;
 
-import com.hanghae0705.sbmoney.model.domain.Comment;
+import com.hanghae0705.sbmoney.model.domain.board.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

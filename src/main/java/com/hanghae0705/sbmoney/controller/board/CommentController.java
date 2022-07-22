@@ -1,14 +1,10 @@
-package com.hanghae0705.sbmoney.controller;
+package com.hanghae0705.sbmoney.controller.board;
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.model.domain.Comment;
-import com.hanghae0705.sbmoney.model.domain.User;
-import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
-import com.hanghae0705.sbmoney.service.CommentService;
+import com.hanghae0705.sbmoney.model.domain.board.Comment;
+import com.hanghae0705.sbmoney.service.board.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

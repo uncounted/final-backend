@@ -1,5 +1,6 @@
-package com.hanghae0705.sbmoney.model.domain;
+package com.hanghae0705.sbmoney.model.domain.board;
 
+import com.hanghae0705.sbmoney.model.domain.user.User;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.OnDelete;

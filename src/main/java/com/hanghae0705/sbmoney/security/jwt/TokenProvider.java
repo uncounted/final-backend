@@ -2,7 +2,7 @@ package com.hanghae0705.sbmoney.security.jwt;
 
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRuntimeException;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.UserRoleEnum;
 import com.hanghae0705.sbmoney.model.dto.TokenDto;
 import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;

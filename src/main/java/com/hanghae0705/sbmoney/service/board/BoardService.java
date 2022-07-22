@@ -1,11 +1,13 @@
-package com.hanghae0705.sbmoney.service;
+package com.hanghae0705.sbmoney.service.board;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.model.domain.*;
+import com.hanghae0705.sbmoney.model.domain.board.Board;
 import com.hanghae0705.sbmoney.model.domain.item.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.item.SavedItem;
+import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.repository.*;
+import com.hanghae0705.sbmoney.service.S3Uploader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

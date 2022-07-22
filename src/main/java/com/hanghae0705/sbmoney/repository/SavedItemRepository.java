@@ -1,8 +1,7 @@
 package com.hanghae0705.sbmoney.repository;
 
-import com.hanghae0705.sbmoney.model.domain.GoalItem;
-import com.hanghae0705.sbmoney.model.domain.SavedItem;
-import org.springframework.data.annotation.CreatedDate;
+import com.hanghae0705.sbmoney.model.domain.item.GoalItem;
+import com.hanghae0705.sbmoney.model.domain.item.SavedItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;

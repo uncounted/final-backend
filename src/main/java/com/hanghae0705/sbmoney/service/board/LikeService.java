@@ -1,10 +1,10 @@
-package com.hanghae0705.sbmoney.service;
+package com.hanghae0705.sbmoney.service.board;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.model.domain.Board;
-import com.hanghae0705.sbmoney.model.domain.BoardLike;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.board.Board;
+import com.hanghae0705.sbmoney.model.domain.board.BoardLike;
+import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.repository.BoardRepository;
 import com.hanghae0705.sbmoney.repository.LikeRepository;
 import com.hanghae0705.sbmoney.repository.UserRepository;

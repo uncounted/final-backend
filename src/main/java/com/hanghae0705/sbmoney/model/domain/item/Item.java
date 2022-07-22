@@ -1,6 +1,7 @@
-package com.hanghae0705.sbmoney.model.domain;
+package com.hanghae0705.sbmoney.model.domain.item;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.hanghae0705.sbmoney.model.domain.user.Favorite;
 import lombok.*;
 
 import javax.persistence.*;

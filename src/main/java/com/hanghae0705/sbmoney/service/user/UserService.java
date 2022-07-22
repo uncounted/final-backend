@@ -1,11 +1,10 @@
-package com.hanghae0705.sbmoney.service;
+package com.hanghae0705.sbmoney.service.user;
 
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ApiException;
-import com.hanghae0705.sbmoney.exception.ApiRequestException;
 import com.hanghae0705.sbmoney.exception.ApiRuntimeException;
-import com.hanghae0705.sbmoney.model.domain.RefreshToken;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.user.RefreshToken;
+import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.UserRoleEnum;
 import com.hanghae0705.sbmoney.model.dto.RespDto;
 import com.hanghae0705.sbmoney.model.dto.TokenRequestDto;
@@ -23,12 +22,10 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;

@@ -1,7 +1,7 @@
-package com.hanghae0705.sbmoney.controller;
+package com.hanghae0705.sbmoney.controller.statistic;
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.service.StatisticsAllUserDayService;
+import com.hanghae0705.sbmoney.service.statistic.StatisticsAllUserDayService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

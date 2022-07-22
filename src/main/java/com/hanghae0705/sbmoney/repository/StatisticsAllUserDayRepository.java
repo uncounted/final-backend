@@ -2,7 +2,7 @@ package com.hanghae0705.sbmoney.repository;
 
 import com.hanghae0705.sbmoney.model.domain.QSavedItem;
 import com.hanghae0705.sbmoney.model.domain.QStatisticsAllUserDay;
-import com.hanghae0705.sbmoney.model.domain.StatisticsAllUserDay;
+import com.hanghae0705.sbmoney.model.domain.statistic.StatisticsAllUserDay;
 import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsAllUserDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;

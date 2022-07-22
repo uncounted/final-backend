@@ -2,7 +2,7 @@ package com.hanghae0705.sbmoney.model.domain.chat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -65,7 +65,7 @@ public class ChatRoom {
         private Boolean prosCons;
 
         public Response(ChatRoom chatRoom, Boolean chatRoomProsCons){
-            this.roomId = chatRoom.getId().toString();
+            this.roomId = chatRoom.getRoomId();
             this.roomName = chatRoom.getName();
             this.userId = chatRoom.getUser().getId();
             this.nickname = chatRoom.getUser().getNickname();
