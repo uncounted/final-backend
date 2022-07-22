@@ -8,16 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class TokenDto {
-    private String grantType;
     private String accessToken;
     private String refreshToken;
-    private Long accessTokenExpiresIn;
 
     @Builder
-    public TokenDto(String grantType, String accessToken, String refreshToken, Long accessTokenExpiresIn) {
-        this.grantType = grantType;
+    public TokenDto(String accessToken, String refreshToken) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        this.accessTokenExpiresIn = accessTokenExpiresIn;
     }
 }
