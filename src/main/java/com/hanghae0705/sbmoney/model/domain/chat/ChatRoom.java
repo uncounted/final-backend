@@ -3,6 +3,7 @@ package com.hanghae0705.sbmoney.model.domain.chat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hanghae0705.sbmoney.model.domain.User;
+import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,9 +46,6 @@ public class ChatRoom {
     @OneToMany (mappedBy = "chatRoom")
     @JsonManagedReference(value = "chatLog-chatRoom-fk")
     private List<ChatLog> chatLogList;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
 
     public ChatRoom(User user, String name) {
         this.user = user;
