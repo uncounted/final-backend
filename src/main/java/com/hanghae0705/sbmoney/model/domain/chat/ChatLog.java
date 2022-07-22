@@ -23,12 +23,12 @@ public class ChatLog {
     @JsonBackReference (value = "chatLog-chatRoom-fk")
     private ChatRoom chatRoom;
 
-
     @Builder
-    public ChatLog(Long id, String nickname, ChatMessage.MessageType type, String message) {
+    public ChatLog(Long id, String nickname, ChatMessage.MessageType type, String message, ChatRoom chatRoom) {
         this.id = id;
         this.nickname = nickname;
         this.type = type;
         this.message = message;
+        this.chatRoom = chatRoom;
     }
 }
