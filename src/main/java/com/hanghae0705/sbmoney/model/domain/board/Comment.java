@@ -45,6 +45,7 @@ public class Comment extends BaseEntity {
     @AllArgsConstructor
     public static class Response {
         private String username;
+        private String profileImg;
         private Long commentId;
         private String comment;
         private LocalDateTime createdAt;
@@ -52,6 +53,7 @@ public class Comment extends BaseEntity {
 
         public Response(Comment comment){
             this.username = comment.getUser().getUsername();
+            this.profileImg = comment.getUser().getProfileImg();
             this.commentId = comment.getId();
             this.comment = comment.getComment();
             this.createdAt = comment.getCreatedDate();
