@@ -19,11 +19,11 @@ import java.util.List;
 
 @Repository
 @Slf4j
-public class StatisticsRepository {
+public class StatisticsMyDayRepository {
     private final EntityManager em;
     private final JPAQueryFactory queryFactory;
 
-    public StatisticsRepository(EntityManager em) {
+    public StatisticsMyDayRepository(EntityManager em) {
         this.em = em;
         this.queryFactory = new JPAQueryFactory(em);
     }
@@ -32,19 +32,22 @@ public class StatisticsRepository {
     public List<SavedItemForStatisticsDto> findByDate(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         QSavedItem savedItem = QSavedItem.savedItem;
         NumberPath<Integer> aliasOrderType = Expressions.numberPath(Integer.class, "totalPrice");
+        // select sum(price), item_id, user_id, count(item_id)
+        // from saved_item group by item_id, user_id order by user_id, sum(price) desc;
 
         List<SavedItemForStatisticsDto> result = queryFactory
                 .select(Projections.fields(SavedItemForStatisticsDto.class,
+                        savedItem.item.id.as("itemId"),
                         savedItem.user.id.as("userId"),
                         savedItem.item.category.id.as("categoryId"),
                         savedItem.item.name.as("itemName"),
                         savedItem.price.sum().as("totalPrice"),
-                        savedItem.count().as("totalCount")
+                        savedItem.item.id.count().as("totalCount")
                 ))
                 .from(savedItem)
                 .where(savedItem.createdAt.between(startDateTime, endDateTime))
-                .groupBy(savedItem.item.id)
-                .orderBy(savedItem.user.id.desc())
+                .groupBy(savedItem.item.id, savedItem.user.id)
+                .orderBy(savedItem.user.id.desc(), aliasOrderType.desc())
                 .fetch();
 
         // log
