@@ -1,6 +1,7 @@
 package com.hanghae0705.sbmoney.service;
 
 
+import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatLog;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoom;
@@ -57,7 +58,7 @@ public class ChatService {
         RedisOperations<String, ChatMessage> operations = redisTemplate.opsForList().getOperations();
         System.out.println((operations.opsForList().range(roomId, 0, -1)));
 
-        ChatRoom chatRoom = chatRoomRepository.findById(roomId).orElseThrow(
+        ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 방입니다.")
         );
         List<ChatMessage> chatMessageList = operations.opsForList().range(roomId, 0, -1);
@@ -74,10 +75,10 @@ public class ChatService {
     }
 
     /**
-     * 채팅 종료
+     * 채팅 조회
      */
-    public void closeRoom() {
-
-    }
+//    public Message getChatLog(Long id) {
+//        List<ChatLog> chatLogList = chatLogRepository.findById(id)
+//    }
 
 }
