@@ -248,6 +248,25 @@ public class UserService {
         }
     }
 
+    public Message getNicknameAndImg() {
+        Optional<User.ResponseNicknameAndImg> resp = userRepository.findByUsername(SecurityUtil.getCurrentUsername())
+                .map(User.ResponseNicknameAndImg::of);
+
+        if (resp.isPresent()) {
+            return Message.builder()
+                    .result(true)
+                    .respMsg("닉네임, 프로필 이미지 조회에 성공하였습니다.")
+                    .data(resp)
+                    .build();
+        } else {
+            return Message.builder()
+                    .result(false)
+                    .respMsg("로그인 유저 정보가 없습니다.")
+                    .data(null)
+                    .build();
+        }
+    }
+
     @Transactional
     public TokenDto login(User.RequestLogin requestLogin, HttpServletRequest request, HttpServletResponse response) {
         // 1. Login ID/PW 를 기반으로 AuthenticationToken 생성

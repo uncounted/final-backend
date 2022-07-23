@@ -7,6 +7,7 @@ import com.hanghae0705.sbmoney.model.dto.TokenDto;
 import com.hanghae0705.sbmoney.model.dto.TokenRequestDto;
 import com.hanghae0705.sbmoney.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -65,6 +66,12 @@ public class UserController {
     @GetMapping("/api/myInfo")
     public Message getMyInfo(){
         return userService.getMyInfo();
+    }
+
+    // 채팅용 닉네임, 프로필 이미지 반환
+    @GetMapping("/api/myChatInfo")
+    public ResponseEntity<Message> getMyChatInfo(){
+        return ResponseEntity.ok(userService.getNicknameAndImg());
     }
 
     // 액세스 토큰, 리프레시 토큰 재발급
