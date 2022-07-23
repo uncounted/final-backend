@@ -31,9 +31,6 @@ public class ChatRoom {
     @Column(nullable = false)
     String comment;
 
-    @Column(nullable = false)
-    LocalTime timeLimit;
-
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     @JsonIgnore
