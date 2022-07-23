@@ -37,10 +37,10 @@ public class RedisSubscriber {
             RedisOperations<String, Object> operations = redisTemplate.opsForList().getOperations();
 
             // 최초 진입 시 기존 채팅 기록 출력
-            if (chatMessage.getType().equals(ChatMessage.MessageType.ENTER)) {
-                messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getRoomId(),
-                        operations.opsForList().range(chatMessage.getRoomId(), 0, -1));
-            }
+//            if (chatMessage.getType().equals(ChatMessage.MessageType.ENTER)) {
+//                messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getRoomId(),
+//                        operations.opsForList().range(chatMessage.getRoomId(), 0, -1));
+//            }
 
             // 채팅방을 구독한 클라이언트에게 메시지 발송
             messagingTemplate.convertAndSend("/sub/chat/room/" + chatMessage.getRoomId(), chatMessage);

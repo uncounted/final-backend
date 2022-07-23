@@ -26,8 +26,8 @@ public class ChatController {
 //        DecodedJWT decodedJWT = JWT.decode(token);
 //        String claim = decodedJWT.getClaim("sub").toString();
 //        String nickname = claim.substring(1, claim.length()-1);
-        // 로그인 회원 정보로 대화명 설정
-        //message.setSender(nickname);
+//        // 로그인 회원 정보로 대화명 설정
+//        message.setSender(nickname);
         // Websocket에 발행된 메시지를 redis로 발행(publish)
         chatService.sendChatMessage(message);
     }
