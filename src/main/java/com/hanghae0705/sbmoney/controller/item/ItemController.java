@@ -37,7 +37,7 @@ public class ItemController {
         return ResponseEntity.ok(message);
     }
 
-    @PostMapping("/api/items/goalItem/{goalItemId}")
+    @PutMapping("/api/items/goalItem/{goalItemId}")
     public ResponseEntity<Message> postNewGoalItem(@PathVariable Long goalItemId,
                                                    @RequestPart(value = "image",required = false) MultipartFile multipartFile,
                                                    @RequestPart(value = "goalItem") Item.goalItemRequest itemRequest) throws ItemException, IOException {
