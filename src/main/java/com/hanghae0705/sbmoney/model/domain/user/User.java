@@ -294,6 +294,9 @@ public class User extends BaseEntity {
         }
     }
 
+    @Getter
+    @Setter
+    @NoArgsConstructor
     public static class ResponseNicknameAndImg {
         private String nickname;
         private String profileImg;
