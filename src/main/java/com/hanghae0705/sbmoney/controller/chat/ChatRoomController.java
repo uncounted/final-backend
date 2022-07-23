@@ -1,6 +1,7 @@
 package com.hanghae0705.sbmoney.controller.chat;
 
 
+import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoom;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoomProsCons;
@@ -11,6 +12,7 @@ import com.hanghae0705.sbmoney.repository.RedisChatRoomRepository;
 import com.hanghae0705.sbmoney.service.ChatService;
 import com.hanghae0705.sbmoney.service.CommonService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
@@ -55,7 +57,7 @@ public class ChatRoomController {
     public ChatRoom createRoom(@RequestBody ChatRoom.Request request) {
         User user = commonService.getUser();
         String RoomUuid = UUID.randomUUID().toString();
-        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, request.getComment(), request.getTimeLimit(), RoomUuid));;
+        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, request.getTimeLimit(), RoomUuid));;
         String redisChatRoomId = chatRoom.getRoomId();
         redisChatRoomRepository.createChatRoom(redisChatRoomId, request.getTimeLimit());
         return chatRoom;
@@ -84,7 +86,11 @@ public class ChatRoomController {
     }
 
     @GetMapping("/api/room/{roomId}/save")
-    public void saveChatLog(@PathVariable String roomId) {
+    public ResponseEntity<Message> saveChatLog(@PathVariable String roomId) {
         chatService.saveChatLog(roomId);
+        return ResponseEntity.ok(Message.builder()
+                .result(true)
+                .respMsg("종료된 채팅 기록 저장에 성공했습니다.")
+                .build());
     }
 }

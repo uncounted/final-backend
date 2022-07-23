@@ -47,9 +47,8 @@ public class ChatRoom {
     @JsonManagedReference(value = "chatLog-chatRoom-fk")
     private List<ChatLog> chatLogList;
 
-    public ChatRoom(User user, String comment, LocalTime timeLimit, String roomId) {
+    public ChatRoom(User user, LocalTime timeLimit, String roomId) {
         this.user = user;
-        this.comment = comment;
         this.timeLimit = timeLimit;
         this.roomId = roomId;
     }
@@ -58,7 +57,6 @@ public class ChatRoom {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Request {
-        private String comment;
         private LocalTime timeLimit;
     }
 
