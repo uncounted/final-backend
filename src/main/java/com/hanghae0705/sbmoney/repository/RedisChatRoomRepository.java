@@ -9,13 +9,14 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class RedisChatRoomRepository {
     // Redis CacheKeys
     private static final String CHAT_ROOMS = "CHAT_ROOM"; // 채팅룸 저장
-    public static final String PROS_CONS = "PROS_CONS"; // 채팅룸에 입장한 클라이언트수 저장
+    public static final String USER_COUNT = "USER_COUNT"; // 채팅룸에 입장한 클라이언트수 저장
     public static final String ENTER_INFO = "ENTER_INFO"; // 채팅룸에 입장한 클라이언트의 sessionId와 채팅룸 id를 맵핑한 정보 저장
     public static final String CHAT_TIME = "CHAT_TIME";
 
@@ -56,6 +57,21 @@ public class RedisChatRoomRepository {
     // 유저 세션정보와 맵핑된 채팅방ID 삭제
     public void removeUserEnterInfo(String sessionId) {
         hashOpsEnterInfo.delete(ENTER_INFO, sessionId);
+    }
+
+    // 채팅방 유저수 조회
+    public long getUserCount(String roomId) {
+        return Long.valueOf(Optional.ofNullable(valueOps.get(USER_COUNT + "_" + roomId)).orElse("0"));
+    }
+
+    // 채팅방에 입장한 유저수 +1
+    public long plusUserCount(String roomId) {
+        return Optional.ofNullable(valueOps.increment(USER_COUNT + "_" + roomId)).orElse(0L);
+    }
+
+    // 채팅방에 입장한 유저수 -1
+    public long minusUserCount(String roomId) {
+        return Optional.ofNullable(valueOps.decrement(USER_COUNT + "_" + roomId)).filter(count -> count > 0).orElse(0L);
     }
 
 }

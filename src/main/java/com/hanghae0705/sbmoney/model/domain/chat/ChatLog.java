@@ -27,6 +27,10 @@ public class ChatLog {
     @JsonBackReference (value = "chatLog-chatRoom-fk")
     private ChatRoom chatRoom;
 
+    public void update(ChatRoom chatRoom){
+        this.chatRoom = chatRoom;
+    }
+
     @Builder
     public ChatLog(Long id, String nickname, ChatMessage.MessageType type, String message, ChatRoom chatRoom) {
         this.id = id;

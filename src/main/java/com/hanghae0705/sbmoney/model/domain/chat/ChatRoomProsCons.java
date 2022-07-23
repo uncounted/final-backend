@@ -38,6 +38,10 @@ public class ChatRoomProsCons {
         return prosCons;
     }
 
+    public void setChatRoom(ChatRoom chatRoom){
+        this.chatRoom = chatRoom;
+    }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor

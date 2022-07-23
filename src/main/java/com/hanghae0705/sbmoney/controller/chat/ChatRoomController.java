@@ -2,6 +2,7 @@ package com.hanghae0705.sbmoney.controller.chat;
 
 
 import com.hanghae0705.sbmoney.data.Message;
+import com.hanghae0705.sbmoney.model.domain.chat.ChatLog;
 import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoom;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoomProsCons;
@@ -61,6 +62,21 @@ public class ChatRoomController {
         String redisChatRoomId = chatRoom.getRoomId();
         redisChatRoomRepository.createChatRoom(redisChatRoomId, request.getComment());
         return chatRoom;
+    }
+
+    @DeleteMapping("/api/chat/room/{roomId}")
+    public void deleteRoom(@PathVariable String roomId){
+        ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(
+                () -> new IllegalArgumentException("존재하는 방이 없습니다.")
+        );
+        for(ChatLog chatLog : chatRoom.getChatLogList()){
+            chatLog.update(null);
+        }
+
+        for(ChatRoomProsCons chatRoomProsCons : chatRoom.getChatRoomProsConsList()){
+            chatRoomProsCons.setChatRoom(null);
+        }
+        chatRoomRepository.delete(chatRoom);
     }
 
     @Transactional

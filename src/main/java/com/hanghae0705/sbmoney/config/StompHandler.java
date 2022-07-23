@@ -1,6 +1,7 @@
 package com.hanghae0705.sbmoney.config;
 
 import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
+import com.hanghae0705.sbmoney.repository.ChatRoomRepository;
 import com.hanghae0705.sbmoney.repository.RedisChatRoomRepository;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.service.ChatService;
@@ -40,6 +41,7 @@ public class StompHandler implements ChannelInterceptor {
             // 채팅방에 들어온 클라이언트 sessionId를 roomId와 맵핑해 놓는다.(나중에 특정 세션이 어떤 채팅방에 들어가 있는지 알기 위함)
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             redisChatRoomRepository.setUserEnterInfo(sessionId, roomId);
+            redisChatRoomRepository.plusUserCount(roomId);
             // 클라이언트 입장 메시지를 채팅방에 발송한다.(redis publish)
             String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
             chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(name).build());
@@ -48,6 +50,7 @@ public class StompHandler implements ChannelInterceptor {
             // 연결이 종료된 클라이언트 sesssionId로 채팅방 id를 얻는다.
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = redisChatRoomRepository.getUserEnterRoomId(sessionId);
+            redisChatRoomRepository.minusUserCount(roomId);
             // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
             String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
             chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.QUIT).roomId(roomId).sender(name).build());
