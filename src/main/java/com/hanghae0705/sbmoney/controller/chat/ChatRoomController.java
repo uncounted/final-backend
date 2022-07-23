@@ -52,12 +52,12 @@ public class ChatRoomController {
     }
 
     @PostMapping("/api/chat/room")
-    public ChatRoom createRoom(@RequestBody ChatRoom.Request name) {
+    public ChatRoom createRoom(@RequestBody ChatRoom.Request request) {
         User user = commonService.getUser();
         String RoomUuid = UUID.randomUUID().toString();
-        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, name.getName(), RoomUuid));;
+        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, request.getComment(), request.getTimeLimit(), RoomUuid));;
         String redisChatRoomId = chatRoom.getRoomId();
-        redisChatRoomRepository.createChatRoom(redisChatRoomId, name.getName());
+        redisChatRoomRepository.createChatRoom(redisChatRoomId, request.getTimeLimit());
         return chatRoom;
     }
 
