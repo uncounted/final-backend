@@ -18,6 +18,7 @@ public class ChatLog {
     private ChatMessage.MessageType type;
     private String message;
 
+
     @ManyToOne
     @JoinColumn (name = "CHATROOM_ID")
     @JsonBackReference (value = "chatLog-chatRoom-fk")
