@@ -41,19 +41,22 @@ public class StompHandler implements ChannelInterceptor {
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             redisChatRoomRepository.setUserEnterInfo(sessionId, roomId);
             // 클라이언트 입장 메시지를 채팅방에 발송한다.(redis publish)
-            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
-            chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(name).build());
-            log.info("SUBSCRIBED {}, {}", name, roomId);
+            String nickname = Optional.ofNullable((String) message.getHeaders().get("sender")).orElse("UnknownUser");
+            String profileImg = Optional.ofNullable((String) message.getHeaders().get("profileImg")).orElse("UnknownUser");
+            //String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
+            chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(nickname).profileImg(profileImg).build());
+            log.info("SUBSCRIBED {}, {}", nickname, roomId);
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) { // Websocket 연결 종료
             // 연결이 종료된 클라이언트 sesssionId로 채팅방 id를 얻는다.
             String sessionId = (String) message.getHeaders().get("simpSessionId");
             String roomId = redisChatRoomRepository.getUserEnterRoomId(sessionId);
             // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
-            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
-            chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.QUIT).roomId(roomId).sender(name).build());
+            String nickname = Optional.ofNullable((String) message.getHeaders().get("sender")).orElse("UnknownUser");
+            //String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
+            chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.QUIT).roomId(roomId).sender(nickname).build());
             // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
             redisChatRoomRepository.removeUserEnterInfo(sessionId);
-            log.info("DISCONNECTED {}, {}", sessionId, roomId);
+            log.info("DISCONNECTED {}, {}", nickname, roomId);
         }
         return message;
     }
