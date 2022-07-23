@@ -33,14 +33,19 @@ public class CommentService {
     }
 
     // 댓글 조회
-    public Message getCommentList(Long BoardId) {
-        List<Comment> commentList = commentRepository.findByBoard_Id(BoardId);
-        List<Comment.Response> responseList = new ArrayList<>();
-        for (Comment comment : commentList) {
-            Comment.Response response = new Comment.Response(comment);
-            responseList.add(response);
+    public Message getCommentList(Long boardId) {
+        try {
+            getValueByIdFromRepo("board", boardId);
+            List<Comment> commentList = commentRepository.findByBoard_Id(boardId);
+            List<Comment.Response> responseList = new ArrayList<>();
+            for (Comment comment : commentList) {
+                Comment.Response response = new Comment.Response(comment);
+                responseList.add(response);
+            }
+            return new Message(true, "댓글을 조회했습니다.", responseList);
+        } catch (Exception e) {
+            return new Message(false, errorMsg);
         }
-        return new Message(true, "댓글을 조회했습니다.", responseList);
     }
 
     @Transactional

@@ -1,7 +1,5 @@
 package com.hanghae0705.sbmoney.config;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
 import com.hanghae0705.sbmoney.repository.RedisChatRoomRepository;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
@@ -31,10 +29,8 @@ public class StompHandler implements ChannelInterceptor {
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
-
         if (StompCommand.CONNECT == accessor.getCommand()) { // websocket 연결요청
             String jwtToken = accessor.getFirstNativeHeader("token");
-
             log.info("CONNECT {}", jwtToken);
             // Header의 jwt token 검증
             tokenProvider.validateToken(jwtToken);
