@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -18,6 +20,7 @@ public class ChatLog {
     private ChatMessage.MessageType type;
     private String message;
 
+    private LocalDateTime createdAt;
 
     @ManyToOne
     @JoinColumn (name = "CHATROOM_ID")
