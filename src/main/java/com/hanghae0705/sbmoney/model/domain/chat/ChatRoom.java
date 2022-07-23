@@ -1,5 +1,6 @@
 package com.hanghae0705.sbmoney.model.domain.chat;
 
+import com.amazonaws.util.TimestampFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hanghae0705.sbmoney.model.domain.user.User;
@@ -7,11 +8,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.joda.time.DateTime;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Entity
@@ -31,6 +34,9 @@ public class ChatRoom {
     @Column(nullable = false)
     String comment;
 
+    @Column(nullable = false)
+    int timeLimit;
+
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     @JsonIgnore
@@ -44,8 +50,9 @@ public class ChatRoom {
     @JsonManagedReference(value = "chatLog-chatRoom-fk")
     private List<ChatLog> chatLogList;
 
-    public ChatRoom(User user, String comment, String roomId) {
+    public ChatRoom(User user, int timeLimit, String comment, String roomId) {
         this.user = user;
+        this.timeLimit = timeLimit;
         this.comment = comment;
         this.roomId = roomId;
     }
@@ -59,6 +66,7 @@ public class ChatRoom {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Request {
+        private int timeLimit;
         private String comment;
     }
 

@@ -57,7 +57,7 @@ public class ChatRoomController {
     public ChatRoom createRoom(@RequestBody ChatRoom.Request request) {
         User user = commonService.getUser();
         String RoomUuid = UUID.randomUUID().toString();
-        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, request.getComment(), RoomUuid));;
+        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, request.getTimeLimit(), request.getComment(), RoomUuid));;
         String redisChatRoomId = chatRoom.getRoomId();
         redisChatRoomRepository.createChatRoom(redisChatRoomId, request.getComment());
         return chatRoom;
