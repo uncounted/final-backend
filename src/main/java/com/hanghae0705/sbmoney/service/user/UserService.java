@@ -16,6 +16,7 @@ import com.hanghae0705.sbmoney.model.dto.TokenDto;
 import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.security.CookieUtils;
+import com.hanghae0705.sbmoney.service.CommonService;
 import com.hanghae0705.sbmoney.util.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
