@@ -9,6 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -19,14 +22,17 @@ public class ChatRoom {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
-
     @Column(nullable = false, unique = true)
     String roomId;
 
 //    @Column(nullable = false)
 //    private Boolean proceeding;
+
+    @Column(nullable = false)
+    String comment;
+
+    @Column(nullable = false)
+    LocalTime timeLimit;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
@@ -41,9 +47,10 @@ public class ChatRoom {
     @JsonManagedReference(value = "chatLog-chatRoom-fk")
     private List<ChatLog> chatLogList;
 
-    public ChatRoom(User user, String name, String roomId) {
+    public ChatRoom(User user, String comment, LocalTime timeLimit, String roomId) {
         this.user = user;
-        this.name = name;
+        this.comment = comment;
+        this.timeLimit = timeLimit;
         this.roomId = roomId;
     }
 
@@ -51,14 +58,15 @@ public class ChatRoom {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Request {
-        private String name;
+        private String comment;
+        private LocalTime timeLimit;
     }
 
     @Getter
     @RequiredArgsConstructor
     public static class Response {
         private String roomId;
-        private String roomName;
+        private String comment;
         private Long userId;
         private String nickname;
         private String profileImg;
@@ -66,7 +74,7 @@ public class ChatRoom {
 
         public Response(ChatRoom chatRoom, Boolean chatRoomProsCons){
             this.roomId = chatRoom.getRoomId();
-            this.roomName = chatRoom.getName();
+            this.comment = chatRoom.getComment();
             this.userId = chatRoom.getUser().getId();
             this.nickname = chatRoom.getUser().getNickname();
             this.profileImg = chatRoom.getUser().getProfileImg();
