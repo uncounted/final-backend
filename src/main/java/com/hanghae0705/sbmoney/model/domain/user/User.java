@@ -293,4 +293,22 @@ public class User extends BaseEntity {
             this.provider = provider;
         }
     }
+
+    public static class ResponseNicknameAndImg {
+        private String nickname;
+        private String profileImg;
+
+        public static ResponseNicknameAndImg of(User user){
+            return ResponseNicknameAndImg.builder()
+                    .nickname(user.getNickname())
+                    .profileImg(user.getProfileImg())
+                    .build();
+        }
+
+        @Builder
+        public ResponseNicknameAndImg(String nickname, String profileImg) {
+            this.nickname = nickname;
+            this.profileImg = profileImg;
+        }
+    }
 }
