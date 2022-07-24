@@ -54,13 +54,13 @@ public class ChatRoomController {
     }
 
     @PostMapping("/api/chat/room")
-    public ChatRoom createRoom(@RequestBody ChatRoom.Request request) {
+    public ChatRoom.Response createRoom(@RequestBody ChatRoom.Request request) {
         User user = commonService.getUser();
         String RoomUuid = UUID.randomUUID().toString();
-        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, request.getTimeLimit(), request.getComment(), RoomUuid));;
+        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, request.getTimeLimit(), request.getComment(), RoomUuid, true));
         String redisChatRoomId = chatRoom.getRoomId();
         redisChatRoomRepository.createChatRoom(redisChatRoomId, request.getComment());
-        return chatRoom;
+        return new ChatRoom.Response(chatRoom);
     }
 
     @DeleteMapping("/api/chat/room/{roomId}") //로그랑 메세지도 삭제
@@ -73,19 +73,23 @@ public class ChatRoomController {
 
     @Transactional
     @PostMapping("/api/chat/room/{roomId}/vote")
-    public Boolean vote(@PathVariable String roomId, @RequestBody ChatRoomProsCons.Request chatRoomProsConsRequest){
+    public ChatRoom vote(@PathVariable String roomId, @RequestBody ChatRoomProsCons.Request chatRoomProsConsRequest){
         Long userId = commonService.getUserId();
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 방입니다.")
         );
+        Boolean prosCons = chatRoomProsConsRequest.getProsCons();
         ChatRoomProsCons checkVote = chatRoomProsConsRepository.findByUserIdAndChatRoom(userId, chatRoom);
         if(checkVote != null){
-            return checkVote.update(chatRoomProsConsRequest.getProsCons());
+            chatRoom.MinusVoteCount(!prosCons);
+            chatRoom.PlusVoteCount(prosCons);
+            checkVote.update(chatRoomProsConsRequest.getProsCons());
         } else {
             ChatRoomProsCons chatRoomProsCons = new ChatRoomProsCons(chatRoomProsConsRequest.getProsCons(), userId, chatRoom);
             chatRoomProsConsRepository.save(chatRoomProsCons);
-            return chatRoomProsConsRequest.getProsCons();
+            chatRoom.PlusVoteCount(prosCons);
         }
+        return chatRoom;
     }
 
     @GetMapping("/api/chat/room/{roomId}")
