@@ -8,6 +8,7 @@ import com.hanghae0705.sbmoney.model.domain.user.User;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -30,6 +31,9 @@ public class ChatRoom extends CreatedTime {
     @Column(nullable = false)
     int timeLimit;
 
+    int voteTrueCount;
+    int voteFalseCount;
+
     @ManyToOne
     @JoinColumn(name = "USER_ID")
     @JsonIgnore
@@ -43,16 +47,32 @@ public class ChatRoom extends CreatedTime {
     @JsonManagedReference(value = "chatLog-chatRoom-fk")
     private List<ChatLog> chatLogList;
 
-    public ChatRoom(User user, int timeLimit, String comment, String roomId) {
+    public ChatRoom(User user, int timeLimit, String comment, String roomId, Boolean proceeding) {
         this.user = user;
         this.timeLimit = timeLimit;
         this.comment = comment;
         this.roomId = roomId;
+        this.proceeding = true;
     }
 
     public ChatRoom(User user, String roomId) {
         this.user = user;
         this.roomId = roomId;
+    }
+    public void PlusVoteCount(Boolean prosCons) {
+        if (prosCons) {
+            this.voteTrueCount++;
+        } else {
+            this.voteFalseCount++;
+        }
+    }
+
+    public void MinusVoteCount(Boolean prosCons) {
+        if (prosCons) {
+            this.voteTrueCount--;
+        } else {
+            this.voteFalseCount--;
+        }
     }
 
     public void changeProceeding(Boolean proceeding) {
@@ -76,6 +96,7 @@ public class ChatRoom extends CreatedTime {
         private String nickname;
         private String profileImg;
         private Boolean prosCons;
+        private LocalDateTime createdAt;
 
         public static Response of(ChatRoom chatRoom) {
             return Response.builder()
@@ -90,6 +111,7 @@ public class ChatRoom extends CreatedTime {
             this.userId = chatRoom.getUser().getId();
             this.nickname = chatRoom.getUser().getNickname();
             this.profileImg = chatRoom.getUser().getProfileImg();
+            this.createdAt = chatRoom.getCreatedDate();
         }
 
         @Builder
