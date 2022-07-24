@@ -107,4 +107,5 @@ public class ChatRoomController {
     public Message getTopRoom() {
         return chatService.getTopRoom();
     }
+
 }

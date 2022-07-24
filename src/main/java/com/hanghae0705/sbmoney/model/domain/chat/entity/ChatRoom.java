@@ -21,8 +21,8 @@ public class ChatRoom extends CreatedTime {
     @Column(nullable = false, unique = true)
     String roomId;
 
-//    @Column(nullable = false)
-//    private Boolean proceeding;
+    @Column(nullable = false)
+    private Boolean proceeding;
 
     @Column(nullable = false)
     String comment;
@@ -53,6 +53,10 @@ public class ChatRoom extends CreatedTime {
     public ChatRoom(User user, String roomId) {
         this.user = user;
         this.roomId = roomId;
+    }
+
+    public void changeProceeding(Boolean proceeding) {
+        this.proceeding = proceeding;
     }
 
     @Getter
