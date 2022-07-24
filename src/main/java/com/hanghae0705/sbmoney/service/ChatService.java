@@ -133,5 +133,18 @@ public class ChatService {
                 .build();
     }
 
+    public void getCloesdChatRoom(Long closedRoomId) {
+
+        // 챗룸 정보(닉네임, 프로필 정보, 코멘트, 찬/반 비율) 가져오기
+        ChatRoom chatRoom = chatRoomRepository.findById(closedRoomId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 방입니다.")
+        );
+
+
+
+        // 채팅 로그 읽어오기
+        List<ChatLog> chatLogList = chatLogRepository.findChatLogByChatRoomId(closedRoomId);
+
+    }
 
 }
