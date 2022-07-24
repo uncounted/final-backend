@@ -2,6 +2,8 @@ package com.hanghae0705.sbmoney.service;
 
 
 import com.hanghae0705.sbmoney.data.Message;
+import com.hanghae0705.sbmoney.exception.ApiException;
+import com.hanghae0705.sbmoney.exception.ApiRequestException;
 import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
 import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatLog;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
@@ -15,6 +17,7 @@ import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,6 +63,7 @@ public class ChatService {
     /**
      * 채팅 종료 시 채팅 기록 저장
      */
+    @Transactional
     public void saveChatLog(String roomId) {
         RedisOperations<String, ChatMessage> operations = redisTemplate.opsForList().getOperations();
         System.out.println((operations.opsForList().range(roomId, 0, -1)));
@@ -67,6 +71,11 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 방입니다.")
         );
+
+        // proceeding 종료방(false)으로 변경
+        chatRoom.changeProceeding(false);
+
+        // roomId에 해당하는 ChatMessage를 찾아서 ChatLog에 저장
         List<ChatMessage> chatMessageList = operations.opsForList().range(roomId, 0, -1);
         for(ChatMessage chatMessage : chatMessageList) {
             ChatLog chatLog = ChatLog.builder()
@@ -97,7 +106,6 @@ public class ChatService {
         for(Map.Entry<String, Long> room : roomMap.entrySet()) {
             log.info("mapkey :"+room.getKey());
             log.info("mapvalue :"+room.getValue());
-
         }
 
         // 상위 5개 찾기
@@ -110,7 +118,6 @@ public class ChatService {
                         (e1, e2) -> e1, LinkedHashMap::new)
                 );
 
-
         // userCount가 높은 5개만 DB에서 chatRoom 데이터 읽어오기
         List<ChatRoom.Response> chatRoomList = topRoom.keySet().stream()
                 .map(chatRoomRepository::findByRoomId)
@@ -119,7 +126,6 @@ public class ChatService {
                 .map(ChatRoom.Response::of)
                 .collect(Collectors.toList());
 
-        // 리스트로 반환
         return Message.builder()
                 .result(true)
                 .respMsg("상위 5개 결과를 조회하였습니다.")
@@ -127,11 +133,5 @@ public class ChatService {
                 .build();
     }
 
-    /**
-     * 채팅 조환
-     */
-//    public Message getChatLog(Long id) {
-//        List<ChatLog> chatLogList = chatLogRepository.findById(id)
-//    }
 
 }

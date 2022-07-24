@@ -21,7 +21,8 @@ public enum ApiException implements BaseExceptionType{
     NO_AUTHORITY_KEY(3003, 500, "권한 정보가 없는 토큰입니다."),
     NOT_VALID_REFRESH_TOKEN(3004, 500, "유효하지 않은 리프레시 토큰입니다"),
     NO_PROVIDER(3010, 500, "provider가 없습니다."),
-    NO_COOKIE(4001, 500, "쿠키가 없습니다.");
+    NO_COOKIE(4001, 500, "쿠키가 없습니다."),
+    NO_CHAT_ROOM(5001, 500, "챗방이 없습니다.");
 
 
     private int errorCode;
