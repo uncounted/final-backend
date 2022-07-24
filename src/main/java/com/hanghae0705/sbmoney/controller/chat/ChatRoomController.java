@@ -2,9 +2,8 @@ package com.hanghae0705.sbmoney.controller.chat;
 
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.model.domain.chat.ChatLog;
 import com.hanghae0705.sbmoney.model.domain.user.User;
-import com.hanghae0705.sbmoney.model.domain.chat.ChatRoom;
+import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatRoom;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoomProsCons;
 import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
 import com.hanghae0705.sbmoney.repository.ChatRoomProsConsRepository;
@@ -94,12 +93,18 @@ public class ChatRoomController {
         return redisChatRoomRepository.findRoomById(roomId);
     }
 
-    @GetMapping("/api/room/{roomId}/save")
+    @GetMapping("/api/chat/room/{roomId}/save")
     public ResponseEntity<Message> saveChatLog(@PathVariable String roomId) {
         chatService.saveChatLog(roomId);
         return ResponseEntity.ok(Message.builder()
                 .result(true)
                 .respMsg("종료된 채팅 기록 저장에 성공했습니다.")
                 .build());
+    }
+
+    // userCount가 높은 상위 5개 방을 호출함
+    @GetMapping("/api/chat/room/top")
+    public Message getTopRoom() {
+        return chatService.getTopRoom();
     }
 }

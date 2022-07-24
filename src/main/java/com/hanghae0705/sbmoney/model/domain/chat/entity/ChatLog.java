@@ -1,10 +1,10 @@
-package com.hanghae0705.sbmoney.model.domain.chat;
+package com.hanghae0705.sbmoney.model.domain.chat.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

@@ -2,22 +2,24 @@ package com.hanghae0705.sbmoney.service;
 
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.model.domain.chat.ChatLog;
+import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
+import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatLog;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
-import com.hanghae0705.sbmoney.model.domain.chat.ChatRoom;
+import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatRoom;
 import com.hanghae0705.sbmoney.repository.ChatLogRepository;
 import com.hanghae0705.sbmoney.repository.ChatRoomRepository;
 import com.hanghae0705.sbmoney.repository.RedisChatRoomRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class ChatService {
@@ -44,6 +46,7 @@ public class ChatService {
      */
     public void sendChatMessage(ChatMessage chatMessage) {
         chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
+
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
             chatMessage.setSender("[알림]");
@@ -77,8 +80,55 @@ public class ChatService {
         }
     }
 
+    public Message getTopRoom() {
+        // 모든 roomId 호출
+        List<RedisChatRoom> allRooms =  redisChatRoomRepository.findAllRoom();
+        for(RedisChatRoom room : allRooms) {
+            log.info("allrooms :"+room.getRoomId());
+        }
+
+        // roomId에 해당하는 userCount 찾기
+        Map<String, Long> roomMap = allRooms.stream()
+                .collect(Collectors.toMap(
+                        RedisChatRoom::getRoomId,
+                        RedisChatRoom::getUserCount
+                ));
+
+        for(Map.Entry<String, Long> room : roomMap.entrySet()) {
+            log.info("mapkey :"+room.getKey());
+            log.info("mapvalue :"+room.getValue());
+
+        }
+
+        // 상위 5개 찾기
+        Map<String, Long> topRoom = roomMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .limit(5)
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1, LinkedHashMap::new)
+                );
+
+
+        // userCount가 높은 5개만 DB에서 chatRoom 데이터 읽어오기
+        List<ChatRoom.Response> chatRoomList = topRoom.keySet().stream()
+                .map(chatRoomRepository::findByRoomId)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(ChatRoom.Response::of)
+                .collect(Collectors.toList());
+
+        // 리스트로 반환
+        return Message.builder()
+                .result(true)
+                .respMsg("상위 5개 결과를 조회하였습니다.")
+                .data(chatRoomList)
+                .build();
+    }
+
     /**
-     * 채팅 조회
+     * 채팅 조환
      */
 //    public Message getChatLog(Long id) {
 //        List<ChatLog> chatLogList = chatLogRepository.findById(id)
