@@ -1,6 +1,7 @@
 package com.hanghae0705.sbmoney.model.domain.chat;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatRoom;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

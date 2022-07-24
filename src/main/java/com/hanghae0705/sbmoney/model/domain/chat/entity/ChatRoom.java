@@ -1,14 +1,11 @@
-package com.hanghae0705.sbmoney.model.domain.chat;
+package com.hanghae0705.sbmoney.model.domain.chat.entity;
 
-import com.amazonaws.util.TimestampFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.CreatedTime;
+import com.hanghae0705.sbmoney.model.domain.chat.ChatRoomProsCons;
 import com.hanghae0705.sbmoney.model.domain.user.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -76,6 +73,22 @@ public class ChatRoom extends CreatedTime {
         private String profileImg;
         private Boolean prosCons;
 
+        public static Response of(ChatRoom chatRoom) {
+            return Response.builder()
+                    .chatRoom(chatRoom)
+                    .build();
+        }
+
+        @Builder
+        public Response(ChatRoom chatRoom){
+            this.roomId = chatRoom.getRoomId();
+            this.comment = chatRoom.getComment();
+            this.userId = chatRoom.getUser().getId();
+            this.nickname = chatRoom.getUser().getNickname();
+            this.profileImg = chatRoom.getUser().getProfileImg();
+        }
+
+        @Builder
         public Response(ChatRoom chatRoom, Boolean chatRoomProsCons){
             this.roomId = chatRoom.getRoomId();
             this.comment = chatRoom.getComment();
