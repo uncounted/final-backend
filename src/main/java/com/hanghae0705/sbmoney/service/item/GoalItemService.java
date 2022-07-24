@@ -6,7 +6,9 @@ import com.hanghae0705.sbmoney.exception.ItemException;
 import com.hanghae0705.sbmoney.model.domain.item.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.item.Item;
 import com.hanghae0705.sbmoney.model.domain.item.SavedItem;
+import com.hanghae0705.sbmoney.model.domain.user.Favorite;
 import com.hanghae0705.sbmoney.model.domain.user.User;
+import com.hanghae0705.sbmoney.repository.FavoriteRepository;
 import com.hanghae0705.sbmoney.repository.GoalItemRepository;
 import com.hanghae0705.sbmoney.service.S3Uploader;
 import com.hanghae0705.sbmoney.util.MathFloor;
@@ -20,12 +22,14 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class GoalItemService {
     private final GoalItemRepository goalItemRepository;
+    private final FavoriteRepository favoriteRepository;
     private final S3Uploader s3Uploader;
     private final ItemValidator itemValidator;
 
@@ -51,10 +55,19 @@ public class GoalItemService {
 
     public Message getHistory(User user) {
         List<GoalItem> goalItemList = user.getGoalItems();
-        List<GoalItem.Response> reachedGoalItemList = new ArrayList<>();
+        List<GoalItem.HistoryResponse> reachedGoalItemList = new ArrayList<>();
         for (GoalItem goalItem : goalItemList) {
             if (goalItem.isCheckReached()) {
-                reachedGoalItemList.add(new GoalItem.Response(goalItem));
+                List<SavedItem> savedItemList = goalItem.getSavedItems();
+                List<Favorite> favorites = favoriteRepository.findByUserId(user.getId());
+                List<SavedItem.Response> savedItemResponseList = new ArrayList<>();
+                for (SavedItem savedItem : savedItemList) {
+                    Favorite.SavedItemResponse favorite = itemValidator.isFavoriteItem(favorites, savedItem.getItem(), savedItem.getPrice());
+                    SavedItem.Response savedItemResponse = new SavedItem.Response(savedItem, favorite);
+                    savedItemResponseList.add(savedItemResponse);
+                }
+                Collections.reverse(savedItemResponseList);
+                reachedGoalItemList.add(new GoalItem.HistoryResponse(goalItem, savedItemResponseList));
             }
         }
         return new Message(true, "히스토리를 성공적으로 조회하였습니다.", reachedGoalItemList);
