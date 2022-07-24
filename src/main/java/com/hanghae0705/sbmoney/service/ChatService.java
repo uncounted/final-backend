@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -65,6 +66,8 @@ public class ChatService {
      */
     @Transactional
     public void saveChatLog(String roomId) {
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
+
         RedisOperations<String, ChatMessage> operations = redisTemplate.opsForList().getOperations();
         System.out.println((operations.opsForList().range(roomId, 0, -1)));
 
@@ -77,6 +80,7 @@ public class ChatService {
 
         // roomId에 해당하는 ChatMessage를 찾아서 ChatLog에 저장
         List<ChatMessage> chatMessageList = operations.opsForList().range(roomId, 0, -1);
+
         for(ChatMessage chatMessage : chatMessageList) {
             ChatLog chatLog = ChatLog.builder()
                     .id(null)
@@ -133,18 +137,31 @@ public class ChatService {
                 .build();
     }
 
-    public void getCloesdChatRoom(Long closedRoomId) {
-
-        // 챗룸 정보(닉네임, 프로필 정보, 코멘트, 찬/반 비율) 가져오기
+    public Message getCloesdChatRoom(Long closedRoomId) {
+        // 챗룸 정보(닉네임, 프로필 정보, 코멘트, 찬/반 비율, 챗로그) 가져오기
         ChatRoom chatRoom = chatRoomRepository.findById(closedRoomId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 방입니다.")
         );
 
+        float totalCount = chatRoom.getVoteTrueCount() + chatRoom.getVoteFalseCount();
+        int voteTruePercent = Math.round(chatRoom.getVoteTrueCount() / totalCount * 100);
+        int voteFalsePercent = Math.round(chatRoom.getVoteFalseCount() / totalCount * 100);
 
+        ChatRoom.ClosedRoomDetail closedRoomDetail = ChatRoom.ClosedRoomDetail.builder()
+                .closedRoomId(chatRoom.getId())
+                .authorNickname(chatRoom.getUser().getNickname())
+                .authorProfileImg(chatRoom.getUser().getProfileImg())
+                .comment(chatRoom.getComment())
+                .voteTruePercent(voteTruePercent)
+                .voteFalsePercent(voteFalsePercent)
+                .chatLogList(chatRoom.getChatLogList())
+                .build();
 
-        // 채팅 로그 읽어오기
-        List<ChatLog> chatLogList = chatLogRepository.findChatLogByChatRoomId(closedRoomId);
-
+        return Message.builder()
+                .result(true)
+                .respMsg("종료방 상세 조회에 성공했습니다.")
+                .data(closedRoomDetail)
+                .build();
     }
 
 }

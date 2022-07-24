@@ -125,5 +125,28 @@ public class ChatRoom extends CreatedTime {
         }
     }
 
+    @Getter
+    @NoArgsConstructor
+    public static class ClosedRoomDetail {
+        private Long closedRoomId;
+        private String authorNickname;
+        private String authorProfileImg;
+        private String comment;
+        private float voteTruePercent;
+        private float voteFalsePercent;
+        private List<ChatLog> chatLogList;
+
+        @Builder
+        public ClosedRoomDetail(Long closedRoomId, String authorNickname, String authorProfileImg, String comment, float voteTruePercent, float voteFalsePercent, List<ChatLog> chatLogList) {
+            this.closedRoomId = closedRoomId;
+            this.authorNickname = authorNickname;
+            this.authorProfileImg = authorProfileImg;
+            this.comment = comment;
+            this.voteTruePercent = voteTruePercent;
+            this.voteFalsePercent = voteFalsePercent;
+            this.chatLogList = chatLogList;
+        }
+    }
+
 
 }

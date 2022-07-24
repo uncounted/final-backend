@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Service;
 
@@ -26,11 +27,12 @@ public class RedisSubscriber {
      */
     public void sendMessage(String publishMessage) {
         try {
+            redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
             // ChatMessage 객채로 맵핑
             ChatMessage chatMessage = objectMapper.readValue(publishMessage, ChatMessage.class);
 
             // 기존 메시지 List에 넣기 - Redis에 넣을 때는 serialize가 필요함. 반대로 조회할 때는 deserialize
-            redisTemplate.opsForList().rightPush(chatMessage.getRoomId(), publishMessage);
+            redisTemplate.opsForList().rightPush(chatMessage.getRoomId(), chatMessage);
 
             // 최대 시간 설정(30분)
             redisTemplate.expireAt(chatMessage.getRoomId(), Date.from(ZonedDateTime.now().plusMinutes(30).toInstant()));

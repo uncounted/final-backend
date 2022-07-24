@@ -112,4 +112,8 @@ public class ChatRoomController {
         return chatService.getTopRoom();
     }
 
+    @GetMapping("/api/closedChat/room/{closedRoomId}")
+    public Message getClosedRoomDetail(@PathVariable Long closedRoomId) {
+        return chatService.getCloesdChatRoom(closedRoomId);
+    }
 }
