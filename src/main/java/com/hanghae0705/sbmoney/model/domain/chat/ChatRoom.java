@@ -3,24 +3,20 @@ package com.hanghae0705.sbmoney.model.domain.chat;
 import com.amazonaws.util.TimestampFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.hanghae0705.sbmoney.model.domain.baseEntity.CreatedTime;
 import com.hanghae0705.sbmoney.model.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.joda.time.DateTime;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Entity
 @Getter
 @RequiredArgsConstructor
-public class ChatRoom {
+public class ChatRoom extends CreatedTime {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,11 +38,11 @@ public class ChatRoom {
     @JsonIgnore
     private User user;
 
-    @OneToMany(mappedBy = "chatRoom")
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "chatRoom-fk")
     private List<ChatRoomProsCons> chatRoomProsConsList;
 
-    @OneToMany (mappedBy = "chatRoom")
+    @OneToMany (mappedBy = "chatRoom", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "chatLog-chatRoom-fk")
     private List<ChatLog> chatLogList;
 

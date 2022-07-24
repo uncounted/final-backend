@@ -64,18 +64,11 @@ public class ChatRoomController {
         return chatRoom;
     }
 
-    @DeleteMapping("/api/chat/room/{roomId}")
+    @DeleteMapping("/api/chat/room/{roomId}") //로그랑 메세지도 삭제
     public void deleteRoom(@PathVariable String roomId){
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(
                 () -> new IllegalArgumentException("존재하는 방이 없습니다.")
         );
-        for(ChatLog chatLog : chatRoom.getChatLogList()){
-            chatLog.update(null);
-        }
-
-        for(ChatRoomProsCons chatRoomProsCons : chatRoom.getChatRoomProsConsList()){
-            chatRoomProsCons.setChatRoom(null);
-        }
         chatRoomRepository.delete(chatRoom);
     }
 
