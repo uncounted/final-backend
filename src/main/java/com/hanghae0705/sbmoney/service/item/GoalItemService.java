@@ -99,9 +99,10 @@ public class GoalItemService {
         int total = (price == 0) ? item.getDefaultPrice() * count : goalItemRequest.getPrice() * count;
 
         GoalItem goalItem = goalItemRepository.save(new GoalItem(user, count, total, item));
-        String url = s3Uploader.upload(multipartFile, "static");
-        goalItem.setImage(url);
-
+        if(multipartFile != null){
+            String url = s3Uploader.upload(multipartFile, "static");
+            goalItem.setImage(url);
+        }
         return new Message(true, "목표 항목을 등록하였습니다.", goalItem);
     }
 
