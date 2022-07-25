@@ -139,12 +139,14 @@ public class ChatRoom extends CreatedTime {
 
         @Builder
         public ClosedResponse(ChatRoom chatRoom){
+            int totalCount = chatRoom.getVoteTrueCount() + chatRoom.getVoteFalseCount();
+
             this.roomId = chatRoom.getRoomId();
             this.comment = chatRoom.getComment();
             this.authorNickname = chatRoom.getUser().getNickname();
             this.authorProfileImg = chatRoom.getUser().getProfileImg();
-            this.voteTruePercent =chatRoom.getVoteTrueCount()  / (chatRoom.getVoteTrueCount() + chatRoom.getVoteFalseCount()) * 100;
-            this.voteFalsePercent =chatRoom.getVoteFalseCount()  / (chatRoom.getVoteTrueCount() + chatRoom.getVoteFalseCount()) * 100;
+            this.voteTruePercent = (totalCount == 0) ? 0 : chatRoom.getVoteTrueCount()  / totalCount * 100;
+            this.voteFalsePercent = (totalCount == 0) ? 0 : chatRoom.getVoteFalseCount()  / totalCount * 100;
             this.createdAt = chatRoom.getCreatedDate();
         }
     }

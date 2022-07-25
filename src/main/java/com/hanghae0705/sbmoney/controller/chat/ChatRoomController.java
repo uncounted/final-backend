@@ -57,7 +57,6 @@ public class ChatRoomController {
 
     @GetMapping("/api/closedChat/rooms")
     public List<ChatRoom.ClosedResponse> closedRoom() {
-        Long userId = commonService.getUserId();
         List<ChatRoom> chatRooms = chatRoomRepository.findAll();
         List<ChatRoom.ClosedResponse> chatRoomResponseList = new ArrayList<>();
         //proceeding(true/false)
