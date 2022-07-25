@@ -1,6 +1,7 @@
 package com.hanghae0705.sbmoney.repository.chat;
 
 import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
+import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatRoom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ValueOperations;
@@ -18,7 +19,6 @@ public class RedisChatRoomRepository {
     private static final String CHAT_ROOMS = "CHAT_ROOM"; // 채팅룸 저장
     public static final String USER_COUNT = "USER_COUNT"; // 채팅룸에 입장한 클라이언트수 저장
     public static final String ENTER_INFO = "ENTER_INFO"; // 채팅룸에 입장한 클라이언트의 sessionId와 채팅룸 id를 맵핑한 정보 저장
-    public static final String CHAT_TIME = "CHAT_TIME";
 
     @Resource(name = "redisTemplate")
     private HashOperations<String, String, RedisChatRoom> hashOpsChatRoom;
@@ -33,8 +33,8 @@ public class RedisChatRoomRepository {
     }
 
     // 특정 채팅방 조회
-    public RedisChatRoom findRoomById(String id) {
-        return hashOpsChatRoom.get(CHAT_ROOMS, id);
+    public RedisChatRoom findRoomById(String roomId) {
+        return hashOpsChatRoom.get(CHAT_ROOMS, roomId);
     }
 
     // 채팅방 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.

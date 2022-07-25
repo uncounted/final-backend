@@ -21,6 +21,7 @@ public class RedisChatRoom implements Serializable {
         RedisChatRoom redisChatRoom = new RedisChatRoom();
         redisChatRoom.roomId = uuid;
         redisChatRoom.comment = comment;
+        redisChatRoom.userCount = 0L;
         return redisChatRoom;
     }
 }

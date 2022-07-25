@@ -73,7 +73,9 @@ public class ChatService {
         List<ChatRoom.Response> chatRoomResponseList = new ArrayList<>();
         //proceeding(true/false)
         for (ChatRoom chatRoom : chatRooms) {
+            System.out.println("chatRoom.getProceeding()"+chatRoom.getProceeding());
             if (chatRoom.getProceeding()) {
+                System.out.println("chatRoom.getRoomId()"+chatRoom.getRoomId());
                 Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
                 List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
                 Boolean checkProsCons = null;
@@ -233,9 +235,9 @@ public class ChatService {
                 .build();
     }
 
-    public Message getCloesdChatRoom(Long closedRoomId) {
+    public Message getCloesdChatRoom(String closedRoomId) {
         // 챗룸 정보(닉네임, 프로필 정보, 코멘트, 찬/반 비율, 챗로그) 가져오기
-        ChatRoom chatRoom = chatRoomRepository.findById(closedRoomId).orElseThrow(
+        ChatRoom chatRoom = chatRoomRepository.findByRoomId(closedRoomId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 방입니다.")
         );
 
@@ -244,7 +246,7 @@ public class ChatService {
         int voteFalsePercent = Math.round(chatRoom.getVoteFalseCount() / totalCount * 100);
 
         ChatRoom.ClosedRoomDetail closedRoomDetail = ChatRoom.ClosedRoomDetail.builder()
-                .closedRoomId(chatRoom.getId())
+                .closedRoomId(chatRoom.getRoomId())
                 .authorNickname(chatRoom.getUser().getNickname())
                 .authorProfileImg(chatRoom.getUser().getProfileImg())
                 .comment(chatRoom.getComment())
