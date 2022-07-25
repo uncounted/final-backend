@@ -2,13 +2,17 @@ package com.hanghae0705.sbmoney.service;
 
 
 import com.hanghae0705.sbmoney.data.Message;
+import com.hanghae0705.sbmoney.model.domain.chat.ChatRoomProsCons;
 import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
 import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatLog;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
 import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatRoom;
+import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.repository.chat.ChatLogRepository;
+import com.hanghae0705.sbmoney.repository.chat.ChatRoomProsConsRepository;
 import com.hanghae0705.sbmoney.repository.chat.ChatRoomRepository;
 import com.hanghae0705.sbmoney.repository.chat.RedisChatRoomRepository;
+import com.hanghae0705.sbmoney.validator.ChatRoomValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisOperations;
@@ -29,8 +33,11 @@ public class ChatService {
     private final ChannelTopic channelTopic;
     private final RedisTemplate redisTemplate;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatRoomProsConsRepository chatRoomProsConsRepository;
     private final RedisChatRoomRepository redisChatRoomRepository;
     private final ChatLogRepository chatLogRepository;
+    private final CommonService commonService;
+    private final ChatRoomValidator chatRoomValidator;
 
     /**
      * destination정보에서 roomId 추출
@@ -59,6 +66,98 @@ public class ChatService {
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
+    public Message getRooms() {
+        Long userId = commonService.getUserId();
+        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
+        List<ChatRoom.Response> chatRoomResponseList = new ArrayList<>();
+        //proceeding(true/false)
+        for (ChatRoom chatRoom : chatRooms) {
+            if (chatRoom.getProceeding()) {
+                Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
+                List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
+                Boolean checkProsCons = null;
+                //찬성 반대를 눌렀는 지 체크
+                if (!chatRoomProsConsList.isEmpty()) {
+                    for (ChatRoomProsCons chatRoomProsCons : chatRoomProsConsList) {
+                        if (chatRoomProsCons.getUserId().equals(userId)) {
+                            checkProsCons = chatRoomProsCons.getProsCons();
+                            break;
+                        }
+                    }
+                }
+                chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount));
+            }
+        }
+        return Message.builder()
+                .result(true)
+                .respMsg("채팅방 전체 조회에 성공했습니다.")
+                .data(chatRoomResponseList)
+                .build();
+    }
+
+    public Message getClosedRooms() {
+        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
+        List<ChatRoom.ClosedResponse> chatRoomResponseList = new ArrayList<>();
+        //proceeding(true/false)
+        for (ChatRoom chatRoom : chatRooms) {
+            if (!chatRoom.getProceeding()) {
+                chatRoomResponseList.add(new ChatRoom.ClosedResponse(chatRoom));
+            }
+        }
+        return Message.builder()
+                .result(true)
+                .respMsg("종료방 상세 전체 조회에 성공했습니다.")
+                .data(chatRoomResponseList)
+                .build();
+    }
+
+    public Message getRoomDetail(String roomId) {
+        ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
+        Long userCount = redisChatRoomRepository.getUserCount(roomId);
+        return Message.builder()
+                .result(true)
+                .respMsg("채팅방 상세 조회에 성공했습니다.")
+                .data(new ChatRoom.Response(chatRoom, userCount))
+                .build();
+    }
+
+    public Message createRoom(ChatRoom.Request request) {
+        User user = commonService.getUser();
+        String RoomUuid = UUID.randomUUID().toString();
+        ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, request.getTimeLimit(), request.getComment(), RoomUuid, true));
+        String redisChatRoomId = chatRoom.getRoomId();
+        redisChatRoomRepository.createChatRoom(redisChatRoomId, request.getComment());
+        return Message.builder()
+                .result(true)
+                .respMsg("방 개설을 성공하였습니다.")
+                .data(new ChatRoom.Response(chatRoom, 0L))
+                .build();
+    }
+
+    public Message vote(String roomId, ChatRoomProsCons.Request chatRoomProsConsRequest) {
+        Long userId = commonService.getUserId();
+        ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
+        Boolean prosCons = chatRoomProsConsRequest.getProsCons();
+        ChatRoomProsCons checkVote = chatRoomProsConsRepository.findByUserIdAndChatRoom(userId, chatRoom);
+        if (checkVote != null) {
+            if (prosCons != checkVote.getProsCons()) {
+                chatRoom.MinusVoteCount(!prosCons);
+                chatRoom.PlusVoteCount(prosCons);
+                checkVote.update(chatRoomProsConsRequest.getProsCons());
+            }
+        } else {
+            ChatRoomProsCons chatRoomProsCons = new ChatRoomProsCons(chatRoomProsConsRequest.getProsCons(), userId, chatRoom);
+            chatRoomProsConsRepository.save(chatRoomProsCons);
+            chatRoom.PlusVoteCount(prosCons);
+        }
+        return Message.builder()
+                .result(true)
+                .respMsg("쓸까? 말까? 투표를 하셨습니다.")
+                .data(new ChatRoom.VoteResponse(chatRoom))
+                .build();
+
+    }
+
     /**
      * 채팅 종료 시 채팅 기록 저장
      */
@@ -69,9 +168,7 @@ public class ChatService {
         RedisOperations<String, ChatMessage> operations = redisTemplate.opsForList().getOperations();
         System.out.println((operations.opsForList().range(roomId, 0, -1)));
 
-        ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(
-                () -> new IllegalArgumentException("존재하지 않는 방입니다.")
-        );
+        ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
 
         // proceeding 종료방(false)으로 변경
         chatRoom.changeProceeding(false);
@@ -79,7 +176,7 @@ public class ChatService {
         // roomId에 해당하는 ChatMessage를 찾아서 ChatLog에 저장
         List<ChatMessage> chatMessageList = operations.opsForList().range(roomId, 0, -1);
 
-        for(ChatMessage chatMessage : chatMessageList) {
+        for (ChatMessage chatMessage : chatMessageList) {
             ChatLog chatLog = ChatLog.builder()
                     .id(null)
                     .type(chatMessage.getType())
@@ -93,9 +190,9 @@ public class ChatService {
 
     public Message getTopRoom() {
         // 모든 roomId 호출
-        List<RedisChatRoom> allRooms =  redisChatRoomRepository.findAllRoom();
-        for(RedisChatRoom room : allRooms) {
-            log.info("allrooms :"+room.getRoomId());
+        List<RedisChatRoom> allRooms = redisChatRoomRepository.findAllRoom();
+        for (RedisChatRoom room : allRooms) {
+            log.info("allrooms :" + room.getRoomId());
         }
 
         // roomId에 해당하는 userCount 찾기
@@ -105,9 +202,9 @@ public class ChatService {
                         RedisChatRoom::getUserCount
                 ));
 
-        for(Map.Entry<String, Long> room : roomMap.entrySet()) {
-            log.info("mapkey :"+room.getKey());
-            log.info("mapvalue :"+room.getValue());
+        for (Map.Entry<String, Long> room : roomMap.entrySet()) {
+            log.info("mapkey :" + room.getKey());
+            log.info("mapvalue :" + room.getValue());
         }
 
         // 상위 5개 찾기
