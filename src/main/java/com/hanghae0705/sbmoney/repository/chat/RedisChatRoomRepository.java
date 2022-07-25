@@ -1,5 +1,6 @@
 package com.hanghae0705.sbmoney.repository.chat;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
@@ -60,17 +61,17 @@ public class RedisChatRoomRepository {
     }
 
     // 채팅방 유저수 조회
-    public long getUserCount(String roomId) {
+    public Long getUserCount(String roomId) {
         return Long.parseLong(Optional.ofNullable(valueOps.get(USER_COUNT + "_" + roomId)).orElse("0"));
     }
 
     // 채팅방에 입장한 유저수 +1
-    public long plusUserCount(String roomId) {
+    public Long plusUserCount(String roomId) {
         return Optional.ofNullable(valueOps.increment(USER_COUNT + "_" + roomId)).orElse(0L);
     }
 
     // 채팅방에 입장한 유저수 -1
-    public long minusUserCount(String roomId) {
+    public Long minusUserCount(String roomId) {
         return Optional.ofNullable(valueOps.decrement(USER_COUNT + "_" + roomId)).filter(count -> count > 0).orElse(0L);
     }
 

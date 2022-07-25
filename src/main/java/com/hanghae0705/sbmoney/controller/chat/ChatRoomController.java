@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class ChatRoomController {
     private final ChatService chatService;
 
     @GetMapping("/api/chat/rooms")
-    public ResponseEntity<Message> getRooms() {
+    public ResponseEntity<Message> getRooms() throws IOException {
         return ResponseEntity.ok(chatService.getRooms());
     }
 
@@ -28,7 +29,7 @@ public class ChatRoomController {
     }
 
     @GetMapping("/api/chat/room/{roomId}")
-    public Message roomInfo(@PathVariable String roomId) {
+    public Message roomInfo(@PathVariable String roomId) throws IOException {
         return chatService.getRoomDetail(roomId);
     }
 

@@ -22,6 +22,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,7 @@ public class ChatService {
      * 채팅방에 메시지 발송
      */
     public void sendChatMessage(ChatMessage chatMessage) {
-        //chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
+        chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
 
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
@@ -66,7 +67,7 @@ public class ChatService {
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
-    public Message getRooms() {
+    public Message getRooms() throws IOException {
         Long userId = commonService.getUserId();
         List<ChatRoom> chatRooms = chatRoomRepository.findAll();
         List<ChatRoom.Response> chatRoomResponseList = new ArrayList<>();
@@ -111,7 +112,7 @@ public class ChatService {
                 .build();
     }
 
-    public Message getRoomDetail(String roomId) {
+    public Message getRoomDetail(String roomId) throws IOException {
         ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
         Long userCount = redisChatRoomRepository.getUserCount(roomId);
         return Message.builder()

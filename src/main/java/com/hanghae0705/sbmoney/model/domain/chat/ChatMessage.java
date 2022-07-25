@@ -1,5 +1,6 @@
 package com.hanghae0705.sbmoney.model.domain.chat;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,7 @@ public class ChatMessage {
     }
 
     @Builder
-    public ChatMessage(MessageType type, String roomId, String sender, String profileImg, String message, long userCount) {
+    public ChatMessage(MessageType type, String roomId, String sender, String profileImg, String message, Long userCount) {
         this.type = type;
         this.roomId = roomId;
         this.sender = sender;
