@@ -1,15 +1,10 @@
 package com.hanghae0705.sbmoney.controller.chat;
 
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
-import com.hanghae0705.sbmoney.repository.ChatRoomRepository;
 import com.hanghae0705.sbmoney.service.ChatService;
-import com.hanghae0705.sbmoney.service.CommonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 

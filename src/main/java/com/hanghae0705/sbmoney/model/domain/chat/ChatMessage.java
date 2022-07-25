@@ -2,13 +2,10 @@ package com.hanghae0705.sbmoney.model.domain.chat;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import java.io.Serializable;
-
 @Getter
 @Setter
 public class ChatMessage {

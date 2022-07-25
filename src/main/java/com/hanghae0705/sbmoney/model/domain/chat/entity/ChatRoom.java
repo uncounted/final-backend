@@ -92,9 +92,9 @@ public class ChatRoom extends CreatedTime {
     public static class Response {
         private String roomId;
         private String comment;
-        private Long userId;
-        private String nickname;
-        private String profileImg;
+        private String authorNickname;
+        private String authorProfileImg;
+        private Long userCount;
         private Boolean prosCons;
         private LocalDateTime createdAt;
 
@@ -105,25 +105,52 @@ public class ChatRoom extends CreatedTime {
         }
 
         @Builder
-        public Response(ChatRoom chatRoom){
+        public Response(ChatRoom chatRoom, Long userCount){
             this.roomId = chatRoom.getRoomId();
             this.comment = chatRoom.getComment();
-            this.userId = chatRoom.getUser().getId();
-            this.nickname = chatRoom.getUser().getNickname();
-            this.profileImg = chatRoom.getUser().getProfileImg();
+            this.authorNickname = chatRoom.getUser().getNickname();
+            this.authorProfileImg = chatRoom.getUser().getProfileImg();
+            this.userCount = userCount;
             this.createdAt = chatRoom.getCreatedDate();
         }
 
         @Builder
-        public Response(ChatRoom chatRoom, Boolean chatRoomProsCons){
+        public Response(ChatRoom chatRoom, Boolean chatRoomProsCons, Long userCount){
             this.roomId = chatRoom.getRoomId();
             this.comment = chatRoom.getComment();
-            this.userId = chatRoom.getUser().getId();
-            this.nickname = chatRoom.getUser().getNickname();
-            this.profileImg = chatRoom.getUser().getProfileImg();
+            this.authorNickname = chatRoom.getUser().getNickname();
+            this.authorProfileImg = chatRoom.getUser().getProfileImg();
+            this.userCount = userCount;
+            this.createdAt = chatRoom.getCreatedDate();
             this.prosCons = chatRoomProsCons;
         }
     }
+
+    @Getter
+    @RequiredArgsConstructor
+    public static class ClosedResponse {
+        private String roomId;
+        private String comment;
+        private String authorNickname;
+        private String authorProfileImg;
+        private int voteTruePercent;
+        private int voteFalsePercent;
+        private LocalDateTime createdAt;
+
+        @Builder
+        public ClosedResponse(ChatRoom chatRoom){
+            int totalCount = chatRoom.getVoteTrueCount() + chatRoom.getVoteFalseCount();
+
+            this.roomId = chatRoom.getRoomId();
+            this.comment = chatRoom.getComment();
+            this.authorNickname = chatRoom.getUser().getNickname();
+            this.authorProfileImg = chatRoom.getUser().getProfileImg();
+            this.voteTruePercent = (totalCount == 0) ? 0 : chatRoom.getVoteTrueCount()  / totalCount * 100;
+            this.voteFalsePercent = (totalCount == 0) ? 0 : chatRoom.getVoteFalseCount()  / totalCount * 100;
+            this.createdAt = chatRoom.getCreatedDate();
+        }
+    }
+
 
     @Getter
     @NoArgsConstructor

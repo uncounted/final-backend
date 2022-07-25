@@ -1,4 +1,4 @@
-package com.hanghae0705.sbmoney.repository;
+package com.hanghae0705.sbmoney.repository.board;
 
 import com.hanghae0705.sbmoney.model.domain.board.Board;
 import org.springframework.data.domain.Page;

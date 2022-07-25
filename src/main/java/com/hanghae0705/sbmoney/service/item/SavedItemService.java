@@ -7,9 +7,9 @@ import com.hanghae0705.sbmoney.model.domain.item.Item;
 import com.hanghae0705.sbmoney.model.domain.item.SavedItem;
 import com.hanghae0705.sbmoney.model.domain.user.Favorite;
 import com.hanghae0705.sbmoney.model.domain.user.User;
-import com.hanghae0705.sbmoney.repository.FavoriteRepository;
-import com.hanghae0705.sbmoney.repository.GoalItemRepository;
-import com.hanghae0705.sbmoney.repository.SavedItemRepository;
+import com.hanghae0705.sbmoney.repository.item.FavoriteRepository;
+import com.hanghae0705.sbmoney.repository.item.GoalItemRepository;
+import com.hanghae0705.sbmoney.repository.item.SavedItemRepository;
 import com.hanghae0705.sbmoney.util.MathFloor;
 import com.hanghae0705.sbmoney.validator.ItemValidator;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +45,7 @@ public class SavedItemService {
         }
         int updatePrice = savedItemTotal + price;
 
-        if (goalItem.getItem().getId() != -1L && updatePrice > goalItem.getTotal()) { // GoalItem이 목표 금액을 달성했을 때
+        if (goalItem.getItem().getId() != -1L && updatePrice >= goalItem.getTotal()) { // GoalItem이 목표 금액을 달성했을 때
             LocalDateTime reachedAt = LocalDateTime.now();
             goalItem.setCheckReached(true, 100.0, reachedAt);
             savedItemRepository.save(new SavedItem(item, price, user, goalItem));
