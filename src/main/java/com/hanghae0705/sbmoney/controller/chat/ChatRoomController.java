@@ -5,7 +5,6 @@ import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatRoom;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoomProsCons;
-import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
 import com.hanghae0705.sbmoney.repository.ChatRoomProsConsRepository;
 import com.hanghae0705.sbmoney.repository.ChatRoomRepository;
 import com.hanghae0705.sbmoney.repository.RedisChatRoomRepository;
@@ -35,23 +34,50 @@ public class ChatRoomController {
         Long userId = commonService.getUserId();
         List<ChatRoom> chatRooms = chatRoomRepository.findAll();
         List<ChatRoom.Response> chatRoomResponseList = new ArrayList<>();
-
+        //proceeding(true/false)
         for(ChatRoom chatRoom : chatRooms){
-            List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
-            Boolean checkProsCons = null;
-            //찬성 반대를 눌렀는 지 체크
-            if(!chatRoomProsConsList.isEmpty()){
-                for (ChatRoomProsCons chatRoomProsCons : chatRoomProsConsList){
-                    if(chatRoomProsCons.getUserId().equals(userId)){
-                        checkProsCons = chatRoomProsCons.getProsCons();
-                        break;
+            if(chatRoom.getProceeding()){
+                Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
+                List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
+                Boolean checkProsCons = null;
+                //찬성 반대를 눌렀는 지 체크
+                if(!chatRoomProsConsList.isEmpty()){
+                    for (ChatRoomProsCons chatRoomProsCons : chatRoomProsConsList){
+                        if(chatRoomProsCons.getUserId().equals(userId)){
+                            checkProsCons = chatRoomProsCons.getProsCons();
+                            break;
+                        }
                     }
                 }
+                chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount)) ;
             }
-            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons)) ;
         }
         return chatRoomResponseList;
     }
+
+    @GetMapping("/api/closedChat/rooms")
+    public List<ChatRoom.ClosedResponse> closedRoom() {
+        Long userId = commonService.getUserId();
+        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
+        List<ChatRoom.ClosedResponse> chatRoomResponseList = new ArrayList<>();
+        //proceeding(true/false)
+        for(ChatRoom chatRoom : chatRooms){
+            if(!chatRoom.getProceeding()){
+                chatRoomResponseList.add(new ChatRoom.ClosedResponse(chatRoom));
+            }
+        }
+        return chatRoomResponseList;
+    }
+
+    @GetMapping("/api/chat/room/{roomId}")
+    public ChatRoom.Response roomInfo(@PathVariable String roomId) {
+        ChatRoom chatRoom = chatRoomRepository.findByRoomId(roomId).orElseThrow(
+                () -> new IllegalArgumentException("존재하지 않는 방입니다.")
+        );
+        Long userCount = redisChatRoomRepository.getUserCount(roomId);
+        return new ChatRoom.Response(chatRoom, userCount);
+    }
+
 
     @PostMapping("/api/chat/room")
     public ChatRoom.Response createRoom(@RequestBody ChatRoom.Request request) {
@@ -60,7 +86,7 @@ public class ChatRoomController {
         ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, request.getTimeLimit(), request.getComment(), RoomUuid, true));
         String redisChatRoomId = chatRoom.getRoomId();
         redisChatRoomRepository.createChatRoom(redisChatRoomId, request.getComment());
-        return new ChatRoom.Response(chatRoom);
+        return new ChatRoom.Response(chatRoom, 0L);
     }
 
     @DeleteMapping("/api/chat/room/{roomId}") //로그랑 메세지도 삭제
@@ -92,10 +118,7 @@ public class ChatRoomController {
         return chatRoom;
     }
 
-    @GetMapping("/api/chat/room/{roomId}")
-    public RedisChatRoom roomInfo(@PathVariable String roomId) {
-        return redisChatRoomRepository.findRoomById(roomId);
-    }
+
 
     @GetMapping("/api/chat/room/{roomId}/save")
     public ResponseEntity<Message> saveChatLog(@PathVariable String roomId) {
