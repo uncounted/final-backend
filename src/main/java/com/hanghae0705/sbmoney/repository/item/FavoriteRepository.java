@@ -1,4 +1,4 @@
-package com.hanghae0705.sbmoney.repository;
+package com.hanghae0705.sbmoney.repository.item;
 
 import com.hanghae0705.sbmoney.model.domain.user.Favorite;
 import org.springframework.data.jpa.repository.JpaRepository;

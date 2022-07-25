@@ -1,4 +1,4 @@
-package com.hanghae0705.sbmoney.repository;
+package com.hanghae0705.sbmoney.repository.user;
 
 import com.hanghae0705.sbmoney.model.domain.user.RefreshToken;
 import org.springframework.data.jpa.repository.JpaRepository;

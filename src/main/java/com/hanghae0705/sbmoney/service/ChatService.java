@@ -2,15 +2,13 @@ package com.hanghae0705.sbmoney.service;
 
 
 import com.hanghae0705.sbmoney.data.Message;
-import com.hanghae0705.sbmoney.exception.ApiException;
-import com.hanghae0705.sbmoney.exception.ApiRequestException;
 import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
 import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatLog;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
 import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatRoom;
-import com.hanghae0705.sbmoney.repository.ChatLogRepository;
-import com.hanghae0705.sbmoney.repository.ChatRoomRepository;
-import com.hanghae0705.sbmoney.repository.RedisChatRoomRepository;
+import com.hanghae0705.sbmoney.repository.chat.ChatLogRepository;
+import com.hanghae0705.sbmoney.repository.chat.ChatRoomRepository;
+import com.hanghae0705.sbmoney.repository.chat.RedisChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisOperations;

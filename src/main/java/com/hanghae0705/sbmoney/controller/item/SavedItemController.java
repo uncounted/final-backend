@@ -4,7 +4,7 @@ import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ItemException;
 import com.hanghae0705.sbmoney.model.domain.item.SavedItem;
 import com.hanghae0705.sbmoney.model.domain.user.User;
-import com.hanghae0705.sbmoney.repository.SavedItemRepository;
+import com.hanghae0705.sbmoney.repository.item.SavedItemRepository;
 import com.hanghae0705.sbmoney.service.CommonService;
 import com.hanghae0705.sbmoney.service.item.SavedItemService;
 import lombok.RequiredArgsConstructor;

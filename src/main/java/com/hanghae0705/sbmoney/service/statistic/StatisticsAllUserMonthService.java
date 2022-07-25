@@ -3,7 +3,7 @@ package com.hanghae0705.sbmoney.service.statistic;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.statistic.StatisticsAllUserMonth;
 import com.hanghae0705.sbmoney.model.dto.SavedItemForStatisticsAllUserDto;
-import com.hanghae0705.sbmoney.repository.StatisticsAllUserRepository;
+import com.hanghae0705.sbmoney.repository.statistic.StatisticsAllUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

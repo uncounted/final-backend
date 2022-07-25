@@ -1,8 +1,7 @@
 package com.hanghae0705.sbmoney.config;
 
 import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
-import com.hanghae0705.sbmoney.repository.ChatRoomRepository;
-import com.hanghae0705.sbmoney.repository.RedisChatRoomRepository;
+import com.hanghae0705.sbmoney.repository.chat.RedisChatRoomRepository;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.service.ChatService;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,6 @@ import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.stereotype.Component;
 
-import java.security.Principal;
 import java.util.Optional;
 
 @Slf4j

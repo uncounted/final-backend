@@ -1,4 +1,4 @@
-package com.hanghae0705.sbmoney.repository;
+package com.hanghae0705.sbmoney.repository.statistic;
 
 
 import com.hanghae0705.sbmoney.model.domain.item.QSavedItem;
