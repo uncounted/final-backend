@@ -36,7 +36,7 @@ public class RedisSubscriber {
 
             // 최대 시간 설정(30분)
             redisTemplate.expireAt(chatMessage.getRoomId(), Date.from(ZonedDateTime.now().plusMinutes(30).toInstant()));
-            RedisOperations<String, Object> operations = redisTemplate.opsForList().getOperations();
+            RedisOperations<String, ChatMessage> operations = redisTemplate.opsForList().getOperations();
 
             // 최초 진입 시 기존 채팅 기록 출력
 //            if (chatMessage.getType().equals(ChatMessage.MessageType.ENTER)) {

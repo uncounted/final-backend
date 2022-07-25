@@ -54,7 +54,7 @@ public class ChatService {
      * 채팅방에 메시지 발송
      */
     public void sendChatMessage(ChatMessage chatMessage) {
-        chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
+        //chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
 
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
