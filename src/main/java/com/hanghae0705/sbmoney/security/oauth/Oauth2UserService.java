@@ -2,7 +2,7 @@ package com.hanghae0705.sbmoney.security.oauth;
 
 import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.UserRoleEnum;
-import com.hanghae0705.sbmoney.repository.UserRepository;
+import com.hanghae0705.sbmoney.repository.user.UserRepository;
 import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;

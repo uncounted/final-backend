@@ -5,9 +5,9 @@ import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.board.Board;
 import com.hanghae0705.sbmoney.model.domain.board.BoardLike;
 import com.hanghae0705.sbmoney.model.domain.user.User;
-import com.hanghae0705.sbmoney.repository.BoardRepository;
-import com.hanghae0705.sbmoney.repository.LikeRepository;
-import com.hanghae0705.sbmoney.repository.UserRepository;
+import com.hanghae0705.sbmoney.repository.board.BoardRepository;
+import com.hanghae0705.sbmoney.repository.board.LikeRepository;
+import com.hanghae0705.sbmoney.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

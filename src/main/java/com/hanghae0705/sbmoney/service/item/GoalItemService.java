@@ -8,8 +8,8 @@ import com.hanghae0705.sbmoney.model.domain.item.Item;
 import com.hanghae0705.sbmoney.model.domain.item.SavedItem;
 import com.hanghae0705.sbmoney.model.domain.user.Favorite;
 import com.hanghae0705.sbmoney.model.domain.user.User;
-import com.hanghae0705.sbmoney.repository.FavoriteRepository;
-import com.hanghae0705.sbmoney.repository.GoalItemRepository;
+import com.hanghae0705.sbmoney.repository.item.FavoriteRepository;
+import com.hanghae0705.sbmoney.repository.item.GoalItemRepository;
 import com.hanghae0705.sbmoney.service.S3Uploader;
 import com.hanghae0705.sbmoney.util.MathFloor;
 import com.hanghae0705.sbmoney.validator.ItemValidator;
@@ -61,13 +61,15 @@ public class GoalItemService {
                 List<SavedItem> savedItemList = goalItem.getSavedItems();
                 List<Favorite> favorites = favoriteRepository.findByUserId(user.getId());
                 List<SavedItem.Response> savedItemResponseList = new ArrayList<>();
+                int totalPrice = 0;
                 for (SavedItem savedItem : savedItemList) {
                     Favorite.SavedItemResponse favorite = itemValidator.isFavoriteItem(favorites, savedItem.getItem(), savedItem.getPrice());
                     SavedItem.Response savedItemResponse = new SavedItem.Response(savedItem, favorite);
+                    totalPrice += savedItem.getPrice();
                     savedItemResponseList.add(savedItemResponse);
                 }
                 Collections.reverse(savedItemResponseList);
-                reachedGoalItemList.add(new GoalItem.HistoryResponse(goalItem, savedItemResponseList));
+                reachedGoalItemList.add(new GoalItem.HistoryResponse(goalItem, totalPrice, savedItemResponseList));
             }
         }
         return new Message(true, "히스토리를 성공적으로 조회하였습니다.", reachedGoalItemList);
@@ -97,9 +99,10 @@ public class GoalItemService {
         int total = (price == 0) ? item.getDefaultPrice() * count : goalItemRequest.getPrice() * count;
 
         GoalItem goalItem = goalItemRepository.save(new GoalItem(user, count, total, item));
-        String url = s3Uploader.upload(multipartFile, "static");
-        goalItem.setImage(url);
-
+        if(multipartFile != null){
+            String url = s3Uploader.upload(multipartFile, "static");
+            goalItem.setImage(url);
+        }
         return new Message(true, "목표 항목을 등록하였습니다.", goalItem);
     }
 

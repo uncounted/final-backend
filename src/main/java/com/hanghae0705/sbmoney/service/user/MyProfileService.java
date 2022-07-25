@@ -4,7 +4,7 @@ import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRequestException;
 import com.hanghae0705.sbmoney.model.domain.user.User;
-import com.hanghae0705.sbmoney.repository.UserRepository;
+import com.hanghae0705.sbmoney.repository.user.UserRepository;
 import com.hanghae0705.sbmoney.security.SecurityUtil;
 import com.hanghae0705.sbmoney.service.S3Uploader;
 import org.springframework.stereotype.Service;

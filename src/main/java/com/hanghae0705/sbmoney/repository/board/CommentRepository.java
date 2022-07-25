@@ -1,4 +1,4 @@
-package com.hanghae0705.sbmoney.repository;
+package com.hanghae0705.sbmoney.repository.board;
 
 import com.hanghae0705.sbmoney.model.domain.board.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
