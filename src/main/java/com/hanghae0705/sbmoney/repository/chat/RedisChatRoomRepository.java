@@ -61,7 +61,7 @@ public class RedisChatRoomRepository {
 
     // 채팅방 유저수 조회
     public long getUserCount(String roomId) {
-        return Long.parseLong(Optional.ofNullable(valueOps.get(USER_COUNT + "_" + roomId)).orElse("0"));
+        return Long.valueOf(Optional.ofNullable(valueOps.get(USER_COUNT + "_" + roomId)).orElse("0"));
     }
 
     // 채팅방에 입장한 유저수 +1

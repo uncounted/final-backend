@@ -11,7 +11,7 @@ import java.time.LocalTime;
 @Setter
 public class RedisChatRoom implements Serializable {
 
-    private static final long serialVersionUID = 6494678977089006639L;
+    private static final long serialVersionUID = 6494678977289006639L;
 
     private String roomId;
     private String comment;
