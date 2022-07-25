@@ -43,7 +43,7 @@ public class ChatRoom extends CreatedTime {
     @JsonManagedReference(value = "chatRoom-fk")
     private List<ChatRoomProsCons> chatRoomProsConsList;
 
-    @OneToMany (mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
     @JsonManagedReference(value = "chatLog-chatRoom-fk")
     private List<ChatLog> chatLogList;
 
@@ -59,6 +59,7 @@ public class ChatRoom extends CreatedTime {
         this.user = user;
         this.roomId = roomId;
     }
+
     public void PlusVoteCount(Boolean prosCons) {
         if (prosCons) {
             this.voteTrueCount++;
@@ -109,7 +110,7 @@ public class ChatRoom extends CreatedTime {
         }
 
         @Builder
-        public Response(ChatRoom chatRoom, Long userCount){
+        public Response(ChatRoom chatRoom, Long userCount) {
             this.roomId = chatRoom.getRoomId();
             this.comment = chatRoom.getComment();
             this.authorNickname = chatRoom.getUser().getNickname();
@@ -119,7 +120,7 @@ public class ChatRoom extends CreatedTime {
         }
 
         @Builder
-        public Response(ChatRoom chatRoom, Boolean chatRoomProsCons, Long userCount){
+        public Response(ChatRoom chatRoom, Boolean chatRoomProsCons, Long userCount) {
             this.roomId = chatRoom.getRoomId();
             this.comment = chatRoom.getComment();
             this.authorNickname = chatRoom.getUser().getNickname();
@@ -142,15 +143,39 @@ public class ChatRoom extends CreatedTime {
         private LocalDateTime createdAt;
 
         @Builder
-        public ClosedResponse(ChatRoom chatRoom){
+        public ClosedResponse(ChatRoom chatRoom) {
             int totalCount = chatRoom.getVoteTrueCount() + chatRoom.getVoteFalseCount();
 
             this.roomId = chatRoom.getRoomId();
             this.comment = chatRoom.getComment();
             this.authorNickname = chatRoom.getUser().getNickname();
             this.authorProfileImg = chatRoom.getUser().getProfileImg();
-            this.voteTruePercent = (totalCount == 0) ? 0 : chatRoom.getVoteTrueCount()  / totalCount * 100;
-            this.voteFalsePercent = (totalCount == 0) ? 0 : chatRoom.getVoteFalseCount()  / totalCount * 100;
+            this.voteTruePercent = (totalCount == 0) ? 0 : chatRoom.getVoteTrueCount() / totalCount * 100;
+            this.voteFalsePercent = (totalCount == 0) ? 0 : chatRoom.getVoteFalseCount() / totalCount * 100;
+            this.createdAt = chatRoom.getCreatedDate();
+        }
+    }
+
+
+    @Getter
+    @RequiredArgsConstructor
+    public static class VoteResponse {
+        private String roomId;
+        private String comment;
+        private String authorNickname;
+        private String authorProfileImg;
+        private int voteTrueCount;
+        private int voteFalseCount;
+        private LocalDateTime createdAt;
+
+        @Builder
+        public VoteResponse(ChatRoom chatRoom) {
+            this.roomId = chatRoom.getRoomId();
+            this.comment = chatRoom.getComment();
+            this.authorNickname = chatRoom.getUser().getNickname();
+            this.authorProfileImg = chatRoom.getUser().getProfileImg();
+            this.voteTrueCount = chatRoom.getVoteTrueCount();
+            this.voteFalseCount = chatRoom.getVoteFalseCount();
             this.createdAt = chatRoom.getCreatedDate();
         }
     }
