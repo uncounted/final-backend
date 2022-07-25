@@ -29,9 +29,6 @@ public class UserController {
                 .build();
     }
 
-    //@GetMapping("/login/oauth/code/google") //라이브러리에서 처리하는 부분이기 때문에 작성 불필요
-    // 또한 /login/oauth/code 는 구글 API 신청 시 한 번 등록한 후 변경불가
-
     // 아이디 중복검사
     @PostMapping("/api/user/register/checkUsername")
     public RespDto checkUsername(@RequestBody User.RequestCheckUsername requestCheckUsername){
@@ -102,6 +99,12 @@ public class UserController {
     @PostMapping("/api/user/changePassword")
     public RespDto changePassword(HttpServletRequest httpServletRequest, @RequestBody User.RequestChangePassword requestChangePassword) {
         return userService.changePassword(httpServletRequest, requestChangePassword);
+    }
+
+    // 회원 탈퇴
+    @GetMapping("/api/user/resign")
+    public void requestResign() {
+        userService.requestResign();
     }
 
     //로그인 테스트

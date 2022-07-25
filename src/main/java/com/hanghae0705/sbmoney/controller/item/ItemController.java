@@ -2,7 +2,6 @@ package com.hanghae0705.sbmoney.controller.item;
 
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ItemException;
-import com.hanghae0705.sbmoney.model.domain.item.GoalItem;
 import com.hanghae0705.sbmoney.model.domain.item.Item;
 import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.service.CommonService;
