@@ -45,7 +45,7 @@ public class SavedItemService {
         }
         int updatePrice = savedItemTotal + price;
 
-        if (goalItem.getItem().getId() != -1L && updatePrice > goalItem.getTotal()) { // GoalItem이 목표 금액을 달성했을 때
+        if (goalItem.getItem().getId() != -1L && updatePrice >= goalItem.getTotal()) { // GoalItem이 목표 금액을 달성했을 때
             LocalDateTime reachedAt = LocalDateTime.now();
             goalItem.setCheckReached(true, 100.0, reachedAt);
             savedItemRepository.save(new SavedItem(item, price, user, goalItem));

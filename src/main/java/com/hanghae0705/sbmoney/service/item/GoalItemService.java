@@ -61,13 +61,15 @@ public class GoalItemService {
                 List<SavedItem> savedItemList = goalItem.getSavedItems();
                 List<Favorite> favorites = favoriteRepository.findByUserId(user.getId());
                 List<SavedItem.Response> savedItemResponseList = new ArrayList<>();
+                int totalPrice = 0;
                 for (SavedItem savedItem : savedItemList) {
                     Favorite.SavedItemResponse favorite = itemValidator.isFavoriteItem(favorites, savedItem.getItem(), savedItem.getPrice());
                     SavedItem.Response savedItemResponse = new SavedItem.Response(savedItem, favorite);
+                    totalPrice += savedItem.getPrice();
                     savedItemResponseList.add(savedItemResponse);
                 }
                 Collections.reverse(savedItemResponseList);
-                reachedGoalItemList.add(new GoalItem.HistoryResponse(goalItem, savedItemResponseList));
+                reachedGoalItemList.add(new GoalItem.HistoryResponse(goalItem, totalPrice, savedItemResponseList));
             }
         }
         return new Message(true, "히스토리를 성공적으로 조회하였습니다.", reachedGoalItemList);

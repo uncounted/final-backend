@@ -166,7 +166,7 @@ public class GoalItem extends BaseEntity {
         private LocalDateTime reachedAt;
         private List<SavedItem.Response> savedItems;
 
-        public HistoryResponse(GoalItem goalItem, List<SavedItem.Response> savedItems){
+        public HistoryResponse(GoalItem goalItem, int totalPrice, List<SavedItem.Response> savedItems){
             this.goalItemId = goalItem.getId();
             this.categoryId = goalItem.getItem().getCategory().getId();
             this.categoryName = goalItem.getItem().getCategory().getName();
@@ -174,7 +174,7 @@ public class GoalItem extends BaseEntity {
             this.itemName = goalItem.getItem().getName();
             this.goalItemCount = goalItem.getCount();
             this.price = (goalItem.getCount() == 0)? 0 : goalItem.getTotal() / goalItem.getCount();
-            this.totalPrice = goalItem.getTotal();
+            this.totalPrice = totalPrice;
             this.checkReached = goalItem.isCheckReached();
             this.goalPercent = goalItem.getGoalPercent();
             this.savedItemCount = (goalItem.getSavedItems() == null) ? 0 : goalItem.getSavedItems().size();
