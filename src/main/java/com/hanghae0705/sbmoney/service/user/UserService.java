@@ -4,11 +4,17 @@ import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.exception.ApiException;
 import com.hanghae0705.sbmoney.exception.ApiRequestException;
 import com.hanghae0705.sbmoney.exception.ApiRuntimeException;
+import com.hanghae0705.sbmoney.model.domain.board.Board;
+import com.hanghae0705.sbmoney.model.domain.board.Comment;
+import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatRoom;
 import com.hanghae0705.sbmoney.model.domain.user.RefreshToken;
 import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.UserRoleEnum;
 import com.hanghae0705.sbmoney.model.dto.RespDto;
 import com.hanghae0705.sbmoney.model.dto.TokenRequestDto;
+import com.hanghae0705.sbmoney.repository.board.BoardRepository;
+import com.hanghae0705.sbmoney.repository.board.CommentRepository;
+import com.hanghae0705.sbmoney.repository.chat.ChatRoomRepository;
 import com.hanghae0705.sbmoney.repository.user.RefreshTokenRepository;
 import com.hanghae0705.sbmoney.repository.user.UserRepository;
 import com.hanghae0705.sbmoney.security.SecurityUtil;
@@ -16,6 +22,7 @@ import com.hanghae0705.sbmoney.model.dto.TokenDto;
 import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.security.CookieUtils;
+import com.hanghae0705.sbmoney.service.CommonService;
 import com.hanghae0705.sbmoney.util.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +37,9 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.hanghae0705.sbmoney.security.filter.JwtFilter.AUTHORIZATION_HEADER;
 import static com.hanghae0705.sbmoney.security.filter.JwtFilter.BEARER_PREFIX;
@@ -39,11 +48,15 @@ import static com.hanghae0705.sbmoney.security.filter.JwtFilter.BEARER_PREFIX;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final BoardRepository boardRepository;
+    private final CommentRepository commentRepository;
+    private final ChatRoomRepository chatRoomRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final MailService mailService;
+    private final CommonService commonService;
 
     public void saveUser(User.RequestRegister requestRegisterDto) {
         userRepository.save(User.builder()
@@ -391,4 +404,37 @@ public class UserService {
                     .build();
         }
     }
+
+    @Transactional
+    public void requestResign() {
+        User user = commonService.getUser();
+
+        // Board, Comment, ChatRoom 유저 삭제
+        updateBoardUserNull(user);
+        updateCommentUserNull(user);
+        updateChatRoomUserNull(user);
+
+        // User 정보 삭제
+        userRepository.delete(user);
+    }
+
+
+    public void updateBoardUserNull(User user) {
+        List<Board> boardList = boardRepository.findAllByUserId(user.getId());
+        boardList.forEach(Board::updateUserNull);
+        boardRepository.saveAll(boardList);
+    }
+
+    public void updateCommentUserNull(User user) {
+        List<Comment> commentList = commentRepository.findAllByUserId(user.getId());
+        commentList.forEach(Comment::updateUserNull);
+        commentRepository.saveAll(commentList);
+    }
+
+    public void updateChatRoomUserNull(User user) {
+        List<ChatRoom> chatRoomList = chatRoomRepository.findAllByUserId(user.getId());
+        chatRoomList.forEach(ChatRoom::updateUserNull);
+        chatRoomRepository.saveAll(chatRoomList);
+    }
+
 }

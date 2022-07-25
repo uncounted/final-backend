@@ -71,4 +71,8 @@ public class Comment extends BaseEntity {
     public void updateComment(Request request) {
         this.comment = request.getComment();
     }
+
+    public void updateUserNull() {
+        this.user = null;
+    }
 }
