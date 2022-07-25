@@ -93,6 +93,9 @@ public class Board extends BaseEntity {
     public void updateBoard(Board.Update update) {
         this.contents = update.contents;
     }
+    public void updateUserNull() {
+        this.user = null;
+    }
 
     public void likeBoard(boolean like, Long likeCount) {
 

@@ -79,6 +79,10 @@ public class ChatRoom extends CreatedTime {
         this.proceeding = proceeding;
     }
 
+    public void updateUserNull() {
+        this.user = null;
+    }
+
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
