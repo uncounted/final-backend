@@ -3,6 +3,7 @@ package com.hanghae0705.sbmoney.model.domain.board;
 import com.hanghae0705.sbmoney.model.domain.user.User;
 import com.hanghae0705.sbmoney.model.domain.baseEntity.BaseEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -61,6 +62,7 @@ public class Comment extends BaseEntity {
         }
     }
 
+    @Builder
     public Comment(Request request, Board board, User user){
         this.comment = request.getComment();
         this.board = board;

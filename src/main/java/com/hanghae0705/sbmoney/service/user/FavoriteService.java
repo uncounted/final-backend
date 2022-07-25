@@ -128,14 +128,14 @@ public class FavoriteService {
         return false;
     }
 
-    public User getUser() {
+    private User getUser() {
         ApiRequestException e = new ApiRequestException(ApiException.NOT_MATCH_USER);
         errorMsg = e.getMessage();
         return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(() -> e);
     }
 
     // if문 쓰는게 더 보기 편한가
-    public void compareTwoObjectsIsEqual(Object target1, Object target2) {
+    private void compareTwoObjectsIsEqual(Object target1, Object target2) {
         if (!target1.equals(target2)) {
             IllegalArgumentException e = new IllegalArgumentException("두 인자가 일치하지 않습니다.");
             getExpMsg(e);
@@ -143,7 +143,7 @@ public class FavoriteService {
         }
     }
 
-    public void compareTwoObjectsIsNotEqual(Object target1, Object target2) {
+    private void compareTwoObjectsIsNotEqual(Object target1, Object target2) {
         if (target1.equals(target2)) {
             IllegalArgumentException e = new IllegalArgumentException("두 인자가 일치합니다.");
             getExpMsg(e);
@@ -151,7 +151,7 @@ public class FavoriteService {
         }
     }
 
-    public void checkPriceOverZero(int price) {
+    private void checkPriceOverZero(int price) {
         if(price <= 0) {
             ApiRequestException e = new ApiRequestException(ApiException.NOT_VALID_DATA);
             getExpMsg(e);

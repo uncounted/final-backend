@@ -56,13 +56,13 @@ public class MyProfileService {
         }
     }
 
-    public User getUser() {
+    private User getUser() {
         ApiRequestException e = new ApiRequestException(ApiException.NOT_EXIST_USER);
         errorMsg = e.getMessage();
         return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(() -> e);
     }
 
-    public void checkStrLengthIsValid(String target, int max, boolean ableZero) {
+    private void checkStrLengthIsValid(String target, int max, boolean ableZero) {
         if(!ableZero) {
             if (target.trim().length() <= 0 || target.trim().length() > max) {
                 ApiRequestException e = new ApiRequestException(ApiException.NOT_VALID_DATA);
