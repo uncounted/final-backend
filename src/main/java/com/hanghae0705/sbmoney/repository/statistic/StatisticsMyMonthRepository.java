@@ -31,21 +31,23 @@ public class StatisticsMyMonthRepository {
     // 월별, 일별 Data 생성
     // savedItem에서 entity들을 뽑아와 날짜로 월별, 일별 통계 테이블에 저장하는 용도
     // 얘는 controller의 스케쥴러에서 사용한다.
-    public List<SavedItemForStatisticsDto> createStatisticByUsername(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
+    public List<SavedItemForStatisticsDto> findByDate(Long userId, LocalDateTime startDate, LocalDateTime endDate) {
         QSavedItem savedItem = QSavedItem.savedItem;
         NumberPath<Integer> aliasOrderType = Expressions.numberPath(Integer.class, "totalPrice");
         List<SavedItemForStatisticsDto> tempList = jpaQueryFactory.select(
                 Projections.fields(SavedItemForStatisticsDto.class,
                     savedItem.user.id.as("userId"),
+                    savedItem.item.id.as("itemId"),
                     savedItem.item.name.as("itemName"),
-                    savedItem.count().as("totalCount"),
+                    savedItem.item.id.count().as("totalCount"),
                     savedItem.price.sum().as("totalPrice"),
                     savedItem.item.category.id.as("categoryId")))
                 .from(savedItem)
                 .where(savedItem.user.id.eq(userId), savedItem.createdAt.between(startDate, endDate))
-                .orderBy(aliasOrderType.desc())
-                .groupBy(savedItem.item.id)
-                .limit(5).fetch();
+                .orderBy(aliasOrderType.desc(), savedItem.user.id.desc())
+                .groupBy(savedItem.item.id, savedItem.user.id)
+                .limit(5)
+                .fetch();
         tempList.forEach(SavedItemForStatisticsDto -> {
             log.info("userId: "+SavedItemForStatisticsDto.getUserId() + " | "
                     + "categoryId: "+SavedItemForStatisticsDto.getCategoryId() + " | "

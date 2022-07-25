@@ -43,7 +43,7 @@ public class StatisticsMyMonthlyService {
             LocalDateTime collectEndTime = collectStartTime.plusMonths(1).minusSeconds(1);
 
             // savedItem table 에서 select query 실행
-            List<SavedItemForStatisticsDto> tempList = myMonthRepository.createStatisticByUsername(userId, collectStartTime, collectEndTime);
+            List<SavedItemForStatisticsDto> tempList = myMonthRepository.findByDate(userId, collectStartTime, collectEndTime);
 
             // tempList에서 priceRank, cntRank 정렬해서 순위값을 정하고 DB에 넣어야함
             List<StatisticsMyMonth> statisticsMyMonthList = tempList.stream()
@@ -56,9 +56,11 @@ public class StatisticsMyMonthlyService {
                             .categoryId(savedItem.getCategoryId())
                             .rankPrice(tempList.indexOf(savedItem)+1)
                             .build())
+                    .limit(5)
                     .collect(Collectors.toList());
 
             List<SavedItemForStatisticsDto> savedItemListOrderedByCount = tempList.stream().sorted(Comparator.comparing(SavedItemForStatisticsDto::getTotalCount).reversed())
+                    .limit(5)
                     .collect(Collectors.toList());
 
             for(SavedItemForStatisticsDto savedItemDto : savedItemListOrderedByCount) {
@@ -73,7 +75,7 @@ public class StatisticsMyMonthlyService {
                 myMonthRepository.saveMyMonthlyStatistics(savedItemStatistics);
             }
         } catch (Exception e) {
-            log.info(e.getMessage() + "|" +" 월별 통계 service 에서 에러 발생");
+            log.info(e.getMessage() + " 월별 통계 service 에서 에러 발생");
         }
     }
 

@@ -88,18 +88,18 @@ public class CommentService {
         }
     }
 
-    public User getUser() {
+    private User getUser() {
         ApiRequestException e = new ApiRequestException(ApiException.NOT_MATCH_USER);
         errorMsg = e.getMessage();
         return userRepository.findByUsername(SecurityUtil.getCurrentUsername()).orElseThrow(() -> e);
     }
 
-    public void getErrMsg(Exception e) {
+    private void getErrMsg(Exception e) {
         log.info(e.getMessage());
         errorMsg = e.getMessage();
     }
 
-    public void checkCommentLength(String target) {
+    private void checkCommentLength(String target) {
         if(target.length() > 200) {
             IllegalArgumentException e = new IllegalArgumentException("댓글은 200자 이내로 작성해야합니다.");
             getErrMsg(e);
@@ -107,7 +107,7 @@ public class CommentService {
         }
     }
 
-    public void checkCommentUserAndCurrentUser(Comment comment) {
+    private void checkCommentUserAndCurrentUser(Comment comment) {
         Comment target = (Comment) getValueByIdFromRepo("comment", comment.getId());
         if(!target.getUser().equals(getUser())){
             ApiRequestException e = new ApiRequestException(ApiException.NOT_MATCH_USER);
@@ -116,7 +116,7 @@ public class CommentService {
         }
     }
 
-    public void checkValueIsEmpty(String target) {
+    private void checkValueIsEmpty(String target) {
         if (target.trim().isEmpty()) {
             NullPointerException e = new NullPointerException("내용이 없습니다.");
             getErrMsg(e);
@@ -125,7 +125,7 @@ public class CommentService {
     }
 
     // AOP를 적용하면 얘를 다른 곳에서 쓸 수 있게 한다 이건데...
-    public Object getValueByIdFromRepo(String repo, Long id) {
+    private Object getValueByIdFromRepo(String repo, Long id) {
         ApiRequestException e = new ApiRequestException(ApiException.NOT_EXIST_DATA);
         errorMsg = e.getMessage();
         switch (repo) {
