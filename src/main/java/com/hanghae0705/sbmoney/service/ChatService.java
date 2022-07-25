@@ -22,6 +22,7 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,7 @@ public class ChatService {
      * 채팅방에 메시지 발송
      */
     public void sendChatMessage(ChatMessage chatMessage) {
-        //chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
+        chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
 
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
@@ -66,13 +67,15 @@ public class ChatService {
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
-    public Message getRooms() {
+    public Message getRooms() throws IOException {
         Long userId = commonService.getUserId();
         List<ChatRoom> chatRooms = chatRoomRepository.findAll();
         List<ChatRoom.Response> chatRoomResponseList = new ArrayList<>();
         //proceeding(true/false)
         for (ChatRoom chatRoom : chatRooms) {
+            System.out.println("chatRoom.getProceeding()"+chatRoom.getProceeding());
             if (chatRoom.getProceeding()) {
+                System.out.println("chatRoom.getRoomId()"+chatRoom.getRoomId());
                 Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
                 List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
                 Boolean checkProsCons = null;
@@ -111,7 +114,7 @@ public class ChatService {
                 .build();
     }
 
-    public Message getRoomDetail(String roomId) {
+    public Message getRoomDetail(String roomId) throws IOException {
         ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
         Long userCount = redisChatRoomRepository.getUserCount(roomId);
         return Message.builder()
@@ -232,9 +235,9 @@ public class ChatService {
                 .build();
     }
 
-    public Message getCloesdChatRoom(Long closedRoomId) {
+    public Message getCloesdChatRoom(String closedRoomId) {
         // 챗룸 정보(닉네임, 프로필 정보, 코멘트, 찬/반 비율, 챗로그) 가져오기
-        ChatRoom chatRoom = chatRoomRepository.findById(closedRoomId).orElseThrow(
+        ChatRoom chatRoom = chatRoomRepository.findByRoomId(closedRoomId).orElseThrow(
                 () -> new IllegalArgumentException("존재하지 않는 방입니다.")
         );
 
@@ -243,7 +246,7 @@ public class ChatService {
         int voteFalsePercent = Math.round(chatRoom.getVoteFalseCount() / totalCount * 100);
 
         ChatRoom.ClosedRoomDetail closedRoomDetail = ChatRoom.ClosedRoomDetail.builder()
-                .closedRoomId(chatRoom.getId())
+                .closedRoomId(chatRoom.getRoomId())
                 .authorNickname(chatRoom.getUser().getNickname())
                 .authorProfileImg(chatRoom.getUser().getProfileImg())
                 .comment(chatRoom.getComment())
