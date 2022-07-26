@@ -58,13 +58,13 @@ public class ChatService {
         chatMessage.setTimeLimit(redisChatRoomRepository
                 .findRoomById(chatMessage.getRoomId()).getTimeLimit());
 
-//        if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
-//            chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
-//            chatMessage.setSender("[알림]");
-//        } else if (ChatMessage.MessageType.QUIT.equals(chatMessage.getType())) {
-//            chatMessage.setMessage(chatMessage.getSender() + "님이 방에서 나갔습니다.");
-//            chatMessage.setSender("[알림]");
-//        }
+        if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
+            chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
+            chatMessage.setSender("[알림]");
+        } else if (ChatMessage.MessageType.QUIT.equals(chatMessage.getType())) {
+            chatMessage.setMessage(chatMessage.getSender() + "님이 방에서 나갔습니다.");
+            chatMessage.setSender("[알림]");
+        }
 
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
