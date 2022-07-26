@@ -20,7 +20,7 @@ public class RedisSubscriber {
 
     private final ObjectMapper objectMapper;
     private final SimpMessageSendingOperations messagingTemplate;
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, ChatMessage> redisTemplate;
 
     /**
      * Redis에서 메시지가 발행(publish)되면 대기하고 있던 Redis Subscriber가 해당 메시지를 받아 처리한다.
@@ -34,8 +34,8 @@ public class RedisSubscriber {
             // 기존 메시지 List에 넣기 - Redis에 넣을 때는 serialize가 필요함. 반대로 조회할 때는 deserialize
             redisTemplate.opsForList().rightPush(chatMessage.getRoomId(), chatMessage);
 
-            // 최대 시간 설정(30분)
-            redisTemplate.expireAt(chatMessage.getRoomId(), Date.from(ZonedDateTime.now().plusMinutes(30).toInstant()));
+            // 최대 시간 설정(15분)
+            redisTemplate.expireAt(chatMessage.getRoomId(), Date.from(ZonedDateTime.now().plusMinutes(15).toInstant()));
             RedisOperations<String, ChatMessage> operations = redisTemplate.opsForList().getOperations();
 
             // 최초 진입 시 기존 채팅 기록 출력
