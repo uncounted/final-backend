@@ -57,9 +57,7 @@ public class ChatService {
      * 채팅방에 메시지 발송
      */
     public void sendChatMessage(ChatMessage chatMessage) {
-
         chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
-
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
             chatMessage.setSender("[알림]");
@@ -70,33 +68,26 @@ public class ChatService {
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
-    /**
-     * 채팅방 전체 조회
-     * @return
-     */
-
     public Message getRooms() {
         Long userId = commonService.getUserId();
-        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
+        List<ChatRoom> chatRooms = chatRoomRepository.findAllByProceedingOrderByCreatedAtDesc(true);
         List<ChatRoom.Response> chatRoomResponseList = new ArrayList<>();
         //proceeding(true/false)
         for (ChatRoom chatRoom : chatRooms) {
-            if (chatRoom.getProceeding()) {
-                Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
-
-                List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
-                Boolean checkProsCons = null;
-                //찬성 반대를 눌렀는 지 체크
-                if (!chatRoomProsConsList.isEmpty()) {
-                    for (ChatRoomProsCons chatRoomProsCons : chatRoomProsConsList) {
-                        if (chatRoomProsCons.getUserId().equals(userId)) {
-                            checkProsCons = chatRoomProsCons.getProsCons();
-                            break;
-                        }
+            Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
+            List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
+            Boolean checkProsCons = null;
+            //찬성 반대를 눌렀는 지 체크
+            if (!chatRoomProsConsList.isEmpty()) {
+                for (ChatRoomProsCons chatRoomProsCons : chatRoomProsConsList) {
+                    if (chatRoomProsCons.getUserId().equals(userId)) {
+                        checkProsCons = chatRoomProsCons.getProsCons();
+                        break;
                     }
                 }
-                chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount));
             }
+            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount));
+
         }
         return Message.builder()
                 .result(true)
@@ -105,8 +96,23 @@ public class ChatService {
                 .build();
     }
 
+    public Message getClosedRooms() {
+        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
+        List<ChatRoom.ClosedResponse> chatRoomResponseList = new ArrayList<>();
+        //proceeding(true/false)
+        for (ChatRoom chatRoom : chatRooms) {
+            if (!chatRoom.getProceeding()) {
+                chatRoomResponseList.add(new ChatRoom.ClosedResponse(chatRoom));
+            }
+        }
+        return Message.builder()
+                .result(true)
+                .respMsg("종료방 상세 전체 조회에 성공했습니다.")
+                .data(chatRoomResponseList)
+                .build();
+    }
 
-    public Message getRoomDetail(String roomId) throws IOException {
+    public Message getRoomDetail(String roomId) {
         ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
         Long userCount = redisChatRoomRepository.getUserCount(roomId);
         return Message.builder()
@@ -120,7 +126,6 @@ public class ChatService {
         User user = commonService.getUser();
         String RoomUuid = UUID.randomUUID().toString();
         ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, request.getTimeLimit(), request.getComment(), RoomUuid, true));
-
         String redisChatRoomId = chatRoom.getRoomId();
         redisChatRoomRepository.createChatRoom(redisChatRoomId, request.getComment());
         return Message.builder()
@@ -158,11 +163,13 @@ public class ChatService {
      * 채팅 종료 시 채팅 기록 저장
      */
     @Transactional
-    public Message saveChatLog(String roomId) {
+    public void saveChatLog(String roomId) {
         //redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
+        //ObjectMapper objectMapper = new ObjectMapper();
         RedisOperations<String, ChatMessage> operations = redisChatMessageTemplate.opsForList().getOperations();
 
-        // 챗룸 검사 및 반환
+        //List<ChatMessage> chatMessageList = objectMapper.convertValue(redisTemplate.opsForList().getOperations(), List<ChatMessage>.class);
+
         ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
 
         // proceeding 종료방(false)으로 변경
@@ -176,17 +183,11 @@ public class ChatService {
                     .id(null)
                     .type(chatMessage.getType())
                     .nickname(chatMessage.getSender())
-                    .profileImg(chatMessage.getProfileImg())
                     .message(chatMessage.getMessage())
                     .chatRoom(chatRoom)
                     .build();
             chatLogRepository.save(chatLog);
         }
-
-        return Message.builder()
-                .result(true)
-                .respMsg("종료된 채팅 기록 저장에 성공했습니다.")
-                .build();
     }
 
     /**
@@ -232,32 +233,6 @@ public class ChatService {
                 .data(chatRoomList)
                 .build();
     }
-
-    /**
-     * 종료방 전체 조회
-     * @return
-     */
-    public Message getClosedRooms() {
-        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
-        List<ChatRoom.ClosedResponse> chatRoomResponseList = new ArrayList<>();
-        //proceeding(true/false)
-        for (ChatRoom chatRoom : chatRooms) {
-            if (!chatRoom.getProceeding()) {
-                chatRoomResponseList.add(new ChatRoom.ClosedResponse(chatRoom));
-            }
-        }
-        return Message.builder()
-                .result(true)
-                .respMsg("종료방 전체 조회에 성공했습니다.")
-                .data(chatRoomResponseList)
-                .build();
-    }
-
-    /**
-     * 종료방 상세 조회
-     * @param closedRoomId
-     * @return
-     */
 
     public Message getCloesdChatRoom(String closedRoomId) {
         // 챗룸 정보(닉네임, 프로필 정보, 코멘트, 찬/반 비율, 챗로그) 가져오기
