@@ -20,7 +20,7 @@ public class EmbeddedRedisConfig {
 
     private RedisServer redisServer;
 
-
+    // redis 서버 시작
     @PostConstruct
     public void redisServer() {
         redisServer = new RedisServer(redisPort);
