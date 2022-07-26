@@ -7,6 +7,8 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.Date;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +41,9 @@ public class RedisChatRoomRepository {
     public RedisChatRoom createChatRoom(String uuid, String comment, int timeLimit) {
         RedisChatRoom redisChatRoom = RedisChatRoom.create(uuid, comment, timeLimit);
         hashOpsChatRoom.put(CHAT_ROOMS, redisChatRoom.getRoomId(), redisChatRoom);
+
+        // 채팅방 지속시간 15분으로 설정
+        hashOpsChatRoom.getOperations().expireAt(redisChatRoom.getRoomId(), Date.from(ZonedDateTime.now().plusMinutes(15).toInstant()));
         return redisChatRoom;
     }
 
