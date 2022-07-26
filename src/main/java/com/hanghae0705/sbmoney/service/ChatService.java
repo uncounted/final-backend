@@ -57,9 +57,7 @@ public class ChatService {
      * 채팅방에 메시지 발송
      */
     public void sendChatMessage(ChatMessage chatMessage) {
-
         chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
-
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
             chatMessage.setSender("[알림]");
@@ -72,28 +70,24 @@ public class ChatService {
 
     public Message getRooms() {
         Long userId = commonService.getUserId();
-        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
+        List<ChatRoom> chatRooms = chatRoomRepository.findAllByProceedingOrderByCreatedAtDesc(true);
         List<ChatRoom.Response> chatRoomResponseList = new ArrayList<>();
         //proceeding(true/false)
         for (ChatRoom chatRoom : chatRooms) {
-            if (chatRoom.getProceeding()) {
-                Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
-
-                System.out.println("chatRoom.getRoomId()"+chatRoom.getRoomId());
-
-                List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
-                Boolean checkProsCons = null;
-                //찬성 반대를 눌렀는 지 체크
-                if (!chatRoomProsConsList.isEmpty()) {
-                    for (ChatRoomProsCons chatRoomProsCons : chatRoomProsConsList) {
-                        if (chatRoomProsCons.getUserId().equals(userId)) {
-                            checkProsCons = chatRoomProsCons.getProsCons();
-                            break;
-                        }
+            Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
+            List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
+            Boolean checkProsCons = null;
+            //찬성 반대를 눌렀는 지 체크
+            if (!chatRoomProsConsList.isEmpty()) {
+                for (ChatRoomProsCons chatRoomProsCons : chatRoomProsConsList) {
+                    if (chatRoomProsCons.getUserId().equals(userId)) {
+                        checkProsCons = chatRoomProsCons.getProsCons();
+                        break;
                     }
                 }
-                chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount));
             }
+            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount));
+
         }
         return Message.builder()
                 .result(true)
@@ -118,7 +112,7 @@ public class ChatService {
                 .build();
     }
 
-    public Message getRoomDetail(String roomId) throws IOException {
+    public Message getRoomDetail(String roomId) {
         ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
         Long userCount = redisChatRoomRepository.getUserCount(roomId);
         return Message.builder()
