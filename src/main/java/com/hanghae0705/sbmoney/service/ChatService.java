@@ -68,6 +68,7 @@ public class ChatService {
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
+    // 전체 채팅 목록 조회
     public Message getRooms() {
         Long userId = commonService.getUserId();
         List<ChatRoom> chatRooms = chatRoomRepository.findAllByProceedingOrderByCreatedAtDesc(true);
@@ -96,22 +97,7 @@ public class ChatService {
                 .build();
     }
 
-    public Message getClosedRooms() {
-        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
-        List<ChatRoom.ClosedResponse> chatRoomResponseList = new ArrayList<>();
-        //proceeding(true/false)
-        for (ChatRoom chatRoom : chatRooms) {
-            if (!chatRoom.getProceeding()) {
-                chatRoomResponseList.add(new ChatRoom.ClosedResponse(chatRoom));
-            }
-        }
-        return Message.builder()
-                .result(true)
-                .respMsg("종료방 상세 전체 조회에 성공했습니다.")
-                .data(chatRoomResponseList)
-                .build();
-    }
-
+    // 채팅방 상세 조회
     public Message getRoomDetail(String roomId) {
         ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
         Long userCount = redisChatRoomRepository.getUserCount(roomId);
@@ -122,6 +108,7 @@ public class ChatService {
                 .build();
     }
 
+    // 채팅방 생성
     public Message createRoom(ChatRoom.Request request) {
         User user = commonService.getUser();
         String RoomUuid = UUID.randomUUID().toString();
@@ -135,6 +122,7 @@ public class ChatService {
                 .build();
     }
 
+    // 투표
     public Message vote(String roomId, ChatRoomProsCons.Request chatRoomProsConsRequest) {
         Long userId = commonService.getUserId();
         ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
@@ -163,12 +151,9 @@ public class ChatService {
      * 채팅 종료 시 채팅 기록 저장
      */
     @Transactional
-    public void saveChatLog(String roomId) {
+    public Message saveChatLog(String roomId) {
         //redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
-        //ObjectMapper objectMapper = new ObjectMapper();
         RedisOperations<String, ChatMessage> operations = redisChatMessageTemplate.opsForList().getOperations();
-
-        //List<ChatMessage> chatMessageList = objectMapper.convertValue(redisTemplate.opsForList().getOperations(), List<ChatMessage>.class);
 
         ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
 
@@ -182,12 +167,19 @@ public class ChatService {
             ChatLog chatLog = ChatLog.builder()
                     .id(null)
                     .type(chatMessage.getType())
+                    .profileImg(chatMessage.getProfileImg())
                     .nickname(chatMessage.getSender())
                     .message(chatMessage.getMessage())
                     .chatRoom(chatRoom)
                     .build();
             chatLogRepository.save(chatLog);
         }
+
+        return Message.builder()
+                .result(true)
+                .respMsg("채팅 기록 저장에 성공했습니다.")
+                .data(chatMessageList)
+                .build();
     }
 
     /**
@@ -234,6 +226,24 @@ public class ChatService {
                 .build();
     }
 
+    // 종료 채팅 목록 조회
+    public Message getClosedRooms() {
+        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
+        List<ChatRoom.ClosedResponse> chatRoomResponseList = new ArrayList<>();
+        //proceeding(true/false)
+        for (ChatRoom chatRoom : chatRooms) {
+            if (!chatRoom.getProceeding()) {
+                chatRoomResponseList.add(new ChatRoom.ClosedResponse(chatRoom));
+            }
+        }
+        return Message.builder()
+                .result(true)
+                .respMsg("종료방 상세 전체 조회에 성공했습니다.")
+                .data(chatRoomResponseList)
+                .build();
+    }
+
+    // 종료 채팅 상세 조회
     public Message getCloesdChatRoom(String closedRoomId) {
         // 챗룸 정보(닉네임, 프로필 정보, 코멘트, 찬/반 비율, 챗로그) 가져오기
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(closedRoomId).orElseThrow(
