@@ -96,6 +96,7 @@ public class ChatRoom extends CreatedTime {
     @RequiredArgsConstructor
     public static class Response {
         private String roomId;
+        private int timeLimit;
         private String comment;
         private String authorNickname;
         private String authorProfileImg;
@@ -113,6 +114,7 @@ public class ChatRoom extends CreatedTime {
         @Builder
         public Response(ChatRoom chatRoom, Long userCount) {
             this.roomId = chatRoom.getRoomId();
+            this.timeLimit = chatRoom.getTimeLimit();
             this.comment = chatRoom.getComment();
             this.authorNickname = chatRoom.getUser().getNickname();
             this.authorProfileImg = chatRoom.getUser().getProfileImg();
@@ -122,6 +124,7 @@ public class ChatRoom extends CreatedTime {
         @Builder
         public Response(ChatRoom chatRoom, Boolean chatRoomProsCons, Long userCount) {
             this.roomId = chatRoom.getRoomId();
+            this.timeLimit = chatRoom.getTimeLimit();
             this.comment = chatRoom.getComment();
             this.authorNickname = chatRoom.getUser().getNickname();
             this.authorProfileImg = chatRoom.getUser().getProfileImg();
