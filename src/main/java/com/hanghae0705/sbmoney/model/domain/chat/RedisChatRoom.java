@@ -15,7 +15,7 @@ public class RedisChatRoom implements Serializable {
 
     private String roomId;
     private String comment;
-    private long userCount; // 채팅방 인원수
+    private Long userCount; // 채팅방 인원수
 
     public static RedisChatRoom create(String uuid, String comment) {
         RedisChatRoom redisChatRoom = new RedisChatRoom();

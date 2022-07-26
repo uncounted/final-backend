@@ -1,5 +1,13 @@
 package com.hanghae0705.sbmoney.config;
 
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
+import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
+
 import com.hanghae0705.sbmoney.pubsub.RedisSubscriber;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -54,6 +62,18 @@ public class RedisConfig {
         redisTemplate.setConnectionFactory(connectionFactory);
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+        redisTemplate.setHashValueSerializer(new Jackson2JsonRedisSerializer<>(RedisChatRoom.class));
+
+        return redisTemplate;
+    }
+
+    @Bean
+    public RedisTemplate<String, ChatMessage> redisChatMessageTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, ChatMessage> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(connectionFactory);
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
+
         return redisTemplate;
     }
 

@@ -1,6 +1,7 @@
 package com.hanghae0705.sbmoney.service;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoomProsCons;
 import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
@@ -32,7 +33,8 @@ import java.util.stream.Collectors;
 public class ChatService {
 
     private final ChannelTopic channelTopic;
-    private final RedisTemplate redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, ChatMessage> redisChatMessageTemplate;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomProsConsRepository chatRoomProsConsRepository;
     private final RedisChatRoomRepository redisChatRoomRepository;
@@ -55,6 +57,9 @@ public class ChatService {
      * 채팅방에 메시지 발송
      */
     public void sendChatMessage(ChatMessage chatMessage) {
+
+        //chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
+
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
             chatMessage.setSender("[알림]");
@@ -65,15 +70,17 @@ public class ChatService {
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
-    public Message getRooms() throws IOException {
+    public Message getRooms() {
         Long userId = commonService.getUserId();
         List<ChatRoom> chatRooms = chatRoomRepository.findAll();
         List<ChatRoom.Response> chatRoomResponseList = new ArrayList<>();
         //proceeding(true/false)
         for (ChatRoom chatRoom : chatRooms) {
-            System.out.println("chatRoom.getProceeding()"+chatRoom.getProceeding());
             if (chatRoom.getProceeding()) {
+                Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
+
                 System.out.println("chatRoom.getRoomId()"+chatRoom.getRoomId());
+
                 List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
                 Boolean checkProsCons = null;
                 //찬성 반대를 눌렀는 지 체크
@@ -163,10 +170,11 @@ public class ChatService {
      */
     @Transactional
     public void saveChatLog(String roomId) {
-        redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
+        //redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(ChatMessage.class));
+        //ObjectMapper objectMapper = new ObjectMapper();
+        RedisOperations<String, ChatMessage> operations = redisChatMessageTemplate.opsForList().getOperations();
 
-        RedisOperations<String, ChatMessage> operations = redisTemplate.opsForList().getOperations();
-        System.out.println((operations.opsForList().range(roomId, 0, -1)));
+        //List<ChatMessage> chatMessageList = objectMapper.convertValue(redisTemplate.opsForList().getOperations(), List<ChatMessage>.class);
 
         ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
 
