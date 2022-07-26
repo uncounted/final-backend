@@ -132,7 +132,6 @@ public class ChatRoom extends CreatedTime {
             this.createdAt = chatRoom.getCreatedDate();
             this.prosCons = chatRoomProsCons;
         }
-
     }
 
     @Getter

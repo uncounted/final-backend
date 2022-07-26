@@ -1,14 +1,12 @@
 package com.hanghae0705.sbmoney.repository.chat;
 
 import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
-import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatRoom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,8 +36,8 @@ public class RedisChatRoomRepository {
     }
 
     // 채팅방 생성 : 서버간 채팅방 공유를 위해 redis hash에 저장한다.
-    public RedisChatRoom createChatRoom(String uuid, String comment) {
-        RedisChatRoom redisChatRoom = RedisChatRoom.create(uuid, comment);
+    public RedisChatRoom createChatRoom(String uuid, String comment, int timeLimit) {
+        RedisChatRoom redisChatRoom = RedisChatRoom.create(uuid, comment, timeLimit);
         hashOpsChatRoom.put(CHAT_ROOMS, redisChatRoom.getRoomId(), redisChatRoom);
         return redisChatRoom;
     }
