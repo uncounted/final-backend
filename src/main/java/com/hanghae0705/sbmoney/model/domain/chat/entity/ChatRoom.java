@@ -20,19 +20,19 @@ public class ChatRoom extends CreatedTime {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    String roomId;
+    private String roomId;
 
     @Column(nullable = false)
     private Boolean proceeding;
 
     @Column(nullable = false)
-    String comment;
+    private String comment;
 
     @Column(nullable = false)
-    int timeLimit;
+    private int timeLimit;
 
-    int voteTrueCount;
-    int voteFalseCount;
+    private int voteTrueCount;
+    private int voteFalseCount;
 
     @ManyToOne
     @JoinColumn(name = "USER_ID")
@@ -145,7 +145,6 @@ public class ChatRoom extends CreatedTime {
         @Builder
         public ClosedResponse(ChatRoom chatRoom) {
             int totalCount = chatRoom.getVoteTrueCount() + chatRoom.getVoteFalseCount();
-
             this.roomId = chatRoom.getRoomId();
             this.comment = chatRoom.getComment();
             this.authorNickname = chatRoom.getUser().getNickname();
