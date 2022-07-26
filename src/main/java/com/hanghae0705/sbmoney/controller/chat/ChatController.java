@@ -21,6 +21,7 @@ public class ChatController {
      */
     @MessageMapping("/chat/message")
     public void message(ChatMessage message) {
+        message.setUserCount(redisChatRoomRepository.getUserCount(message.getRoomId()));
         // Websocket에 발행된 메시지를 redis로 발행(publish)
         chatService.sendChatMessage(message);
     }
