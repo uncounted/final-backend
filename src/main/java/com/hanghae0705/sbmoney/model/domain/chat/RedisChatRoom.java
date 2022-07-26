@@ -16,12 +16,14 @@ public class RedisChatRoom implements Serializable {
     private String roomId;
     private String comment;
     private Long userCount; // 채팅방 인원수
+    private int timeLimit;
 
-    public static RedisChatRoom create(String uuid, String comment) {
+    public static RedisChatRoom create(String uuid, String comment, int timeLimit) {
         RedisChatRoom redisChatRoom = new RedisChatRoom();
         redisChatRoom.roomId = uuid;
         redisChatRoom.comment = comment;
         redisChatRoom.userCount = 0L;
+        redisChatRoom.timeLimit = timeLimit;
         return redisChatRoom;
     }
 }
