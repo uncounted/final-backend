@@ -1,7 +1,6 @@
 package com.hanghae0705.sbmoney.service;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hanghae0705.sbmoney.data.Message;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoomProsCons;
 import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
@@ -19,11 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,14 +55,17 @@ public class ChatService {
      */
     public void sendChatMessage(ChatMessage chatMessage) {
         chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
-        if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
-            chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
-            chatMessage.setSender("[알림]");
-        } else if (ChatMessage.MessageType.QUIT.equals(chatMessage.getType())) {
-            chatMessage.setMessage(chatMessage.getSender() + "님이 방에서 나갔습니다.");
-            chatMessage.setSender("[알림]");
-        }
-        chatMessage.setTimeLimit(redisChatRoomRepository.findRoomById(chatMessage.getRoomId()).getTimeLimit());
+        chatMessage.setTimeLimit(redisChatRoomRepository
+                .findRoomById(chatMessage.getRoomId()).getTimeLimit());
+
+//        if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
+//            chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
+//            chatMessage.setSender("[알림]");
+//        } else if (ChatMessage.MessageType.QUIT.equals(chatMessage.getType())) {
+//            chatMessage.setMessage(chatMessage.getSender() + "님이 방에서 나갔습니다.");
+//            chatMessage.setSender("[알림]");
+//        }
+
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 

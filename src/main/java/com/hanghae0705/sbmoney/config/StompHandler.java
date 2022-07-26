@@ -4,16 +4,28 @@ import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
 import com.hanghae0705.sbmoney.repository.chat.RedisChatRoomRepository;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.service.ChatService;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -21,6 +33,8 @@ import java.util.Optional;
 @Component
 public class StompHandler implements ChannelInterceptor {
 
+    @Value("${jwt.secret}")
+    public static String JWT_SECRET;
     private final TokenProvider tokenProvider;
     private final RedisChatRoomRepository redisChatRoomRepository;
     private final ChatService chatService;
@@ -50,8 +64,8 @@ public class StompHandler implements ChannelInterceptor {
             // 채팅방의 인원수를 -1한다.
             redisChatRoomRepository.minusUserCount(roomId);
             // 클라이언트 퇴장 메시지를 채팅방에 발송한다.(redis publish)
-            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
-            chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.QUIT).roomId(roomId).sender(name).build());
+            //String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
+            //chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.QUIT).roomId(roomId).build());
             // 퇴장한 클라이언트의 roomId 맵핑 정보를 삭제한다.
             redisChatRoomRepository.removeUserEnterInfo(sessionId);
             log.info("DISCONNECTED {}, {}", sessionId, roomId);
