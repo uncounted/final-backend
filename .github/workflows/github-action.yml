@@ -92,7 +92,7 @@ jobs:
         - name: copy file via ssh password
           uses: appleboy/scp-action@master
           with:
-            host: ${{ secrets.HOST }}
+            host: ec2-3-37-61-13.ap-northeast-2.compute.amazonaws.com
             username: ubuntu
             key: ${{ secrets.PRIVATE_KEY }}
             port: 22
@@ -101,7 +101,7 @@ jobs:
         - name: executing remote ssh commands using password
           uses: appleboy/ssh-action@master
           with:
-            host: ${{ secrets.HOST }}
+            host: ec2-3-37-61-13.ap-northeast-2.compute.amazonaws.com
             username: ubuntu
             key: ${{ secrets.PRIVATE_KEY }}
             port: 22
