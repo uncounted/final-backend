@@ -137,7 +137,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/oauth2/redirect",
             "/api/statistics/**",
             "/chatting/**",
-            "/api/chat/**"
+            //"/api/chat/**"
             //"/api/goalItem"
     };
 
