@@ -20,12 +20,14 @@ public class EmbeddedRedisConfig {
 
     private RedisServer redisServer;
 
-
+    // redis 서버 시작
     @PostConstruct
     public void redisServer() {
         redisServer = new RedisServer(redisPort);
         redisServer.start();
     }
+
+    // redis 서버 종료
     @PreDestroy
     public void stopRedis() {
         if (redisServer != null) {
