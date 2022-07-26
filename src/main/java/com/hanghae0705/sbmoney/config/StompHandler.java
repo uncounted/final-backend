@@ -42,10 +42,7 @@ public class StompHandler implements ChannelInterceptor {
             redisChatRoomRepository.setUserEnterInfo(sessionId, roomId);
             // 채팅방의 인원수를 +1한다.
             redisChatRoomRepository.plusUserCount(roomId);
-            // 클라이언트 입장 메시지를 채팅방에 발송한다.(redis publish)
-            String name = Optional.ofNullable((Principal) message.getHeaders().get("simpUser")).map(Principal::getName).orElse("UnknownUser");
-            chatService.sendChatMessage(ChatMessage.builder().type(ChatMessage.MessageType.ENTER).roomId(roomId).sender(name).build());
-            log.info("SUBSCRIBED {}, {}", name, roomId);
+            log.info("SUBSCRIBED {}", roomId);
         } else if (StompCommand.DISCONNECT == accessor.getCommand()) { // Websocket 연결 종료
             // 연결이 종료된 클라이언트 sesssionId로 채팅방 id를 얻는다.
             String sessionId = (String) message.getHeaders().get("simpSessionId");
