@@ -65,6 +65,7 @@ public class ChatService {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에서 나갔습니다.");
             chatMessage.setSender("[알림]");
         }
+        chatMessage.setTimeLimit(redisChatRoomRepository.findRoomById(chatMessage.getRoomId()).getTimeLimit());
         redisTemplate.convertAndSend(channelTopic.getTopic(), chatMessage);
     }
 
@@ -114,7 +115,7 @@ public class ChatService {
         String RoomUuid = UUID.randomUUID().toString();
         ChatRoom chatRoom = chatRoomRepository.save(new ChatRoom(user, request.getTimeLimit(), request.getComment(), RoomUuid, true));
         String redisChatRoomId = chatRoom.getRoomId();
-        redisChatRoomRepository.createChatRoom(redisChatRoomId, request.getComment());
+        redisChatRoomRepository.createChatRoom(redisChatRoomId, request.getComment(), request.getTimeLimit());
         return Message.builder()
                 .result(true)
                 .respMsg("방 개설을 성공하였습니다.")

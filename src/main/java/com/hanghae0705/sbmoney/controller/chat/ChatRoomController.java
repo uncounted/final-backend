@@ -54,7 +54,6 @@ public class ChatRoomController {
     @PostMapping("/api/chat/room/{roomId}/vote")
     public Message vote(@PathVariable String roomId, @RequestBody ChatRoomProsCons.Request chatRoomProsConsRequest){
         return chatService.vote(roomId, chatRoomProsConsRequest);
-
     }
 
     // userCount가 높은 상위 5개 방을 호출
