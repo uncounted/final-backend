@@ -196,11 +196,15 @@ public class ChatService {
         }
     }
 
+    /**
+     * userCount 기준 상위 5개 추출
+     */
     public Message getTopRoom() {
         // 모든 roomId 호출
         List<RedisChatRoom> allRooms = redisChatRoomRepository.findAllRoom();
         for (RedisChatRoom room : allRooms) {
-            log.info("allrooms :" + room.getRoomId());
+            Long userCount = redisChatRoomRepository.getUserCount(room.getRoomId());
+            room.setUserCount(userCount);
         }
 
         // roomId에 해당하는 userCount 찾기
@@ -209,11 +213,6 @@ public class ChatService {
                         RedisChatRoom::getRoomId,
                         RedisChatRoom::getUserCount
                 ));
-
-        for (Map.Entry<String, Long> room : roomMap.entrySet()) {
-            log.info("mapkey :" + room.getKey());
-            log.info("mapvalue :" + room.getValue());
-        }
 
         // 상위 5개 찾기
         Map<String, Long> topRoom = roomMap.entrySet().stream()
@@ -230,7 +229,8 @@ public class ChatService {
                 .map(chatRoomRepository::findByRoomId)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(ChatRoom.Response::of)
+                .map(room -> ChatRoom.Response.of(room, topRoom.get(room.getRoomId())))
+                //.map(ChatRoom.Response::of)
                 .collect(Collectors.toList());
 
         return Message.builder()
