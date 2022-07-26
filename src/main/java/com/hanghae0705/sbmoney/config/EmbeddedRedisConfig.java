@@ -26,6 +26,8 @@ public class EmbeddedRedisConfig {
         redisServer = new RedisServer(redisPort);
         redisServer.start();
     }
+
+    // redis 서버 종료
     @PreDestroy
     public void stopRedis() {
         if (redisServer != null) {
