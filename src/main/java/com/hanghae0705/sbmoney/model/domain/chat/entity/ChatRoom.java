@@ -103,9 +103,10 @@ public class ChatRoom extends CreatedTime {
         private Boolean prosCons;
         private LocalDateTime createdAt;
 
-        public static Response of(ChatRoom chatRoom) {
+        public static Response of(ChatRoom chatRoom, Long userCount) {
             return Response.builder()
                     .chatRoom(chatRoom)
+                    .userCount(userCount)
                     .build();
         }
 
