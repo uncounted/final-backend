@@ -57,7 +57,9 @@ public class ChatService {
      * 채팅방에 메시지 발송
      */
     public void sendChatMessage(ChatMessage chatMessage) {
+
         //chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
+
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
             chatMessage.setSender("[알림]");
@@ -76,6 +78,9 @@ public class ChatService {
         for (ChatRoom chatRoom : chatRooms) {
             if (chatRoom.getProceeding()) {
                 Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
+
+                System.out.println("chatRoom.getRoomId()"+chatRoom.getRoomId());
+
                 List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
                 Boolean checkProsCons = null;
                 //찬성 반대를 눌렀는 지 체크
@@ -87,7 +92,7 @@ public class ChatService {
                         }
                     }
                 }
-                chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount));
+                chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons));
             }
         }
         return Message.builder()
@@ -119,7 +124,7 @@ public class ChatService {
         return Message.builder()
                 .result(true)
                 .respMsg("채팅방 상세 조회에 성공했습니다.")
-                .data(new ChatRoom.Response(chatRoom, userCount))
+                .data(new ChatRoom.Response(chatRoom))
                 .build();
     }
 
@@ -132,7 +137,7 @@ public class ChatService {
         return Message.builder()
                 .result(true)
                 .respMsg("방 개설을 성공하였습니다.")
-                .data(new ChatRoom.Response(chatRoom, 0L))
+                .data(new ChatRoom.Response(chatRoom))
                 .build();
     }
 
