@@ -99,7 +99,7 @@ public class ChatRoom extends CreatedTime {
         private String comment;
         private String authorNickname;
         private String authorProfileImg;
-//        private Long userCount;
+        private Long userCount;
         private Boolean prosCons;
         private LocalDateTime createdAt;
 
@@ -110,34 +110,25 @@ public class ChatRoom extends CreatedTime {
         }
 
         @Builder
-        public Response(ChatRoom chatRoom) {
+        public Response(ChatRoom chatRoom, Long userCount) {
             this.roomId = chatRoom.getRoomId();
             this.comment = chatRoom.getComment();
             this.authorNickname = chatRoom.getUser().getNickname();
             this.authorProfileImg = chatRoom.getUser().getProfileImg();
-//            this.userCount = userCount;
+            this.userCount = userCount;
             this.createdAt = chatRoom.getCreatedDate();
         }
         @Builder
-        public Response(ChatRoom chatRoom, Boolean chatRoomProsCons) {
+        public Response(ChatRoom chatRoom, Boolean chatRoomProsCons, Long userCount) {
             this.roomId = chatRoom.getRoomId();
             this.comment = chatRoom.getComment();
             this.authorNickname = chatRoom.getUser().getNickname();
             this.authorProfileImg = chatRoom.getUser().getProfileImg();
+            this.userCount = userCount;
             this.createdAt = chatRoom.getCreatedDate();
             this.prosCons = chatRoomProsCons;
         }
 
-//        @Builder
-//        public Response(ChatRoom chatRoom, Boolean chatRoomProsCons, Long userCount) {
-//            this.roomId = chatRoom.getRoomId();
-//            this.comment = chatRoom.getComment();
-//            this.authorNickname = chatRoom.getUser().getNickname();
-//            this.authorProfileImg = chatRoom.getUser().getProfileImg();
-//            this.userCount = userCount;
-//            this.createdAt = chatRoom.getCreatedDate();
-//            this.prosCons = chatRoomProsCons;
-//        }
     }
 
     @Getter

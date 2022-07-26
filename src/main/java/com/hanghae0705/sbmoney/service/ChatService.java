@@ -92,7 +92,7 @@ public class ChatService {
                         }
                     }
                 }
-                chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons));
+                chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount));
             }
         }
         return Message.builder()
@@ -124,7 +124,7 @@ public class ChatService {
         return Message.builder()
                 .result(true)
                 .respMsg("채팅방 상세 조회에 성공했습니다.")
-                .data(new ChatRoom.Response(chatRoom))
+                .data(new ChatRoom.Response(chatRoom, userCount))
                 .build();
     }
 
@@ -137,7 +137,7 @@ public class ChatService {
         return Message.builder()
                 .result(true)
                 .respMsg("방 개설을 성공하였습니다.")
-                .data(new ChatRoom.Response(chatRoom))
+                .data(new ChatRoom.Response(chatRoom, 0L))
                 .build();
     }
 
