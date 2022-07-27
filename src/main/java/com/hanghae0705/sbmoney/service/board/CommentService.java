@@ -13,6 +13,7 @@ import com.hanghae0705.sbmoney.security.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class CommentService {
 
     private String errorMsg;
 
-    public CommentService(CommentRepository commentRepository, @Lazy BoardRepository boardRepository, UserRepository userRepository) {
+    public CommentService(CommentRepository commentRepository, BoardRepository boardRepository, UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.boardRepository = boardRepository;
         this.userRepository = userRepository;
@@ -51,11 +52,13 @@ public class CommentService {
     @Transactional
     public Message postComment(Long boardId, Comment.Request request) {
         try {
-        checkValueIsEmpty(request.getComment());
-        checkCommentLength(request.getComment());
-        Comment comment = new Comment(request, (Board) getValueByIdFromRepo("board", boardId), getUser());
-        commentRepository.save(comment);
-        return new Message(true, "댓글을 등록하였습니다.");
+            checkValueIsEmpty(request.getComment());
+            checkCommentLength(request.getComment());
+            Comment comment = new Comment(request, (Board) getValueByIdFromRepo("board", boardId), getUser());
+            Board board = (Board) getValueByIdFromRepo("board", boardId);
+            board.commentCount(board.getCommentCount() + 1);
+            commentRepository.save(comment);
+            return new Message(true, "댓글을 등록하였습니다.");
         } catch (Exception e) {
             return new Message(false, errorMsg);
         }
@@ -77,16 +80,26 @@ public class CommentService {
     }
 
     @Transactional
-    public Message deleteComment(Long boardId, Long commentId){
+    public Message deleteComment(Long boardId, Long commentId) {
         try {
             getValueByIdFromRepo("board", boardId);
             checkCommentUserAndCurrentUser((Comment) getValueByIdFromRepo("comment", commentId));
             commentRepository.deleteById(commentId);
+            Board board = (Board) getValueByIdFromRepo("board", boardId);
+            board.commentCount(board.getCommentCount() -1);
             return new Message(true, "댓글을 삭제하였습니다.");
         } catch (Exception e) {
             return new Message(false, errorMsg);
         }
     }
+
+//    @Transactional
+//    public Comment test(Long boardId, User user, Comment.Request request) {
+//        Comment comment = new Comment(request, (Board) getValueByIdFromRepo("board", boardId), user);
+//        commentRepository.save(comment);
+//        return comment;
+//    }
+
 
     private User getUser() {
         ApiRequestException e = new ApiRequestException(ApiException.NOT_MATCH_USER);
@@ -100,7 +113,7 @@ public class CommentService {
     }
 
     private void checkCommentLength(String target) {
-        if(target.length() > 200) {
+        if (target.length() > 200) {
             IllegalArgumentException e = new IllegalArgumentException("댓글은 200자 이내로 작성해야합니다.");
             getErrMsg(e);
             throw e;
@@ -109,7 +122,7 @@ public class CommentService {
 
     private void checkCommentUserAndCurrentUser(Comment comment) {
         Comment target = (Comment) getValueByIdFromRepo("comment", comment.getId());
-        if(!target.getUser().equals(getUser())){
+        if (!target.getUser().equals(getUser())) {
             ApiRequestException e = new ApiRequestException(ApiException.NOT_MATCH_USER);
             getErrMsg(e);
             throw e;
@@ -136,4 +149,6 @@ public class CommentService {
         }
         return false;
     }
+
+
 }
