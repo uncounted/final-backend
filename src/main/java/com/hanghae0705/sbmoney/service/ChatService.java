@@ -57,6 +57,8 @@ public class ChatService {
         chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
         chatMessage.setTimeLimit(redisChatRoomRepository
                 .findRoomById(chatMessage.getRoomId()).getTimeLimit());
+        System.out.println(redisChatRoomRepository
+                .findRoomById(chatMessage.getRoomId()));
 
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");
