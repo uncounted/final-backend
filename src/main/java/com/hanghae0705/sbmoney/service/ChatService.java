@@ -189,6 +189,18 @@ public class ChatService {
      * userCount 기준 상위 5개 추출
      */
     public Message getTopRoom() {
+//        // DB 에서 proceeding 이 true 인 챗룸 찾기
+//        List<ChatRoom> chatRoomList = chatRoomRepository.findAllByProceeding(true);
+//
+//        // RedisChatRoom 에서 roomId가 같은 것을 찾아 userCount가 높은 순서대로 정렬하기
+//        List<RedisChatRoom> proceedingRedisChatRoomList = new ArrayList<>();
+//        for (ChatRoom chatRoom : chatRoomList) {
+//            RedisChatRoom redisChatRoom = redisChatRoomRepository.findRoomById(chatRoom.getRoomId());
+//            Long userCount = redisChatRoomRepository.getUserCount(redisChatRoom.getRoomId());
+//            redisChatRoom.setUserCount(userCount);
+//            proceedingRedisChatRoomList.add(redisChatRoom);
+//        }
+
         // 모든 roomId 호출
         List<RedisChatRoom> allRooms = redisChatRoomRepository.findAllRoom();
         for (RedisChatRoom room : allRooms) {
@@ -203,19 +215,19 @@ public class ChatService {
                         RedisChatRoom::getUserCount
                 ));
 
-        // 상위 5개 찾기
+        // userCount 순으로 정렬하기
         Map<String, Long> topRoom = roomMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                .limit(5)
+                //.limit(5)
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
                         (e1, e2) -> e1, LinkedHashMap::new)
                 );
 
-        // userCount가 높은 5개만 DB에서 chatRoom 데이터 읽어오기
+        // topRoom 중, proceeding이 true인 것만 DB에서 chatRoom 데이터 읽어오기
         List<ChatRoom.Response> chatRoomList = topRoom.keySet().stream()
-                .map(chatRoomRepository::findByRoomId)
+                .map(chatRoomId -> chatRoomRepository.findByRoomIdAndProceeding(chatRoomId, true))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(room -> ChatRoom.Response.of(room, topRoom.get(room.getRoomId())))
