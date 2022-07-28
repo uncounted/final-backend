@@ -21,6 +21,8 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,8 +59,14 @@ public class ChatService {
         chatMessage.setUserCount(redisChatRoomRepository.getUserCount(chatMessage.getRoomId()));
         chatMessage.setTimeLimit(redisChatRoomRepository
                 .findRoomById(chatMessage.getRoomId()).getTimeLimit());
-        System.out.println(redisChatRoomRepository
-                .findRoomById(chatMessage.getRoomId()));
+
+        // 채팅방에서 남은 시간을 계산해 반환한다.
+        ChatRoom chatRoom = chatRoomRepository.findByRoomId(chatMessage.getRoomId()).orElseThrow(() -> new IllegalArgumentException("해당하는 방이 없습니다."));
+        long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
+        long leftTime = (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
+        chatMessage.setLeftTime(leftTime);
+
+        log.info("CHAT {}, {}", redisChatRoomRepository.findRoomById(chatMessage.getRoomId()), leftTime);
 
         if (ChatMessage.MessageType.ENTER.equals(chatMessage.getType())) {
             chatMessage.setMessage(chatMessage.getSender() + "님이 방에 입장했습니다.");

@@ -1,6 +1,8 @@
 package com.hanghae0705.sbmoney.config;
 
 import com.hanghae0705.sbmoney.model.domain.chat.ChatMessage;
+import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatRoom;
+import com.hanghae0705.sbmoney.repository.chat.ChatRoomRepository;
 import com.hanghae0705.sbmoney.repository.chat.RedisChatRoomRepository;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.service.ChatService;
@@ -24,6 +26,8 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.security.Principal;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
