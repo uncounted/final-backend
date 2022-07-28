@@ -15,6 +15,7 @@ public enum ApiException implements BaseExceptionType{
     NOT_MATCH_USER(1006, 500, "해당 사용자가 아닙니다."),
     NOT_EXIST_DATA(1007, 500, "해당 데이터가 존재하지 않습니다"),
     NOT_VALID_DATA(1008, 400, "잘못된 값이 입력되었습니다."),
+    NOT_EXIST_EMAIL(1009, 500, "해당하는 이메일이 없습니다."),
     NOT_EXIST_IN_SECURITY_CONTEXT(2001, 500, "Security Context에 인증 정보가 없습니다."),
     NOT_VALID_TOKEN(3001, 500, "유효한 토큰이 아닙니다."),
     EXPIRED_TOKEN(3002, 500, "만료된 토큰입니다."),
