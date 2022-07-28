@@ -72,6 +72,7 @@ public class StatisticsAllUserGolItemRepository {
                 .from(goalByPrice)
                 .where(goalByPrice.standardDate.eq(standardDate))
                 .orderBy(goalByPrice.rankPrice.asc())
+                .limit(10)
                 .fetch();
 
         //log
@@ -99,6 +100,7 @@ public class StatisticsAllUserGolItemRepository {
                 .from(goalByCount)
                 .where(goalByCount.standardDate.eq(standardDate))
                 .orderBy(goalByCount.rankCount.asc())
+                .limit(10)
                 .fetch();
 
         //log
