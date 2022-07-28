@@ -231,59 +231,39 @@ public class UserService {
 
         String password = passwordEncoder.encode(requestChangePassword.getPassword());
         String username = requestChangePassword.getUsername();
-        Optional<User> found = userRepository.findByUsername(username);
+        User found = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_USER));
 
         // changePassword
-        if (found.isPresent()) {
-            found.get().changePassword(password);
-            return RespDto.builder()
-                    .result(true)
-                    .respMsg("비밀번호를 변경했습니다.")
-                    .build();
-        } else {
-            return RespDto.builder()
-                    .result(false)
-                    .respMsg("토큰에 해당하는 유저가 없습니다.")
-                    .build();
-        }
+        found.changePassword(password);
+        return RespDto.builder()
+                .result(true)
+                .respMsg("비밀번호를 변경했습니다.")
+                .build();
     }
 
     public Message getMyInfo() {
-        Optional<User.Response> resp = userRepository.findByUsername(SecurityUtil.getCurrentUsername())
-                .map(User.Response::of);
+        User.Response resp = userRepository.findByUsername(SecurityUtil.getCurrentUsername())
+                .map(User.Response::of)
+                .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_USER));
 
-        if (resp.isPresent()) {
-            return Message.builder()
-                    .result(true)
-                    .respMsg("로그인 유저 정보 조회에 성공하였습니다.")
-                    .data(resp)
-                    .build();
-        } else {
-            return Message.builder()
-                    .result(false)
-                    .respMsg("로그인 유저 정보가 없습니다.")
-                    .data(null)
-                    .build();
-        }
+        return Message.builder()
+                .result(true)
+                .respMsg("로그인 유저 정보 조회에 성공하였습니다.")
+                .data(resp)
+                .build();
     }
 
     public Message getNicknameAndImg() {
-        Optional<User.ResponseNicknameAndImg> resp = userRepository.findByUsername(SecurityUtil.getCurrentUsername())
-                .map(User.ResponseNicknameAndImg::of);
+        User.ResponseNicknameAndImg resp = userRepository.findByUsername(SecurityUtil.getCurrentUsername())
+                .map(User.ResponseNicknameAndImg::of)
+                .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_USER));
 
-        if (resp.isPresent()) {
-            return Message.builder()
-                    .result(true)
-                    .respMsg("닉네임, 프로필 이미지 조회에 성공하였습니다.")
-                    .data(resp)
-                    .build();
-        } else {
-            return Message.builder()
-                    .result(false)
-                    .respMsg("로그인 유저 정보가 없습니다.")
-                    .data(null)
-                    .build();
-        }
+        return Message.builder()
+                .result(true)
+                .respMsg("닉네임, 프로필 이미지 조회에 성공하였습니다.")
+                .data(resp)
+                .build();
     }
 
     @Transactional
