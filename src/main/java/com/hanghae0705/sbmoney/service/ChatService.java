@@ -98,8 +98,12 @@ public class ChatService {
                     }
                 }
             }
-            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount));
 
+            // 남은 시간 계산하여 반환
+            long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
+            long leftTime = (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
+
+            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
         }
         return Message.builder()
                 .result(true)

@@ -103,6 +103,7 @@ public class ChatRoom extends CreatedTime {
         private Long userCount;
         private Boolean prosCons;
         private LocalDateTime createdAt;
+        private Long leftTiime;
 
         public static Response of(ChatRoom chatRoom, Long userCount) {
             return Response.builder()
@@ -122,7 +123,7 @@ public class ChatRoom extends CreatedTime {
             this.createdAt = chatRoom.getCreatedDate();
         }
         @Builder
-        public Response(ChatRoom chatRoom, Boolean chatRoomProsCons, Long userCount) {
+        public Response(ChatRoom chatRoom, Boolean chatRoomProsCons, Long userCount, Long leftTiime) {
             this.roomId = chatRoom.getRoomId();
             this.timeLimit = chatRoom.getTimeLimit();
             this.comment = chatRoom.getComment();
@@ -131,6 +132,7 @@ public class ChatRoom extends CreatedTime {
             this.userCount = userCount;
             this.createdAt = chatRoom.getCreatedDate();
             this.prosCons = chatRoomProsCons;
+            this.leftTiime = leftTiime;
         }
     }
 
