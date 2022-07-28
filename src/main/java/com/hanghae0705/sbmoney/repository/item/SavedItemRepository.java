@@ -8,6 +8,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface SavedItemRepository extends JpaRepository<SavedItem, Long> {
-
     List<SavedItem> findAllByGoalItemAndAndCreatedAtIsBefore(GoalItem goalItem, LocalDateTime createdDate);
+    void deleteAllByUserId(Long userId);
 }

@@ -102,9 +102,9 @@ public class UserController {
     }
 
     // 회원 탈퇴
-    @GetMapping("/api/user/resign")
-    public void requestResign() {
-        userService.requestResign();
+    @PostMapping("/api/user/resign")
+    public ResponseEntity<Message> requestResign(@RequestBody User.RequestLogin requestLogin) {
+        return ResponseEntity.ok(userService.requestResign(requestLogin));
     }
 
     //로그인 테스트
