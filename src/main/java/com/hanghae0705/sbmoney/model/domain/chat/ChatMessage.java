@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -28,12 +29,13 @@ public class ChatMessage {
     private String message; // 메시지
     private Long userCount; // 채팅방 조회수
     private int timeLimit; // 채팅방 시간제한
+    private long leftTime; // 입장 시 남은 시간
 
     public ChatMessage() {
     }
 
     @Builder
-    public ChatMessage(MessageType type, String roomId, String sender, String profileImg, String message, Long userCount, int timeLimit) {
+    public ChatMessage(MessageType type, String roomId, String sender, String profileImg, String message, Long userCount, int timeLimit, long leftTime) {
         this.type = type;
         this.roomId = roomId;
         this.sender = sender;
@@ -41,5 +43,6 @@ public class ChatMessage {
         this.message = message;
         this.userCount = userCount;
         this.timeLimit = timeLimit;
+        this.leftTime = leftTime;
     }
 }
