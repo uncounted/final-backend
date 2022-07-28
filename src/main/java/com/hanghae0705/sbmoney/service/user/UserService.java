@@ -150,26 +150,28 @@ public class UserService {
     }
 
     public Message findUsername(User.RequestUserId requestUserId) {
-        Optional<User.ResponseFoundId> found = userRepository.findByEmail(requestUserId.getEmail())
-                .map(User.ResponseFoundId::of);
+        User.ResponseFoundId found = userRepository.findByEmail(requestUserId.getEmail())
+                .map(User.ResponseFoundId::of)
+                .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_EMAIL));
 
-        // .get()을 안 쓸 수 있는 방향 찾아보기
-        if(found.isPresent()) {
-            if(found.get().getProvider().equals("general")) {
-                found.get().setUserId(found.get().getUserId().substring(0, 3) + "***");
-                System.out.println(found.get().getUserId());
-            }
-
+        if(found.getProvider().equals("general")) {
+            found.setUserId(found.getUserId().substring(0, 3) + "***");
             return Message.builder()
                     .result(true)
                     .respMsg("가입된 회원입니다.")
-                    .data(found.get())
+                    .data(found)
+                    .build();
+        } else if(found.getProvider().equals("kakao")) {
+            return Message.builder()
+                    .result(true)
+                    .respMsg("카카오로 가입된 회원입니다.")
+                    .data(found)
                     .build();
         } else {
             return Message.builder()
-                    .result(false)
-                    .respMsg("회원정보가 없습니다.")
-                    .data(null)
+                    .result(true)
+                    .respMsg("구글로 가입된 회원입니다.")
+                    .data(found)
                     .build();
         }
     }
