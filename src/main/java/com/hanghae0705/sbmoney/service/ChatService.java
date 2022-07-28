@@ -201,17 +201,6 @@ public class ChatService {
      * userCount 기준 상위 5개 추출
      */
     public Message getTopRoom() {
-//        // DB 에서 proceeding 이 true 인 챗룸 찾기
-//        List<ChatRoom> chatRoomList = chatRoomRepository.findAllByProceeding(true);
-//
-//        // RedisChatRoom 에서 roomId가 같은 것을 찾아 userCount가 높은 순서대로 정렬하기
-//        List<RedisChatRoom> proceedingRedisChatRoomList = new ArrayList<>();
-//        for (ChatRoom chatRoom : chatRoomList) {
-//            RedisChatRoom redisChatRoom = redisChatRoomRepository.findRoomById(chatRoom.getRoomId());
-//            Long userCount = redisChatRoomRepository.getUserCount(redisChatRoom.getRoomId());
-//            redisChatRoom.setUserCount(userCount);
-//            proceedingRedisChatRoomList.add(redisChatRoom);
-//        }
 
         // 모든 roomId 호출
         List<RedisChatRoom> allRooms = redisChatRoomRepository.findAllRoom();
@@ -242,8 +231,13 @@ public class ChatService {
                 .map(chatRoomId -> chatRoomRepository.findByRoomIdAndProceeding(chatRoomId, true))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(room -> ChatRoom.Response.of(room, topRoom.get(room.getRoomId())))
-                //.map(ChatRoom.Response::of)
+                .map(room ->
+                        ChatRoom.Response.builder()
+                                .chatRoom(room)
+                                .userCount(topRoom.get(room.getRoomId()))
+                                .leftTime((room.getTimeLimit() * 60L) - Duration.between(room.getCreatedDate(), LocalDateTime.now()).getSeconds())
+                                .build()
+                )
                 .collect(Collectors.toList());
 
         return Message.builder()
