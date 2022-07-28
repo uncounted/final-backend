@@ -15,6 +15,9 @@ import com.hanghae0705.sbmoney.model.dto.TokenRequestDto;
 import com.hanghae0705.sbmoney.repository.board.BoardRepository;
 import com.hanghae0705.sbmoney.repository.board.CommentRepository;
 import com.hanghae0705.sbmoney.repository.chat.ChatRoomRepository;
+import com.hanghae0705.sbmoney.repository.item.FavoriteRepository;
+import com.hanghae0705.sbmoney.repository.item.GoalItemRepository;
+import com.hanghae0705.sbmoney.repository.item.SavedItemRepository;
 import com.hanghae0705.sbmoney.repository.user.RefreshTokenRepository;
 import com.hanghae0705.sbmoney.repository.user.UserRepository;
 import com.hanghae0705.sbmoney.security.SecurityUtil;
@@ -22,7 +25,6 @@ import com.hanghae0705.sbmoney.model.dto.TokenDto;
 import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.security.CookieUtils;
-import com.hanghae0705.sbmoney.service.CommonService;
 import com.hanghae0705.sbmoney.util.MailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,7 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.hanghae0705.sbmoney.security.filter.JwtFilter.AUTHORIZATION_HEADER;
 import static com.hanghae0705.sbmoney.security.filter.JwtFilter.BEARER_PREFIX;
@@ -51,12 +52,14 @@ public class UserService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final GoalItemRepository goalItemRepository;
+    private final SavedItemRepository savedItemRepository;
+    private final FavoriteRepository favoriteRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final BCryptPasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final MailService mailService;
-    private final CommonService commonService;
 
     public void saveUser(User.RequestRegister requestRegisterDto) {
         userRepository.save(User.builder()
@@ -221,8 +224,6 @@ public class UserService {
             throw new RuntimeException("Token 이 유효하지 않습니다.");
         }
 
-//        String tokenUsername = TokenProvider.parseClaims(accessToken).getSubject();
-//        System.out.println("tokenUsername: "+tokenUsername);
         String password = passwordEncoder.encode(requestChangePassword.getPassword());
         String username = requestChangePassword.getUsername();
         Optional<User> found = userRepository.findByUsername(username);
@@ -406,18 +407,37 @@ public class UserService {
     }
 
     @Transactional
-    public void requestResign() {
-        User user = commonService.getUser();
+    public Message requestResign(User.RequestLogin requestLogin) {
+        User user = userRepository.findByUsername(requestLogin.getUsername())
+                .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_USER));
+        Message message;
 
-        // Board, Comment, ChatRoom 유저 삭제
-        updateBoardUserNull(user);
-        updateCommentUserNull(user);
-        updateChatRoomUserNull(user);
+        if (passwordEncoder.matches(requestLogin.getPassword(), user.getPassword())) {
+            // GoalItem, SavedItem, Favorite 삭제
+            goalItemRepository.deleteAllByUserId(user.getId());
+            savedItemRepository.deleteAllByUserId(user.getId());
+            favoriteRepository.deleteAllByUserId(user.getId());
 
-        // User 정보 삭제
-        userRepository.delete(user);
+            // Board, Comment, ChatRoom 유저 Null 업데이트
+            updateBoardUserNull(user);
+            updateCommentUserNull(user);
+            updateChatRoomUserNull(user);
+
+            // User 정보 삭제
+            userRepository.delete(user);
+
+            message = Message.builder()
+                    .result(true)
+                    .respMsg("회원탈퇴에 성공하였습니다.")
+                    .build();
+        } else {
+            message = Message.builder()
+                    .result(false)
+                    .respMsg("아이디와 비밀번호가 일치하지 않습니다.")
+                    .build();
+        }
+        return message;
     }
-
 
     public void updateBoardUserNull(User user) {
         List<Board> boardList = boardRepository.findAllByUserId(user.getId());
