@@ -255,19 +255,33 @@ public class ChatService {
 
     // 종료 채팅 목록 조회
     public Message getClosedRooms() {
-        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
+        List<ChatRoom> closedChatRooms = chatRoomRepository.findAllByProceeding(false);
         List<ChatRoom.ClosedResponse> chatRoomResponseList = new ArrayList<>();
-        //proceeding(true/false)
-        for (ChatRoom chatRoom : chatRooms) {
-            if (!chatRoom.getProceeding()) {
+        Message message;
+
+        if(closedChatRooms.isEmpty()) {
+            message = Message.builder()
+                    .result(false)
+                    .respMsg("종료된 채팅방이 없습니다.")
+                    .build();
+        } else {
+            for (ChatRoom chatRoom : closedChatRooms) {
+                if (chatRoom.getUser() == null) {
+                    chatRoom.changeUser(User.builder()
+                            .nickname("탈퇴회원")
+                            .profileImg("none")
+                            .build());
+                }
                 chatRoomResponseList.add(new ChatRoom.ClosedResponse(chatRoom));
             }
+
+            message = Message.builder()
+                    .result(true)
+                    .respMsg("종료방 상세 전체 조회에 성공했습니다.")
+                    .data(chatRoomResponseList)
+                    .build();
         }
-        return Message.builder()
-                .result(true)
-                .respMsg("종료방 상세 전체 조회에 성공했습니다.")
-                .data(chatRoomResponseList)
-                .build();
+        return message;
     }
 
     // 종료 채팅 상세 조회

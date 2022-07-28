@@ -79,6 +79,9 @@ public class ChatRoom extends CreatedTime {
     public void changeProceeding(Boolean proceeding) {
         this.proceeding = proceeding;
     }
+    public void changeUser(User user) {
+        this.user = user;
+    }
 
     public void updateUserNull() {
         this.user = null;

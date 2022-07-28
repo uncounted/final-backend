@@ -27,6 +27,7 @@ import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.security.CookieUtils;
 import com.hanghae0705.sbmoney.util.MailService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -45,6 +46,7 @@ import java.util.Optional;
 import static com.hanghae0705.sbmoney.security.filter.JwtFilter.AUTHORIZATION_HEADER;
 import static com.hanghae0705.sbmoney.security.filter.JwtFilter.BEARER_PREFIX;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -415,11 +417,11 @@ public class UserService {
         if (passwordEncoder.matches(requestLogin.getPassword(), user.getPassword())) {
             // GoalItem, SavedItem, Favorite 삭제
             savedItemRepository.deleteAllByUserId(user.getId());
-            System.out.println("savedItem ok");
+            log.info("savedItem 삭제 ok");
             goalItemRepository.deleteAllByUserId(user.getId());
-            System.out.println("goalItem ok");
+            log.info("goalItem 삭제 ok");
             favoriteRepository.deleteAllByUserId(user.getId());
-            System.out.println("favorite ok");
+            log.info("favorite 삭제 ok");
 
             // Board, Comment, ChatRoom 유저 Null 업데이트
             updateBoardUserNull(user);
