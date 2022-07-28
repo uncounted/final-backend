@@ -178,18 +178,19 @@ public class UserService {
 
     public RespDto findPassword(User.RequestPassword requestPassword) {
 
-        Optional<User> found = userRepository.findByUsername(requestPassword.getUsername());
+        User found = userRepository.findByUsername(requestPassword.getUsername())
+                .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_USER));
 
         // username의 email과 클라이언트에서 보낸 email이 일치하는지 검사
-        if (found.isPresent() && found.get().getEmail().equals(requestPassword.getEmail())) {
+        if (found.getEmail().equals(requestPassword.getEmail())) {
             // 소셜로 가입된 회원이면 메일 발송하지 않기
-            if (!found.get().getProvider().equals("general")) {
+            if (!found.getProvider().equals("general")) {
                 return RespDto.builder()
                         .result(true)
-                        .respMsg(found.get().getProvider()+" 로 가입된 회원입니다.")
+                        .respMsg(found.getProvider()+" 로 가입된 회원입니다.")
                         .build();
             } else {
-                String email =  found.get().getEmail();
+                String email =  found.getEmail();
 
                 // 메일 인증용 토큰 발급 및 메일 발송
                 // 1. 익명 사용자용 authentication 생성
