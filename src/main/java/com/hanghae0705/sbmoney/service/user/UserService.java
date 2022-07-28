@@ -414,9 +414,12 @@ public class UserService {
 
         if (passwordEncoder.matches(requestLogin.getPassword(), user.getPassword())) {
             // GoalItem, SavedItem, Favorite 삭제
-            goalItemRepository.deleteAllByUserId(user.getId());
             savedItemRepository.deleteAllByUserId(user.getId());
+            System.out.println("savedItem ok");
+            goalItemRepository.deleteAllByUserId(user.getId());
+            System.out.println("goalItem ok");
             favoriteRepository.deleteAllByUserId(user.getId());
+            System.out.println("favorite ok");
 
             // Board, Comment, ChatRoom 유저 Null 업데이트
             updateBoardUserNull(user);
