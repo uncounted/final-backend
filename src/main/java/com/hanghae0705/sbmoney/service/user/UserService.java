@@ -71,7 +71,7 @@ public class UserService {
                 .nickname(requestRegisterDto.getNickname())
                 .email(requestRegisterDto.getEmail())
                 .introDesc("티끌모아 태산!")
-                .profileImg("https://d29fhpw069ctt2.cloudfront.net/icon/image/84587/preview.svg")
+                .profileImg("https://s3.ap-northeast-2.amazonaws.com/tikkeeul.com/KakaoTalk_Image_2022-07-29-17-35-29.png")
                 .lastEntered(LocalDateTime.now())
                 .provider("general")
                 .role(UserRoleEnum.USER)
