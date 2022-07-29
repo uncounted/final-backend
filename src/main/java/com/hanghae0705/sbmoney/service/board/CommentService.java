@@ -11,7 +11,6 @@ import com.hanghae0705.sbmoney.repository.board.CommentRepository;
 import com.hanghae0705.sbmoney.repository.user.UserRepository;
 import com.hanghae0705.sbmoney.security.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -58,15 +57,9 @@ public class CommentService {
             checkCommentLength(request.getComment());
             Comment comment = new Comment(request, (Board) getValueByIdFromRepo("board", boardId), getUser());
             Board board = (Board) getValueByIdFromRepo("board", boardId);
-            Map<String, Object> responseData = new HashMap<>();
             board.commentCount(board.getCommentCount() + 1);
             commentRepository.save(comment);
-            responseData.put("createdAt", comment.getCreatedDate());
-            responseData.put("modifiedAt", comment.getModifiedDate());
-            responseData.put("nickname", comment.getUser().getNickname());
-            responseData.put("commentId", comment.getId());
-            responseData.put("comment", comment.getComment());
-            return new Message(true, "댓글을 등록하였습니다.", responseData);
+            return new Message(true, "댓글을 등록하였습니다.", createResponseData(comment));
         } catch (Exception e) {
             return new Message(false, errorMsg);
         }
@@ -81,7 +74,7 @@ public class CommentService {
             checkValueIsEmpty(request.getComment());
             checkCommentLength(request.getComment());
             comment.updateComment(request);
-            return new Message(true, "댓글을 수정하였습니다.");
+            return new Message(true, "댓글을 수정하였습니다.", createResponseData(comment));
         } catch (Exception e) {
             return new Message(false, errorMsg);
         }
@@ -156,6 +149,17 @@ public class CommentService {
                 return boardRepository.findById(id).orElseThrow(() -> e);
         }
         return false;
+    }
+
+    private Map<String, Object> createResponseData(Comment comment) {
+        Map<String, Object> responseData = new HashMap<>();
+        responseData.put("createdAt", comment.getCreatedDate());
+        responseData.put("modifiedAt", comment.getModifiedDate());
+        responseData.put("nickname", comment.getUser().getNickname());
+        responseData.put("commentId", comment.getId());
+        responseData.put("comment", comment.getComment());
+        responseData.put("profileImg", comment.getUser().getProfileImg());
+        return responseData;
     }
 
 
