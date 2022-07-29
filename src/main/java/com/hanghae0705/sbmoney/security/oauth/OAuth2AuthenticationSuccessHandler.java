@@ -50,7 +50,7 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
     //        super.onAuthenticationSuccess(request, response, chain, authentication);
 
             UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-            String targetUrl = UriComponentsBuilder.fromUriString("https://www.tikkeeul.com/oauth2/redirect")
+            String targetUrl = UriComponentsBuilder.fromUriString("https://www.tikkeeul.com/oauth")
                     .queryParam("Authorization", tokenDto.getAccessToken())
                     .queryParam("refreshToken", tokenDto.getRefreshToken())
                     .queryParam("username", userDetails.getUsername()) // email, nickname
@@ -58,5 +58,6 @@ public class OAuth2AuthenticationSuccessHandler extends SavedRequestAwareAuthent
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
 
     }
+
 
 }
