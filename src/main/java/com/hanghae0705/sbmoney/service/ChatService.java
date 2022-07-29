@@ -98,8 +98,12 @@ public class ChatService {
                     }
                 }
             }
-            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount));
 
+            // 남은 시간 계산하여 반환
+            long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
+            long leftTime = (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
+
+            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
         }
         return Message.builder()
                 .result(true)
@@ -197,17 +201,6 @@ public class ChatService {
      * userCount 기준 상위 5개 추출
      */
     public Message getTopRoom() {
-//        // DB 에서 proceeding 이 true 인 챗룸 찾기
-//        List<ChatRoom> chatRoomList = chatRoomRepository.findAllByProceeding(true);
-//
-//        // RedisChatRoom 에서 roomId가 같은 것을 찾아 userCount가 높은 순서대로 정렬하기
-//        List<RedisChatRoom> proceedingRedisChatRoomList = new ArrayList<>();
-//        for (ChatRoom chatRoom : chatRoomList) {
-//            RedisChatRoom redisChatRoom = redisChatRoomRepository.findRoomById(chatRoom.getRoomId());
-//            Long userCount = redisChatRoomRepository.getUserCount(redisChatRoom.getRoomId());
-//            redisChatRoom.setUserCount(userCount);
-//            proceedingRedisChatRoomList.add(redisChatRoom);
-//        }
 
         // 모든 roomId 호출
         List<RedisChatRoom> allRooms = redisChatRoomRepository.findAllRoom();
@@ -238,8 +231,13 @@ public class ChatService {
                 .map(chatRoomId -> chatRoomRepository.findByRoomIdAndProceeding(chatRoomId, true))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(room -> ChatRoom.Response.of(room, topRoom.get(room.getRoomId())))
-                //.map(ChatRoom.Response::of)
+                .map(room ->
+                        ChatRoom.Response.builder()
+                                .chatRoom(room)
+                                .userCount(topRoom.get(room.getRoomId()))
+                                .leftTime((room.getTimeLimit() * 60L) - Duration.between(room.getCreatedDate(), LocalDateTime.now()).getSeconds())
+                                .build()
+                )
                 .collect(Collectors.toList());
 
         return Message.builder()
@@ -251,19 +249,33 @@ public class ChatService {
 
     // 종료 채팅 목록 조회
     public Message getClosedRooms() {
-        List<ChatRoom> chatRooms = chatRoomRepository.findAll();
+        List<ChatRoom> closedChatRooms = chatRoomRepository.findAllByProceeding(false);
         List<ChatRoom.ClosedResponse> chatRoomResponseList = new ArrayList<>();
-        //proceeding(true/false)
-        for (ChatRoom chatRoom : chatRooms) {
-            if (!chatRoom.getProceeding()) {
+        Message message;
+
+        if(closedChatRooms.isEmpty()) {
+            message = Message.builder()
+                    .result(false)
+                    .respMsg("종료된 채팅방이 없습니다.")
+                    .build();
+        } else {
+            for (ChatRoom chatRoom : closedChatRooms) {
+                if (chatRoom.getUser() == null) {
+                    chatRoom.changeUser(User.builder()
+                            .nickname("탈퇴회원")
+                            .profileImg("none")
+                            .build());
+                }
                 chatRoomResponseList.add(new ChatRoom.ClosedResponse(chatRoom));
             }
+
+            message = Message.builder()
+                    .result(true)
+                    .respMsg("종료방 상세 전체 조회에 성공했습니다.")
+                    .data(chatRoomResponseList)
+                    .build();
         }
-        return Message.builder()
-                .result(true)
-                .respMsg("종료방 상세 전체 조회에 성공했습니다.")
-                .data(chatRoomResponseList)
-                .build();
+        return message;
     }
 
     // 종료 채팅 상세 조회

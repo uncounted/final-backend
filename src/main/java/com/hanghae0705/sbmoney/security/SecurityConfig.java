@@ -92,7 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //Oauth2
                 .and()
                 .oauth2Login()
-                .loginPage("/user/login")
+                .loginPage("/oauth")
                 //.and()
                 .userInfoEndpoint() // 로그인 성공 후 사용자 정보 가져올 때의 설정
                 .userService(oauth2UserService)
@@ -134,9 +134,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             "/api/board",
             "/api/board/detail/**",
             "/api/board/save/**",
-            "/oauth2/redirect",
+            "/oauth2/redirect/**",
+            "/login/oauth2/**",
             "/api/statistics/**",
             "/chatting/**",
+            "/login/**"
             //"/api/chat/**"
             //"/api/goalItem"
     };

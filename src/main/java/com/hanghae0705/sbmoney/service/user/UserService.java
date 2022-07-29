@@ -27,6 +27,7 @@ import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.security.CookieUtils;
 import com.hanghae0705.sbmoney.util.MailService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -45,6 +46,7 @@ import java.util.Optional;
 import static com.hanghae0705.sbmoney.security.filter.JwtFilter.AUTHORIZATION_HEADER;
 import static com.hanghae0705.sbmoney.security.filter.JwtFilter.BEARER_PREFIX;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -69,7 +71,7 @@ public class UserService {
                 .nickname(requestRegisterDto.getNickname())
                 .email(requestRegisterDto.getEmail())
                 .introDesc("티끌모아 태산!")
-                .profileImg("https://d29fhpw069ctt2.cloudfront.net/icon/image/84587/preview.svg")
+                .profileImg("https://s3.ap-northeast-2.amazonaws.com/tikkeeul.com/KakaoTalk_Image_2022-07-29-17-35-29.png")
                 .lastEntered(LocalDateTime.now())
                 .provider("general")
                 .role(UserRoleEnum.USER)
@@ -148,44 +150,47 @@ public class UserService {
     }
 
     public Message findUsername(User.RequestUserId requestUserId) {
-        Optional<User.ResponseFoundId> found = userRepository.findByEmail(requestUserId.getEmail())
-                .map(User.ResponseFoundId::of);
+        User.ResponseFoundId found = userRepository.findByEmail(requestUserId.getEmail())
+                .map(User.ResponseFoundId::of)
+                .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_EMAIL));
 
-        // .get()을 안 쓸 수 있는 방향 찾아보기
-        if(found.isPresent()) {
-            if(found.get().getProvider().equals("general")) {
-                found.get().setUserId(found.get().getUserId().substring(0, 3) + "***");
-                System.out.println(found.get().getUserId());
-            }
-
+        if(found.getProvider().equals("general")) {
+            found.setUserId(found.getUserId().substring(0, 3) + "***");
             return Message.builder()
                     .result(true)
                     .respMsg("가입된 회원입니다.")
-                    .data(found.get())
+                    .data(found)
+                    .build();
+        } else if(found.getProvider().equals("kakao")) {
+            return Message.builder()
+                    .result(true)
+                    .respMsg("카카오로 가입된 회원입니다.")
+                    .data(found)
                     .build();
         } else {
             return Message.builder()
-                    .result(false)
-                    .respMsg("회원정보가 없습니다.")
-                    .data(null)
+                    .result(true)
+                    .respMsg("구글로 가입된 회원입니다.")
+                    .data(found)
                     .build();
         }
     }
 
     public RespDto findPassword(User.RequestPassword requestPassword) {
 
-        Optional<User> found = userRepository.findByUsername(requestPassword.getUsername());
+        User found = userRepository.findByUsername(requestPassword.getUsername())
+                .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_USER));
 
         // username의 email과 클라이언트에서 보낸 email이 일치하는지 검사
-        if (found.isPresent() && found.get().getEmail().equals(requestPassword.getEmail())) {
+        if (found.getEmail().equals(requestPassword.getEmail())) {
             // 소셜로 가입된 회원이면 메일 발송하지 않기
-            if (!found.get().getProvider().equals("general")) {
+            if (!found.getProvider().equals("general")) {
                 return RespDto.builder()
                         .result(true)
-                        .respMsg(found.get().getProvider()+" 로 가입된 회원입니다.")
+                        .respMsg(found.getProvider()+" 로 가입된 회원입니다.")
                         .build();
             } else {
-                String email =  found.get().getEmail();
+                String email =  found.getEmail();
 
                 // 메일 인증용 토큰 발급 및 메일 발송
                 // 1. 익명 사용자용 authentication 생성
@@ -226,59 +231,39 @@ public class UserService {
 
         String password = passwordEncoder.encode(requestChangePassword.getPassword());
         String username = requestChangePassword.getUsername();
-        Optional<User> found = userRepository.findByUsername(username);
+        User found = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_USER));
 
         // changePassword
-        if (found.isPresent()) {
-            found.get().changePassword(password);
-            return RespDto.builder()
-                    .result(true)
-                    .respMsg("비밀번호를 변경했습니다.")
-                    .build();
-        } else {
-            return RespDto.builder()
-                    .result(false)
-                    .respMsg("토큰에 해당하는 유저가 없습니다.")
-                    .build();
-        }
+        found.changePassword(password);
+        return RespDto.builder()
+                .result(true)
+                .respMsg("비밀번호를 변경했습니다.")
+                .build();
     }
 
     public Message getMyInfo() {
-        Optional<User.Response> resp = userRepository.findByUsername(SecurityUtil.getCurrentUsername())
-                .map(User.Response::of);
+        User.Response resp = userRepository.findByUsername(SecurityUtil.getCurrentUsername())
+                .map(User.Response::of)
+                .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_USER));
 
-        if (resp.isPresent()) {
-            return Message.builder()
-                    .result(true)
-                    .respMsg("로그인 유저 정보 조회에 성공하였습니다.")
-                    .data(resp)
-                    .build();
-        } else {
-            return Message.builder()
-                    .result(false)
-                    .respMsg("로그인 유저 정보가 없습니다.")
-                    .data(null)
-                    .build();
-        }
+        return Message.builder()
+                .result(true)
+                .respMsg("로그인 유저 정보 조회에 성공하였습니다.")
+                .data(resp)
+                .build();
     }
 
     public Message getNicknameAndImg() {
-        Optional<User.ResponseNicknameAndImg> resp = userRepository.findByUsername(SecurityUtil.getCurrentUsername())
-                .map(User.ResponseNicknameAndImg::of);
+        User.ResponseNicknameAndImg resp = userRepository.findByUsername(SecurityUtil.getCurrentUsername())
+                .map(User.ResponseNicknameAndImg::of)
+                .orElseThrow(() -> new ApiRequestException(ApiException.NOT_EXIST_USER));
 
-        if (resp.isPresent()) {
-            return Message.builder()
-                    .result(true)
-                    .respMsg("닉네임, 프로필 이미지 조회에 성공하였습니다.")
-                    .data(resp)
-                    .build();
-        } else {
-            return Message.builder()
-                    .result(false)
-                    .respMsg("로그인 유저 정보가 없습니다.")
-                    .data(null)
-                    .build();
-        }
+        return Message.builder()
+                .result(true)
+                .respMsg("닉네임, 프로필 이미지 조회에 성공하였습니다.")
+                .data(resp)
+                .build();
     }
 
     @Transactional
@@ -414,9 +399,12 @@ public class UserService {
 
         if (passwordEncoder.matches(requestLogin.getPassword(), user.getPassword())) {
             // GoalItem, SavedItem, Favorite 삭제
-            goalItemRepository.deleteAllByUserId(user.getId());
             savedItemRepository.deleteAllByUserId(user.getId());
+            log.info("savedItem 삭제 ok");
+            goalItemRepository.deleteAllByUserId(user.getId());
+            log.info("goalItem 삭제 ok");
             favoriteRepository.deleteAllByUserId(user.getId());
+            log.info("favorite 삭제 ok");
 
             // Board, Comment, ChatRoom 유저 Null 업데이트
             updateBoardUserNull(user);

@@ -79,6 +79,9 @@ public class ChatRoom extends CreatedTime {
     public void changeProceeding(Boolean proceeding) {
         this.proceeding = proceeding;
     }
+    public void changeUser(User user) {
+        this.user = user;
+    }
 
     public void updateUserNull() {
         this.user = null;
@@ -94,6 +97,7 @@ public class ChatRoom extends CreatedTime {
 
     @Getter
     @RequiredArgsConstructor
+    @AllArgsConstructor
     public static class Response {
         private String roomId;
         private int timeLimit;
@@ -103,26 +107,21 @@ public class ChatRoom extends CreatedTime {
         private Long userCount;
         private Boolean prosCons;
         private LocalDateTime createdAt;
-
-        public static Response of(ChatRoom chatRoom, Long userCount) {
-            return Response.builder()
-                    .chatRoom(chatRoom)
-                    .userCount(userCount)
-                    .build();
-        }
+        private Long leftTime;
 
         @Builder
-        public Response(ChatRoom chatRoom, Long userCount) {
+        public Response(ChatRoom chatRoom, Long userCount, Long leftTime) {
             this.roomId = chatRoom.getRoomId();
             this.timeLimit = chatRoom.getTimeLimit();
             this.comment = chatRoom.getComment();
             this.authorNickname = chatRoom.getUser().getNickname();
             this.authorProfileImg = chatRoom.getUser().getProfileImg();
-            this.userCount = userCount;
             this.createdAt = chatRoom.getCreatedDate();
+            this.userCount = userCount;
+            this.leftTime = leftTime;
         }
         @Builder
-        public Response(ChatRoom chatRoom, Boolean chatRoomProsCons, Long userCount) {
+        public Response(ChatRoom chatRoom, Boolean chatRoomProsCons, Long userCount, Long leftTime) {
             this.roomId = chatRoom.getRoomId();
             this.timeLimit = chatRoom.getTimeLimit();
             this.comment = chatRoom.getComment();
@@ -131,6 +130,19 @@ public class ChatRoom extends CreatedTime {
             this.userCount = userCount;
             this.createdAt = chatRoom.getCreatedDate();
             this.prosCons = chatRoomProsCons;
+            this.leftTime = leftTime;
+        }
+
+
+        public Response(ChatRoom chatRoom, Long userCount) {
+            this.roomId = chatRoom.getRoomId();
+            this.timeLimit = chatRoom.getTimeLimit();
+            this.comment = chatRoom.getComment();
+            this.authorNickname = chatRoom.getUser().getNickname();
+            this.authorProfileImg = chatRoom.getUser().getProfileImg();
+            this.userCount = userCount;
+            this.createdAt = chatRoom.getCreatedDate();
+            this.userCount = userCount;
         }
     }
 
