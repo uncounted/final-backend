@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -56,9 +58,15 @@ public class CommentService {
             checkCommentLength(request.getComment());
             Comment comment = new Comment(request, (Board) getValueByIdFromRepo("board", boardId), getUser());
             Board board = (Board) getValueByIdFromRepo("board", boardId);
+            Map<String, Object> responseData = new HashMap<>();
             board.commentCount(board.getCommentCount() + 1);
             commentRepository.save(comment);
-            return new Message(true, "댓글을 등록하였습니다.");
+            responseData.put("createdAt", comment.getCreatedDate());
+            responseData.put("modifiedAt", comment.getModifiedDate());
+            responseData.put("nickname", comment.getUser().getNickname());
+            responseData.put("commentId", comment.getId());
+            responseData.put("comment", comment.getComment());
+            return new Message(true, "댓글을 등록하였습니다.", responseData);
         } catch (Exception e) {
             return new Message(false, errorMsg);
         }
@@ -86,19 +94,19 @@ public class CommentService {
             checkCommentUserAndCurrentUser((Comment) getValueByIdFromRepo("comment", commentId));
             commentRepository.deleteById(commentId);
             Board board = (Board) getValueByIdFromRepo("board", boardId);
-            board.commentCount(board.getCommentCount() -1);
+            board.commentCount(board.getCommentCount() - 1);
             return new Message(true, "댓글을 삭제하였습니다.");
         } catch (Exception e) {
             return new Message(false, errorMsg);
         }
     }
 
-//    @Transactional
-//    public Comment test(Long boardId, User user, Comment.Request request) {
-//        Comment comment = new Comment(request, (Board) getValueByIdFromRepo("board", boardId), user);
-//        commentRepository.save(comment);
-//        return comment;
-//    }
+    @Transactional
+    public Comment test(Long boardId, User user, Comment.Request request) {
+        Comment comment = new Comment(request, (Board) getValueByIdFromRepo("board", boardId), user);
+        commentRepository.save(comment);
+        return comment;
+    }
 
 
     private User getUser() {
