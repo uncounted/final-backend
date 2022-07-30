@@ -64,7 +64,7 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(chatMessage.getRoomId()).orElseThrow(() -> new IllegalArgumentException("해당하는 방이 없습니다."));
         long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
         long leftTime = (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
-        chatMessage.setLeftTime(leftTime<0?0:leftTime);
+        chatMessage.setLeftTime(leftTime < 0 ? 0 : leftTime);
 
         log.info("CHAT {}, {}", redisChatRoomRepository.findRoomById(chatMessage.getRoomId()), leftTime);
 
@@ -88,7 +88,7 @@ public class ChatService {
         for (ChatRoom chatRoom : chatRooms) {
             Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
             List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
-            Boolean checkProsCons = null;
+            int checkProsCons = 0;
             //찬성 반대를 눌렀는 지 체크
             if (!chatRoomProsConsList.isEmpty()) {
                 for (ChatRoomProsCons chatRoomProsCons : chatRoomProsConsList) {
@@ -103,7 +103,7 @@ public class ChatService {
             long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
             long leftTime = (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
 
-            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime<0?0:leftTime));
+            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime < 0 ? 0 : leftTime));
         }
         return Message.builder()
                 .result(true)
@@ -141,11 +141,11 @@ public class ChatService {
     public Message vote(String roomId, ChatRoomProsCons.Request chatRoomProsConsRequest) {
         Long userId = commonService.getUserId();
         ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
-        Boolean prosCons = chatRoomProsConsRequest.getProsCons();
+        int prosCons = chatRoomProsConsRequest.getProsCons();
         ChatRoomProsCons checkVote = chatRoomProsConsRepository.findByUserIdAndChatRoom(userId, chatRoom);
         if (checkVote != null) {
             if (prosCons != checkVote.getProsCons()) {
-                chatRoom.MinusVoteCount(!prosCons);
+                chatRoom.MinusVoteCount((prosCons == 1) ? 2 : 1);
                 chatRoom.PlusVoteCount(prosCons);
                 checkVote.update(chatRoomProsConsRequest.getProsCons());
             }
@@ -238,7 +238,7 @@ public class ChatService {
                                 .leftTime(
                                         (room.getTimeLimit() * 60L)
                                                 - Duration.between(room.getCreatedDate(), LocalDateTime.now())
-                                                .getSeconds() <0? 0L :(room.getTimeLimit() * 60L)
+                                                .getSeconds() < 0 ? 0L : (room.getTimeLimit() * 60L)
                                                 - Duration.between(room.getCreatedDate(), LocalDateTime.now())
                                                 .getSeconds())
                                 .build()
@@ -254,11 +254,11 @@ public class ChatService {
 
     // 종료 채팅 목록 조회
     public Message getClosedRooms() {
-        List<ChatRoom> closedChatRooms = chatRoomRepository.findAllByProceeding(false);
+        List<ChatRoom> closedChatRooms = chatRoomRepository.findAllByProceedingOrderByCreatedAtDesc(false);
         List<ChatRoom.ClosedResponse> chatRoomResponseList = new ArrayList<>();
         Message message;
 
-        if(closedChatRooms.isEmpty()) {
+        if (closedChatRooms.isEmpty()) {
             message = Message.builder()
                     .result(false)
                     .respMsg("종료된 채팅방이 없습니다.")

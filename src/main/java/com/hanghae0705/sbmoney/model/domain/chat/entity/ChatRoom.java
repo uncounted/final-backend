@@ -60,18 +60,18 @@ public class ChatRoom extends CreatedTime {
         this.roomId = roomId;
     }
 
-    public void PlusVoteCount(Boolean prosCons) {
-        if (prosCons) {
+    public void PlusVoteCount(int prosCons) {
+        if (prosCons == 1) {
             this.voteTrueCount++;
-        } else {
+        } else if (prosCons == 2) {
             this.voteFalseCount++;
         }
     }
 
-    public void MinusVoteCount(Boolean prosCons) {
-        if (prosCons) {
+    public void MinusVoteCount(int prosCons) {
+        if (prosCons == 1) {
             this.voteTrueCount--;
-        } else {
+        } else if (prosCons == 2){
             this.voteFalseCount--;
         }
     }
@@ -79,6 +79,7 @@ public class ChatRoom extends CreatedTime {
     public void changeProceeding(Boolean proceeding) {
         this.proceeding = proceeding;
     }
+
     public void changeUser(User user) {
         this.user = user;
     }
@@ -105,7 +106,7 @@ public class ChatRoom extends CreatedTime {
         private String authorNickname;
         private String authorProfileImg;
         private Long userCount;
-        private Boolean prosCons;
+        private int prosCons;
         private LocalDateTime createdAt;
         private Long leftTime;
 
@@ -120,8 +121,9 @@ public class ChatRoom extends CreatedTime {
             this.userCount = userCount;
             this.leftTime = leftTime;
         }
+
         @Builder
-        public Response(ChatRoom chatRoom, Boolean chatRoomProsCons, Long userCount, Long leftTime) {
+        public Response(ChatRoom chatRoom, int chatRoomProsCons, Long userCount, Long leftTime) {
             this.roomId = chatRoom.getRoomId();
             this.timeLimit = chatRoom.getTimeLimit();
             this.comment = chatRoom.getComment();

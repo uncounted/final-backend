@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 
@@ -18,7 +19,8 @@ public class ChatRoomProsCons {
     private Long id;
 
     @Column
-    private Boolean prosCons;
+    @ColumnDefault("0")
+    private int prosCons;
 
     @Column
     private Long userId;
@@ -28,13 +30,13 @@ public class ChatRoomProsCons {
     @JsonBackReference(value = "chatRoom-fk")
     private ChatRoom chatRoom;
 
-    public ChatRoomProsCons(Boolean prosCons, Long userId, ChatRoom chatRoom){
+    public ChatRoomProsCons(int prosCons, Long userId, ChatRoom chatRoom){
         this.prosCons = prosCons;
         this.userId = userId;
         this.chatRoom = chatRoom;
     }
 
-    public Boolean update(Boolean prosCons){
+    public int update(int prosCons){
         this.prosCons = prosCons;
         return prosCons;
     }
@@ -47,7 +49,7 @@ public class ChatRoomProsCons {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Request {
-        Boolean prosCons;
+        int prosCons;
     }
 
 }
