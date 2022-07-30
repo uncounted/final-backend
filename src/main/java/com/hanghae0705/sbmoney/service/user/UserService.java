@@ -25,6 +25,7 @@ import com.hanghae0705.sbmoney.model.dto.TokenDto;
 import com.hanghae0705.sbmoney.security.auth.UserDetailsImpl;
 import com.hanghae0705.sbmoney.security.jwt.TokenProvider;
 import com.hanghae0705.sbmoney.security.CookieUtils;
+import com.hanghae0705.sbmoney.service.CommonService;
 import com.hanghae0705.sbmoney.util.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,6 +63,7 @@ public class UserService {
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final MailService mailService;
+    private final CommonService commonService;
 
     public void saveUser(User.RequestRegister requestRegisterDto) {
         userRepository.save(User.builder()
@@ -117,20 +119,36 @@ public class UserService {
         }
     }
 
-    public RespDto checkNickname(String nickname) {
-        Optional<User> found = userRepository.findByNickname(nickname);
+    public RespDto checkNickname(HttpServletRequest httpServletRequest, String nickname) {
 
-        if (found.isEmpty()) {
-            return RespDto.builder()
-                    .result(true)
-                    .respMsg("중복된 닉네임이 없습니다. 회원가입이 가능합니다.")
-                    .build();
-        } else {
-            return RespDto.builder()
+        Optional<User> found = userRepository.findByNickname(nickname);
+        RespDto respDto = null;
+
+        if(httpServletRequest.getHeader(AUTHORIZATION_HEADER) != null && found.isPresent()) {
+            if (found.get().getNickname().equals(commonService.getUser().getNickname())) {
+                respDto = RespDto.builder()
+                        .result(true)
+                        .respMsg("중복된 닉네임이 없습니다. 회원가입이 가능합니다.")
+                        .build();
+            } else {
+                respDto = RespDto.builder()
+                        .result(false)
+                        .respMsg("중복된 닉네임이 있어 회원가입이 불가능합니다.")
+                        .build();
+            }
+        } else if (found.isPresent()){
+            respDto = RespDto.builder()
                     .result(false)
                     .respMsg("중복된 닉네임이 있어 회원가입이 불가능합니다.")
                     .build();
+        } else {
+            respDto = RespDto.builder()
+                    .result(true)
+                    .respMsg("중복된 닉네임이 없습니다. 회원가입이 가능합니다.")
+                    .build();
         }
+
+        return respDto;
     }
 
     public RespDto checkEmail(String email) {

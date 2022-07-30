@@ -64,7 +64,7 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(chatMessage.getRoomId()).orElseThrow(() -> new IllegalArgumentException("해당하는 방이 없습니다."));
         long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
         long leftTime = (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
-        chatMessage.setLeftTime(leftTime);
+        chatMessage.setLeftTime(leftTime<0?0:leftTime);
 
         log.info("CHAT {}, {}", redisChatRoomRepository.findRoomById(chatMessage.getRoomId()), leftTime);
 
@@ -103,7 +103,7 @@ public class ChatService {
             long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
             long leftTime = (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
 
-            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
+            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime<0?0:leftTime));
         }
         return Message.builder()
                 .result(true)
@@ -235,7 +235,12 @@ public class ChatService {
                         ChatRoom.Response.builder()
                                 .chatRoom(room)
                                 .userCount(topRoom.get(room.getRoomId()))
-                                .leftTime((room.getTimeLimit() * 60L) - Duration.between(room.getCreatedDate(), LocalDateTime.now()).getSeconds())
+                                .leftTime(
+                                        (room.getTimeLimit() * 60L)
+                                                - Duration.between(room.getCreatedDate(), LocalDateTime.now())
+                                                .getSeconds() <0? 0L :(room.getTimeLimit() * 60L)
+                                                - Duration.between(room.getCreatedDate(), LocalDateTime.now())
+                                                .getSeconds())
                                 .build()
                 )
                 .collect(Collectors.toList());
