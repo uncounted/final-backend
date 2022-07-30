@@ -43,8 +43,8 @@ public class UserController {
 
     // 닉네임 중복검사
     @PostMapping("/api/user/register/checkNickname")
-    public RespDto checkNickname(@RequestBody User.RequestCheckNickname requestCheckNickname){
-        return userService.checkNickname(requestCheckNickname.getNickname());
+    public RespDto checkNickname(HttpServletRequest httpServletRequest,@RequestBody User.RequestCheckNickname requestCheckNickname){
+        return userService.checkNickname(httpServletRequest, requestCheckNickname.getNickname());
     }
 
     // 수정 예정
