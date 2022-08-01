@@ -319,7 +319,7 @@ public class ChatService {
         Long userId = commonService.getUserId();
         List<ChatRoom> chatRoomList = chatRoomRepository.findAllByOrderByCreatedAtDesc();
         List<ChatRoom.Response> openChatRoomList = new ArrayList<>();
-        List<ChatRoom.Response> closedChatRoomList = new ArrayList<>();
+        List<ChatRoom.ClosedResponse> closedChatRoomList = new ArrayList<>();
         List<ChatRoom.Response> topRoomList = new ArrayList<>();
 
         //채팅방 목록
@@ -339,7 +339,14 @@ public class ChatService {
                 log.info("createdAt: "+chatRoom.getCreatedDate()+" | leftTime: "+leftTime+" | timeLimit: "+chatRoom.getTimeLimit());
             } else {
                 checkProsCons = getCheckProsCons(userId, checkProsCons, chatRoomProsConsList);
-                closedChatRoomList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
+                closedChatRoomList.add(new ChatRoom.ClosedResponse(chatRoom));
+            }
+
+            if (chatRoom.getUser() == null) {
+                chatRoom.changeUser(User.builder()
+                        .nickname("탈퇴회원")
+                        .profileImg("https://s3.ap-northeast-2.amazonaws.com/tikkeeul.com/KakaoTalk_Image_2022-07-29-17-35-29.png")
+                        .build());
             }
         }
 
