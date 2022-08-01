@@ -2,6 +2,7 @@ package com.hanghae0705.sbmoney.service;
 
 
 import com.hanghae0705.sbmoney.data.Message;
+import com.hanghae0705.sbmoney.data.MessageChat;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoomProsCons;
 import com.hanghae0705.sbmoney.model.domain.chat.RedisChatRoom;
 import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatLog;
@@ -64,7 +65,7 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(chatMessage.getRoomId()).orElseThrow(() -> new IllegalArgumentException("해당하는 방이 없습니다."));
         long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
         long leftTime = (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
-        chatMessage.setLeftTime(leftTime);
+        chatMessage.setLeftTime(leftTime < 0 ? 0 : leftTime);
 
         log.info("CHAT {}, {}", redisChatRoomRepository.findRoomById(chatMessage.getRoomId()), leftTime);
 
@@ -88,7 +89,7 @@ public class ChatService {
         for (ChatRoom chatRoom : chatRooms) {
             Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
             List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
-            Boolean checkProsCons = null;
+            int checkProsCons = 0;
             //찬성 반대를 눌렀는 지 체크
             if (!chatRoomProsConsList.isEmpty()) {
                 for (ChatRoomProsCons chatRoomProsCons : chatRoomProsConsList) {
@@ -103,7 +104,7 @@ public class ChatService {
             long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
             long leftTime = (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
 
-            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
+            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime < 0 ? 0 : leftTime));
         }
         return Message.builder()
                 .result(true)
@@ -141,11 +142,11 @@ public class ChatService {
     public Message vote(String roomId, ChatRoomProsCons.Request chatRoomProsConsRequest) {
         Long userId = commonService.getUserId();
         ChatRoom chatRoom = chatRoomValidator.isValidChatRoom(roomId);
-        Boolean prosCons = chatRoomProsConsRequest.getProsCons();
+        int prosCons = chatRoomProsConsRequest.getProsCons();
         ChatRoomProsCons checkVote = chatRoomProsConsRepository.findByUserIdAndChatRoom(userId, chatRoom);
         if (checkVote != null) {
             if (prosCons != checkVote.getProsCons()) {
-                chatRoom.MinusVoteCount(!prosCons);
+                chatRoom.MinusVoteCount((prosCons == 1) ? 2 : 1);
                 chatRoom.PlusVoteCount(prosCons);
                 checkVote.update(chatRoomProsConsRequest.getProsCons());
             }
@@ -201,6 +202,7 @@ public class ChatService {
      * userCount 기준 상위 5개 추출
      */
     public Message getTopRoom() {
+        Long userId = commonService.getUserId();
 
         // 모든 roomId 호출
         List<RedisChatRoom> allRooms = redisChatRoomRepository.findAllRoom();
@@ -226,6 +228,7 @@ public class ChatService {
                         (e1, e2) -> e1, LinkedHashMap::new)
                 );
 
+        int checkProsCons = 0;
         // topRoom 중, proceeding이 true인 것만 DB에서 chatRoom 데이터 읽어오기
         List<ChatRoom.Response> chatRoomList = topRoom.keySet().stream()
                 .map(chatRoomId -> chatRoomRepository.findByRoomIdAndProceeding(chatRoomId, true))
@@ -235,7 +238,13 @@ public class ChatService {
                         ChatRoom.Response.builder()
                                 .chatRoom(room)
                                 .userCount(topRoom.get(room.getRoomId()))
-                                .leftTime((room.getTimeLimit() * 60L) - Duration.between(room.getCreatedDate(), LocalDateTime.now()).getSeconds())
+                                .chatRoomProsCons(getCheckProsCons(userId, checkProsCons, room.getChatRoomProsConsList()))
+                                .leftTime(
+                                        (room.getTimeLimit() * 60L)
+                                                - Duration.between(room.getCreatedDate(), LocalDateTime.now())
+                                                .getSeconds() < 0 ? 0L : (room.getTimeLimit() * 60L)
+                                                - Duration.between(room.getCreatedDate(), LocalDateTime.now())
+                                                .getSeconds())
                                 .build()
                 )
                 .collect(Collectors.toList());
@@ -249,11 +258,11 @@ public class ChatService {
 
     // 종료 채팅 목록 조회
     public Message getClosedRooms() {
-        List<ChatRoom> closedChatRooms = chatRoomRepository.findAllByProceeding(false);
+        List<ChatRoom> closedChatRooms = chatRoomRepository.findAllByProceedingOrderByCreatedAtDesc(false);
         List<ChatRoom.ClosedResponse> chatRoomResponseList = new ArrayList<>();
         Message message;
 
-        if(closedChatRooms.isEmpty()) {
+        if (closedChatRooms.isEmpty()) {
             message = Message.builder()
                     .result(false)
                     .respMsg("종료된 채팅방이 없습니다.")
@@ -306,4 +315,55 @@ public class ChatService {
                 .build();
     }
 
+    public MessageChat getAllList() {
+        Long userId = commonService.getUserId();
+        List<ChatRoom> chatRoomList = chatRoomRepository.findAll();
+        List<ChatRoom.Response> openChatRoomList = new ArrayList<>();
+        List<ChatRoom.Response> closedChatRoomList = new ArrayList<>();
+        List<ChatRoom.Response> topRoomList = new ArrayList<>();
+
+        //채팅방 목록
+        for(ChatRoom chatRoom : chatRoomList) {
+            // 남은 시간 계산하여 저장
+            long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
+            long leftTime = ((chatRoom.getTimeLimit() * 60L) - betweenSeconds)<0 ? 0 : (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
+
+            Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
+            List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
+            int checkProsCons = 0;
+
+            if (chatRoom.getProceeding()) {
+                checkProsCons = getCheckProsCons(userId, checkProsCons, chatRoomProsConsList);
+                openChatRoomList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
+                topRoomList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
+            } else {
+                closedChatRoomList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
+            }
+        }
+
+        //top5 구하기
+        List<ChatRoom.Response> top5RoomList = topRoomList.stream()
+                .sorted(Comparator.comparing(ChatRoom.Response::getUserCount).reversed())
+                .limit(5)
+                .collect(Collectors.toList());
+
+        return MessageChat.builder()
+                .top5(top5RoomList)
+                .chatRooms(openChatRoomList)
+                .closedChatRooms(closedChatRoomList)
+                .build();
+    }
+
+    private int getCheckProsCons(Long userId, int checkProsCons, List<ChatRoomProsCons> chatRoomProsConsList) {
+        //찬성 반대를 눌렀는 지 체크
+        if (!chatRoomProsConsList.isEmpty()) {
+            for (ChatRoomProsCons chatRoomProsCons : chatRoomProsConsList) {
+                if (chatRoomProsCons.getUserId().equals(userId)) {
+                    checkProsCons = chatRoomProsCons.getProsCons();
+                    break;
+                }
+            }
+        }
+        return checkProsCons;
+    }
 }

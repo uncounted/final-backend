@@ -38,13 +38,14 @@ public class Item {
         private String categoryName;
         private Long itemId;
         private String itemName;
+        private int itemDefaultPrice;
 
         public Response(Item item){
             this.categoryId = item.getCategory().getId();
             this.categoryName = item.getCategory().getName();
             this.itemId = item.getId();
             this.itemName = item.getName();
-
+            this.itemDefaultPrice = item.getDefaultPrice();
         }
     }
 
