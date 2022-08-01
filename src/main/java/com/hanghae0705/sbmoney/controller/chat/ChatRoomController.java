@@ -1,6 +1,7 @@
 package com.hanghae0705.sbmoney.controller.chat;
 
 import com.hanghae0705.sbmoney.data.Message;
+import com.hanghae0705.sbmoney.data.MessageChat;
 import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatRoom;
 import com.hanghae0705.sbmoney.model.domain.chat.ChatRoomProsCons;
 import com.hanghae0705.sbmoney.repository.chat.ChatRoomRepository;
@@ -78,5 +79,11 @@ public class ChatRoomController {
     @GetMapping("/api/closedChat/room/{closedRoomId}")
     public ResponseEntity<Message> getClosedRoomDetail(@PathVariable String closedRoomId) {
         return ResponseEntity.ok(chatService.getCloesdChatRoom(closedRoomId));
+    }
+
+    // 채팅방 일괄 조회(탑5, 채팅방목록, 종료목록)
+    @GetMapping("/api/chat/rooms/all")
+    public ResponseEntity<MessageChat> getAllList() {
+        return ResponseEntity.ok(chatService.getAllList());
     }
 }
