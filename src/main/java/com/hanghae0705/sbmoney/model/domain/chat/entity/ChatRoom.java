@@ -162,6 +162,7 @@ public class ChatRoom extends CreatedTime {
         @Builder
         public ClosedResponse(ChatRoom chatRoom) {
             int totalCount = chatRoom.getVoteTrueCount() + chatRoom.getVoteFalseCount();
+
             this.roomId = chatRoom.getRoomId();
             this.comment = chatRoom.getComment();
             this.authorNickname = chatRoom.getUser().getNickname();

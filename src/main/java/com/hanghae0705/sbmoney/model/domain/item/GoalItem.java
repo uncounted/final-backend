@@ -107,6 +107,13 @@ public class GoalItem extends BaseEntity {
     @Getter
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class CheckGoalItem {
+        private Long goalItemId;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class UpdateRequest {
         private int goalItemCount;
         private int price;

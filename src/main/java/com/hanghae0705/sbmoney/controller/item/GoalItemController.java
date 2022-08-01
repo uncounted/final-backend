@@ -41,6 +41,13 @@ public class GoalItemController {
         return ResponseEntity.ok(message);
     }
 
+    @PostMapping("/api/goalItem/check")
+    public ResponseEntity<Message> checkReached(@RequestBody GoalItem.CheckGoalItem checkGoalItem) throws ItemException {
+        User user = commonService.getUser();
+        Message message = goalItemService.checkReached(user, checkGoalItem.getGoalItemId());
+        return ResponseEntity.ok(message);
+    }
+
     @PutMapping("/api/goalItem/{goalItemId}")
     public ResponseEntity<Message> updateGoalItem(@PathVariable Long goalItemId,
                                                   @RequestPart(value = "image",required = false) MultipartFile multipartFile,

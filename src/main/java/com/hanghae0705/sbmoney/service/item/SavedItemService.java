@@ -47,13 +47,9 @@ public class SavedItemService {
 
         if (goalItem.getItem().getId() != -1L && updatePrice >= goalItem.getTotal()) { // GoalItem이 목표 금액을 달성했을 때
             LocalDateTime reachedAt = LocalDateTime.now();
-            goalItem.setCheckReached(true, 100.0, reachedAt);
+            goalItem.setCheckReached(false, 100.0, reachedAt); // 목표 달성 이벤트를 위해 false 설정
             savedItemRepository.save(new SavedItem(item, price, user, goalItem));
-
-            Item noItem = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
-            GoalItem noGoalItem = new GoalItem(user, 0, 0, noItem);
-            goalItemRepository.save(noGoalItem);
-
+            return new Message(true, "티끌 등록에 성공했습니다.", new GoalItem.Response(goalItem));
         } else if (goalItem.getItem().getId() == -1L) {
             savedItemRepository.save(new SavedItem(item, price, user, goalItem));
         } else{ // GoalItem이 목표 금액을 달성하지 못했을 때

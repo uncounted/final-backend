@@ -317,7 +317,7 @@ public class ChatService {
 
     public MessageChat getAllList() {
         Long userId = commonService.getUserId();
-        List<ChatRoom> chatRoomList = chatRoomRepository.findAllDesc();
+        List<ChatRoom> chatRoomList = chatRoomRepository.findAllByOrderByCreatedAtDesc();
         List<ChatRoom.Response> openChatRoomList = new ArrayList<>();
         List<ChatRoom.Response> closedChatRoomList = new ArrayList<>();
         List<ChatRoom.Response> topRoomList = new ArrayList<>();

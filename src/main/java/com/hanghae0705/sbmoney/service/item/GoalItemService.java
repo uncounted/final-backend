@@ -42,7 +42,7 @@ public class GoalItemService {
                     goalItemResponse = new GoalItem.Response(goalItem);
                 }
             }
-            if(goalItemResponse == null) {
+            if(goalItemResponse == null) { // 태산이 모두 달성했을 경우
                 GoalItem noGoalItem = createNoGoalItem(user);
                 goalItemResponse = new GoalItem.Response(goalItemRepository.save(noGoalItem));
             }
@@ -183,6 +183,15 @@ public class GoalItemService {
         LocalDateTime nowDate = LocalDateTime.now();
         noGoalItem.setCheckReached(true, 100.0, nowDate);
         return new Message(true, "목표 항목을 삭제하였습니다.");
+    }
+
+    @Transactional
+    public Message checkReached(User user, Long goalItemId) throws ItemException {
+        GoalItem goalItem = itemValidator.isValidGoalItem(goalItemId, user);
+        LocalDateTime reachedAt = LocalDateTime.now();
+        goalItem.setCheckReached(true, reachedAt);
+        GoalItem noGoalItem = createNoGoalItem(user);
+        return new Message(true, "목표 항목을 달성하였습니다.");
     }
     public GoalItem createNoGoalItem(User user) throws ItemException {
         Item item = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
