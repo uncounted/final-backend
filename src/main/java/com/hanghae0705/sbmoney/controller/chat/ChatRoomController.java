@@ -27,7 +27,7 @@ public class ChatRoomController {
 
     // 채팅방 상세 조회
     @GetMapping("/api/chat/room/{roomId}")
-    public Message roomInfo(@PathVariable String roomId) throws IOException {
+    public Message roomInfo(@PathVariable String roomId) {
         return chatService.getRoomDetail(roomId);
     }
 
