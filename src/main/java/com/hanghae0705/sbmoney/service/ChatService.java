@@ -326,7 +326,6 @@ public class ChatService {
         for(ChatRoom chatRoom : chatRoomList) {
             // 남은 시간 계산하여 저장
             long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
-
             long leftTime = ((chatRoom.getTimeLimit() * 60L) - betweenSeconds)<0 ? 0L : ((chatRoom.getTimeLimit() * 60L) - betweenSeconds);
             Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
             List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
@@ -336,9 +335,7 @@ public class ChatService {
                 checkProsCons = getCheckProsCons(userId, checkProsCons, chatRoomProsConsList);
                 openChatRoomList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
                 topRoomList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
-                log.info("createdAt: "+chatRoom.getCreatedDate()+" | leftTime: "+leftTime+" | timeLimit: "+chatRoom.getTimeLimit());
             } else {
-                checkProsCons = getCheckProsCons(userId, checkProsCons, chatRoomProsConsList);
                 closedChatRoomList.add(new ChatRoom.ClosedResponse(chatRoom));
             }
 
