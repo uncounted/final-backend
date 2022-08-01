@@ -110,17 +110,17 @@ public class ChatRoom extends CreatedTime {
         private LocalDateTime createdAt;
         private Long leftTime;
 
-        @Builder
-        public Response(ChatRoom chatRoom, Long userCount, Long leftTime) {
-            this.roomId = chatRoom.getRoomId();
-            this.timeLimit = chatRoom.getTimeLimit();
-            this.comment = chatRoom.getComment();
-            this.authorNickname = chatRoom.getUser().getNickname();
-            this.authorProfileImg = chatRoom.getUser().getProfileImg();
-            this.createdAt = chatRoom.getCreatedDate();
-            this.userCount = userCount;
-            this.leftTime = leftTime;
-        }
+//        @Builder
+//        public Response(ChatRoom chatRoom, Long userCount, Long leftTime) {
+//            this.roomId = chatRoom.getRoomId();
+//            this.timeLimit = chatRoom.getTimeLimit();
+//            this.comment = chatRoom.getComment();
+//            this.authorNickname = chatRoom.getUser().getNickname();
+//            this.authorProfileImg = chatRoom.getUser().getProfileImg();
+//            this.createdAt = chatRoom.getCreatedDate();
+//            this.userCount = userCount;
+//            this.leftTime = leftTime;
+//        }
 
         @Builder
         public Response(ChatRoom chatRoom, int chatRoomProsCons, Long userCount, Long leftTime) {
