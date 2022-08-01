@@ -45,7 +45,7 @@ public class Comment extends BaseEntity {
     @Getter
     @AllArgsConstructor
     public static class Response {
-        private String username;
+        private String nickname;
         private String profileImg;
         private Long commentId;
         private String comment;
@@ -53,7 +53,7 @@ public class Comment extends BaseEntity {
         private LocalDateTime modifiedAt;
 
         public Response(Comment comment){
-            this.username = comment.getUser().getUsername();
+            this.nickname = comment.getUser().getNickname();
             this.profileImg = comment.getUser().getProfileImg();
             this.commentId = comment.getId();
             this.comment = comment.getComment();
