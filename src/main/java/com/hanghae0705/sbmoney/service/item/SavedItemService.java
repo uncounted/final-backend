@@ -25,7 +25,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SavedItemService {
     private final SavedItemRepository savedItemRepository;
-    private final GoalItemRepository goalItemRepository;
     private final FavoriteRepository favoriteRepository;
     private final ItemValidator itemValidator;
 
@@ -52,13 +51,16 @@ public class SavedItemService {
             return new Message(true, "티끌 등록에 성공했습니다.", new GoalItem.Response(goalItem));
         } else if (goalItem.getItem().getId() == -1L) {
             savedItemRepository.save(new SavedItem(item, price, user, goalItem));
-        } else{ // GoalItem이 목표 금액을 달성하지 못했을 때
+        } else { // GoalItem이 목표 금액을 달성하지 못했을 때
             double decimal = ((double) updatePrice / goalItem.getTotal());
             double updateGoalPercent = MathFloor.PercentTenths(decimal);
             savedItemRepository.save(new SavedItem(item, price, user, goalItem));
             goalItem.setGoalPercent(updateGoalPercent);
         }
-        return new Message(true, "티끌 등록에 성공했습니다.");
+
+        GoalItem.AllResponse allResponse = new GoalItem.AllResponse(goalItem,
+                (List<SavedItem.Response>) getSavedItems(goalItem.getId(), user).getData());
+        return new Message(true, "티끌 등록에 성공했습니다.", allResponse);
     }
 
     public Message getSavedItems(Long goalItemId, User user) throws ItemException {

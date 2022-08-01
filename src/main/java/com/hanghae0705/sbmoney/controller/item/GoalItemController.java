@@ -20,9 +20,10 @@ public class GoalItemController {
     private final CommonService commonService;
 
     @GetMapping("/api/tikkeeul")
-    public ResponseEntity<Message> getTikkeeul() {
+    public ResponseEntity<Message> getTikkeeul() throws ItemException {
         User user = commonService.getUser();
-        Message message = goalItemService.
+        Message message = goalItemService.getAllItems(user);
+        return ResponseEntity.ok(message);
     }
 
     @GetMapping("/api/goalItem")

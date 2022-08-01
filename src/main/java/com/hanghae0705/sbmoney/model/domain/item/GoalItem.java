@@ -157,6 +157,62 @@ public class GoalItem extends BaseEntity {
 
     @Getter
     @RequiredArgsConstructor
+    public static class AllResponse {
+        private Long goalItemId;
+        private Long categoryId;
+        private String categoryName;
+        private Long itemId;
+        private String itemName;
+        private int goalItemCount;
+        private int price;
+        private int totalPrice;
+        private boolean checkReached;
+        private double goalPercent;
+        private int savedItemCount;
+        private LocalDateTime createdAt;
+        private LocalDateTime reachedAt;
+        private String image;
+        private List<SavedItem.Response> savedItemResponses;
+
+        public AllResponse(GoalItem.Response goalItemResponse, List<SavedItem.Response> savedItemResponses){
+            this.goalItemId = goalItemResponse.getGoalItemId();
+            this.categoryId = goalItemResponse.getCategoryId();
+            this.categoryName = goalItemResponse.getCategoryName();
+            this.itemId = goalItemResponse.getItemId();
+            this.itemName = goalItemResponse.getItemName();
+            this.goalItemCount = getGoalItemCount();
+            this.price = goalItemResponse.getPrice();
+            this.totalPrice = goalItemResponse.getTotalPrice();
+            this.checkReached = goalItemResponse.isCheckReached();
+            this.goalPercent = goalItemResponse.getGoalPercent();
+            this.savedItemCount = goalItemResponse.getSavedItemCount();
+            this.createdAt = goalItemResponse.getCreatedAt();
+            this.reachedAt = goalItemResponse.getReachedAt();
+            this.image = goalItemResponse.getImage();
+            this.savedItemResponses = savedItemResponses;
+        }
+
+        public AllResponse(GoalItem goalItem, List<SavedItem.Response> savedItemResponses){
+            this.goalItemId = goalItem.getId();
+            this.categoryId = goalItem.getItem().getCategory().getId();
+            this.categoryName = goalItem.getItem().getCategory().getName();
+            this.itemId = goalItem.getItem().getId();
+            this.itemName = goalItem.getItem().getName();
+            this.goalItemCount = goalItem.getCount();
+            this.price = (goalItem.getCount() == 0)? 0 : goalItem.getTotal() / goalItem.getCount();
+            this.totalPrice = goalItem.getTotal();
+            this.checkReached = goalItem.isCheckReached();
+            this.goalPercent = goalItem.getGoalPercent();
+            this.savedItemCount = (goalItem.getSavedItems() == null) ? 0 : goalItem.getSavedItems().size();
+            this.createdAt = goalItem.getCreatedDate();
+            this.reachedAt = goalItem.getReachedAt();
+            this.image = goalItem.getImage();
+            this.savedItemResponses = savedItemResponses;
+        }
+    }
+
+    @Getter
+    @RequiredArgsConstructor
     public static class HistoryResponse {
         private Long goalItemId;
         private Long categoryId;

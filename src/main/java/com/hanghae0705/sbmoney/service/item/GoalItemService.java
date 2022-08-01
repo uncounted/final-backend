@@ -22,9 +22,7 @@ import javax.transaction.Transactional;
 import java.io.IOException;
 import java.lang.management.GarbageCollectorMXBean;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +31,14 @@ public class GoalItemService {
     private final FavoriteRepository favoriteRepository;
     private final S3Uploader s3Uploader;
     private final ItemValidator itemValidator;
+    private final SavedItemService savedItemService;
+
+    public Message getAllItems(User user) throws ItemException {
+        GoalItem.Response goalItem = (GoalItem.Response) getGoalItem(user).getData();
+        List<SavedItem.Response> savedItems = (List<SavedItem.Response>) savedItemService.getSavedItems(goalItem.getGoalItemId(), user).getData();
+        GoalItem.AllResponse allResponse = new GoalItem.AllResponse(goalItem, savedItems);
+        return new Message(true, "티끌 태산 조회에 성공하셨습니다.", allResponse);
+    }
 
     public Message getGoalItem(User user) throws ItemException {
         List<GoalItem> goalItemList = user.getGoalItems();
