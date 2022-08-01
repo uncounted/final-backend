@@ -371,8 +371,4 @@ public class ChatService {
         }
         return checkProsCons;
     }
-
-    public void getSessionExist() {
-        redisChatRoomRepository.getSessionExist();
-    }
 }
