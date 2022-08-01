@@ -16,8 +16,6 @@ import com.hanghae0705.sbmoney.repository.chat.RedisChatRoomRepository;
 import com.hanghae0705.sbmoney.validator.ChatRoomValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -33,7 +31,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class ChatService {
-    private static final int DEFAULT_PAGE_NUM = 0;
+
     private final ChannelTopic channelTopic;
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisTemplate<String, ChatMessage> redisChatMessageTemplate;
@@ -312,10 +310,9 @@ public class ChatService {
                 .build();
     }
 
-    public MessageChat getAllList(Long lastChatRoomId, int size) {
+    public MessageChat getAllList() {
         Long userId = commonService.getUserId();
-        PageRequest pageRequest = PageRequest.of(DEFAULT_PAGE_NUM, size);
-        Page<ChatRoom> chatRoomList = chatRoomRepository.findByIdLessThanOrderByIdDesc(lastChatRoomId, pageRequest);
+        List<ChatRoom> chatRoomList = chatRoomRepository.findAllByOrderByCreatedAtDesc();
         List<ChatRoom.Response> openChatRoomList = new ArrayList<>();
         List<ChatRoom.ClosedResponse> closedChatRoomList = new ArrayList<>();
         List<ChatRoom.Response> topRoomList = new ArrayList<>();

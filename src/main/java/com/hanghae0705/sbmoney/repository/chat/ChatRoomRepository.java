@@ -1,9 +1,6 @@
 package com.hanghae0705.sbmoney.repository.chat;
 
-import com.hanghae0705.sbmoney.model.domain.board.Board;
 import com.hanghae0705.sbmoney.model.domain.chat.entity.ChatRoom;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -17,6 +14,4 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     List<ChatRoom> findAllByOrderByCreatedAtDesc();
     List<ChatRoom> findAllByProceedingOrderByCreatedAtDesc(Boolean proceeding);
     List<ChatRoom> findAllByUserId(Long userId);
-
-    Page<ChatRoom> findByIdLessThanOrderByIdDesc(Long lastBoardId, Pageable pageable);
 }
