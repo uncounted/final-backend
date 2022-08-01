@@ -328,7 +328,6 @@ public class ChatService {
             long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
 
             long leftTime = ((chatRoom.getTimeLimit() * 60L) - betweenSeconds)<0 ? 0L : ((chatRoom.getTimeLimit() * 60L) - betweenSeconds);
-            System.out.println(chatRoom.getTimeLimit());
             Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
             List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
             int checkProsCons = 0;
