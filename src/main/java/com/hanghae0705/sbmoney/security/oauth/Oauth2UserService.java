@@ -62,7 +62,7 @@ public class Oauth2UserService extends DefaultOAuth2UserService {
 
         String nickname;
         if(userInfo.getFirstName() != null) {
-            nickname = userInfo.getFirstName() + userInfo.getLastName();
+            nickname = userInfo.getLastName() + userInfo.getFirstName();
         } else {
             nickname = userInfo.getName();
         }

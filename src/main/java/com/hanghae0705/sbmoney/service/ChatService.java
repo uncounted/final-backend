@@ -160,7 +160,6 @@ public class ChatService {
                 .respMsg("쓸까? 말까? 투표를 하셨습니다.")
                 .data(new ChatRoom.VoteResponse(chatRoom))
                 .build();
-
     }
 
     /**
@@ -198,9 +197,7 @@ public class ChatService {
                 .build();
     }
 
-    /**
-     * userCount 기준 상위 5개 추출
-     */
+    // userCount 기준 상위 5개 추출
     public Message getTopRoom() {
         Long userId = commonService.getUserId();
 
@@ -323,10 +320,10 @@ public class ChatService {
         List<ChatRoom.Response> topRoomList = new ArrayList<>();
 
         //채팅방 목록
-        for(ChatRoom chatRoom : chatRoomList) {
+        for (ChatRoom chatRoom : chatRoomList) {
             // 남은 시간 계산하여 저장
             long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
-            long leftTime = ((chatRoom.getTimeLimit() * 60L) - betweenSeconds)<0 ? 0L : ((chatRoom.getTimeLimit() * 60L) - betweenSeconds);
+            long leftTime = ((chatRoom.getTimeLimit() * 60L) - betweenSeconds) < 0 ? 0L : ((chatRoom.getTimeLimit() * 60L) - betweenSeconds);
             Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
             List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
             int checkProsCons = 0;
@@ -362,8 +359,8 @@ public class ChatService {
                 .build();
     }
 
+    //찬성 반대를 눌렀는 지 체크
     private int getCheckProsCons(Long userId, int checkProsCons, List<ChatRoomProsCons> chatRoomProsConsList) {
-        //찬성 반대를 눌렀는 지 체크
         if (!chatRoomProsConsList.isEmpty()) {
             for (ChatRoomProsCons chatRoomProsCons : chatRoomProsConsList) {
                 if (chatRoomProsCons.getUserId().equals(userId)) {
@@ -373,5 +370,9 @@ public class ChatService {
             }
         }
         return checkProsCons;
+    }
+
+    public void getSessionExist() {
+        redisChatRoomRepository.getSessionExist();
     }
 }
