@@ -326,8 +326,9 @@ public class ChatService {
         for(ChatRoom chatRoom : chatRoomList) {
             // 남은 시간 계산하여 저장
             long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
-            long leftTime = ((chatRoom.getTimeLimit() * 60L) - betweenSeconds)<0 ? 0 : (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
 
+            long leftTime = ((chatRoom.getTimeLimit() * 60L) - betweenSeconds)<0 ? 0L : ((chatRoom.getTimeLimit() * 60L) - betweenSeconds);
+            System.out.println(chatRoom.getTimeLimit());
             Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
             List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
             int checkProsCons = 0;
@@ -336,7 +337,9 @@ public class ChatService {
                 checkProsCons = getCheckProsCons(userId, checkProsCons, chatRoomProsConsList);
                 openChatRoomList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
                 topRoomList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
+                log.info("createdAt: "+chatRoom.getCreatedDate()+" | leftTime: "+leftTime+" | timeLimit: "+chatRoom.getTimeLimit());
             } else {
+                checkProsCons = getCheckProsCons(userId, checkProsCons, chatRoomProsConsList);
                 closedChatRoomList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
             }
         }
@@ -348,6 +351,8 @@ public class ChatService {
                 .collect(Collectors.toList());
 
         return MessageChat.builder()
+                .result(true)
+                .respMsg("top5, 진행중 채팅방, 종료 채팅방 조회에 성공했습니다.")
                 .top5(top5RoomList)
                 .chatRooms(openChatRoomList)
                 .closedChatRooms(closedChatRoomList)
