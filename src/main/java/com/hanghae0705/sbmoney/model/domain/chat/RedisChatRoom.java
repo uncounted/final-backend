@@ -1,6 +1,8 @@
 package com.hanghae0705.sbmoney.model.domain.chat;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -9,6 +11,8 @@ import java.time.LocalTime;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class RedisChatRoom implements Serializable {
 
     private static final long serialVersionUID = 6494678977289006639L;

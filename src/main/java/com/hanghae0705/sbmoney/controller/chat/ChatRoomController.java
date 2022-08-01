@@ -86,4 +86,9 @@ public class ChatRoomController {
     public ResponseEntity<MessageChat> getAllList() {
         return ResponseEntity.ok(chatService.getAllList());
     }
+
+    @GetMapping("/api/chat/rooms/aaa")
+    public void getSessionExist() {
+        chatService.getSessionExist();
+    }
 }

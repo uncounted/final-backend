@@ -171,7 +171,7 @@ public class ChatRoom extends CreatedTime {
             this.voteFalsePercent = (totalCount == 0) ? 0 : Math.round(chatRoom.getVoteFalseCount() / totalCount * 100);
             this.createdAt = chatRoom.getCreatedDate();
         }
-    }//Math.round(chatRoom.getVoteTrueCount() / totalCount * 100);
+    }
 
 
     @Getter
