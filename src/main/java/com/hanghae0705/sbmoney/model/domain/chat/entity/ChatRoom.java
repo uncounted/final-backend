@@ -162,6 +162,7 @@ public class ChatRoom extends CreatedTime {
     @Getter
     @RequiredArgsConstructor
     public static class ClosedResponse {
+        private Long chatRoomId;
         private String roomId;
         private String comment;
         private String authorNickname;
@@ -173,7 +174,7 @@ public class ChatRoom extends CreatedTime {
         @Builder
         public ClosedResponse(ChatRoom chatRoom) {
             float totalCount = chatRoom.getVoteTrueCount() + chatRoom.getVoteFalseCount();
-
+            this.chatRoomId = chatRoom.getId();
             this.roomId = chatRoom.getRoomId();
             this.comment = chatRoom.getComment();
             this.authorNickname = chatRoom.getUser().getNickname();
