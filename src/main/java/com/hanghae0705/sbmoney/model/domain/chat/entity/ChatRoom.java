@@ -135,6 +135,17 @@ public class ChatRoom extends CreatedTime {
             this.leftTime = leftTime;
         }
 
+        public Response(ChatRoom chatRoom, Long userCount, Long leftTime) {
+            this.roomId = chatRoom.getRoomId();
+            this.timeLimit = chatRoom.getTimeLimit();
+            this.comment = chatRoom.getComment();
+            this.authorNickname = chatRoom.getUser().getNickname();
+            this.authorProfileImg = chatRoom.getUser().getProfileImg();
+            this.userCount = userCount;
+            this.createdAt = chatRoom.getCreatedDate();
+            this.userCount = userCount;
+            this.leftTime = leftTime;
+        }
 
         public Response(ChatRoom chatRoom, Long userCount) {
             this.roomId = chatRoom.getRoomId();

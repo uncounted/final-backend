@@ -63,9 +63,8 @@ public class ChatService {
 
         // 채팅방에서 남은 시간을 계산해 반환한다.
         ChatRoom chatRoom = chatRoomRepository.findByRoomId(chatMessage.getRoomId()).orElseThrow(() -> new IllegalArgumentException("해당하는 방이 없습니다."));
-        long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
-        long leftTime = (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
-        chatMessage.setLeftTime(leftTime < 0 ? 0 : leftTime);
+        long leftTime = getLeftTime(chatRoom);
+        chatMessage.setLeftTime(leftTime);
 
         log.info("CHAT {}, {}", redisChatRoomRepository.findRoomById(chatMessage.getRoomId()), leftTime);
 
@@ -101,10 +100,9 @@ public class ChatService {
             }
 
             // 남은 시간 계산하여 반환
-            long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
-            long leftTime = (chatRoom.getTimeLimit() * 60L) - betweenSeconds;
+            long leftTime = getLeftTime(chatRoom);
 
-            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime < 0 ? 0 : leftTime));
+            chatRoomResponseList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
         }
         return Message.builder()
                 .result(true)
@@ -120,7 +118,7 @@ public class ChatService {
         return Message.builder()
                 .result(true)
                 .respMsg("채팅방 상세 조회에 성공했습니다.")
-                .data(new ChatRoom.Response(chatRoom, userCount))
+                .data(new ChatRoom.Response(chatRoom, userCount, getLeftTime(chatRoom)))
                 .build();
     }
 
@@ -322,8 +320,7 @@ public class ChatService {
         //채팅방 목록
         for (ChatRoom chatRoom : chatRoomList) {
             // 남은 시간 계산하여 저장
-            long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
-            long leftTime = ((chatRoom.getTimeLimit() * 60L) - betweenSeconds) < 0 ? 0L : ((chatRoom.getTimeLimit() * 60L) - betweenSeconds);
+            long leftTime = getLeftTime(chatRoom);
             Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
             List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
             int checkProsCons = 0;
@@ -357,6 +354,11 @@ public class ChatService {
                 .chatRooms(openChatRoomList)
                 .closedChatRooms(closedChatRoomList)
                 .build();
+    }
+
+    private long getLeftTime(ChatRoom chatRoom) {
+        long betweenSeconds = Duration.between(chatRoom.getCreatedDate(), LocalDateTime.now()).getSeconds();
+        return ((chatRoom.getTimeLimit() * 60L) - betweenSeconds) < 0 ? 0L : ((chatRoom.getTimeLimit() * 60L) - betweenSeconds);
     }
 
     //찬성 반대를 눌렀는 지 체크
