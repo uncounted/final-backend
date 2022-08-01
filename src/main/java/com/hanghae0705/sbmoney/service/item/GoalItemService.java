@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.lang.management.GarbageCollectorMXBean;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,7 +43,7 @@ public class GoalItemService {
                     goalItemResponse = new GoalItem.Response(goalItem);
                 }
             }
-            if(goalItemResponse == null) { // 태산이 모두 달성했을 경우
+            if (goalItemResponse == null) { // 태산이 모두 달성했을 경우
                 GoalItem noGoalItem = createNoGoalItem(user);
                 goalItemResponse = new GoalItem.Response(goalItemRepository.save(noGoalItem));
             }
@@ -77,6 +78,23 @@ public class GoalItemService {
 
     @Transactional
     public Message postGoalItem(GoalItem.Request goalItemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
+        GoalItem goalItem = saveGoalItem(goalItemRequest, user);
+
+        String url = s3Uploader.upload(multipartFile, "static");
+        goalItem.setImage(url);
+
+        return new Message(true, "목표 항목을 등록하였습니다.", goalItem);
+    }
+
+    @Transactional
+    public Message postGoalItem(GoalItem.Request goalItemRequest, User user) throws ItemException, IOException {
+        GoalItem goalItem = saveGoalItem(goalItemRequest, user);
+        goalItem.setImage(goalItem.getItem().getCategory().getIconImg());
+        return new Message(true, "목표 항목을 등록하였습니다.", goalItem);
+    }
+
+    @Transactional
+    public GoalItem saveGoalItem(GoalItem.Request goalItemRequest, User user) throws ItemException {
         List<GoalItem> goalItemList = user.getGoalItems();
         if (goalItemList != null) {
             for (GoalItem goalItem : goalItemList) {
@@ -98,12 +116,7 @@ public class GoalItemService {
         int price = goalItemRequest.getPrice();
         int total = (price == 0) ? item.getDefaultPrice() * count : goalItemRequest.getPrice() * count;
 
-        GoalItem goalItem = goalItemRepository.save(new GoalItem(user, count, total, item));
-        if(multipartFile != null){
-            String url = s3Uploader.upload(multipartFile, "static");
-            goalItem.setImage(url);
-        }
-        return new Message(true, "목표 항목을 등록하였습니다.", goalItem);
+        return goalItemRepository.save(new GoalItem(user, count, total, item));
     }
 
     @Transactional
@@ -130,7 +143,7 @@ public class GoalItemService {
             double decimal = (double) savedItemTotal / total;
             goalPercent = MathFloor.PercentTenths(decimal);
 
-            if(!multipartFile.isEmpty()){
+            if (!multipartFile.isEmpty()) {
                 String url = s3Uploader.upload(multipartFile, "static");
                 goalItem.setImage(url);
             }
@@ -161,7 +174,7 @@ public class GoalItemService {
             double goalPercent = MathFloor.PercentTenths(decimal);
             goalItem.updateGoalItem(count, total, goalPercent);
 
-            if(!multipartFile.isEmpty()){
+            if (!multipartFile.isEmpty()) {
                 String url = s3Uploader.upload(multipartFile, "static");
                 goalItem.setImage(url);
             }
@@ -193,6 +206,7 @@ public class GoalItemService {
         GoalItem noGoalItem = createNoGoalItem(user);
         return new Message(true, "목표 항목을 달성하였습니다.");
     }
+
     public GoalItem createNoGoalItem(User user) throws ItemException {
         Item item = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
         return new GoalItem(user, 0, 0, item);

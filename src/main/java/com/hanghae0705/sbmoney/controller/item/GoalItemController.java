@@ -19,6 +19,12 @@ public class GoalItemController {
     private final GoalItemService goalItemService;
     private final CommonService commonService;
 
+    @GetMapping("/api/tikkeeul")
+    public ResponseEntity<Message> getTikkeeul() {
+        User user = commonService.getUser();
+        Message message = goalItemService.
+    }
+
     @GetMapping("/api/goalItem")
     public ResponseEntity<Message> getGoalItem() throws ItemException {
         User user = commonService.getUser();
@@ -37,7 +43,12 @@ public class GoalItemController {
     public ResponseEntity<Message> postGoalItem(@RequestPart(value = "image", required = false) MultipartFile multipartFile,
                                                 @RequestPart(value = "goalItem") GoalItem.Request goalItemRequest) throws ItemException, IOException {
         User user = commonService.getUser();
-        Message message = goalItemService.postGoalItem(goalItemRequest, multipartFile,  user);
+        Message message = null;
+        if(multipartFile == null) {
+            message = goalItemService.postGoalItem(goalItemRequest, user);
+        } else {
+            message = goalItemService.postGoalItem(goalItemRequest, multipartFile,  user);
+        }
         return ResponseEntity.ok(message);
     }
 
