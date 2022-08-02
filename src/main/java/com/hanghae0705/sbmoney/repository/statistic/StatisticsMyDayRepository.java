@@ -52,7 +52,7 @@ public class StatisticsMyDayRepository {
 
         // log
         result.forEach(SavedItemForStatisticsDto -> {
-                    log.info("userId: "+SavedItemForStatisticsDto.getUserId() + " | "
+                    log.info("findByDate - userId: "+SavedItemForStatisticsDto.getUserId() + " | "
                             + "categoryId: "+SavedItemForStatisticsDto.getCategoryId() + " | "
                             + "itemName: "+SavedItemForStatisticsDto.getItemName() + " | "
                             + "totalPrice: "+SavedItemForStatisticsDto.getTotalPrice() + " | "
@@ -81,6 +81,7 @@ public class StatisticsMyDayRepository {
                 .where(myDayPrice.userId.eq(userId),
                         myDayPrice.standardDate.eq(standardDate))
                 .orderBy(myDayPrice.rankPrice.asc())
+                .limit(5)
                 .fetch();
 
         //log
@@ -111,6 +112,7 @@ public class StatisticsMyDayRepository {
                 .where(myDayCount.userId.eq(userId),
                         myDayCount.standardDate.eq(standardDate))
                 .orderBy(myDayCount.rankCount.asc())
+                .limit(5)
                 .fetch();
 
         //log

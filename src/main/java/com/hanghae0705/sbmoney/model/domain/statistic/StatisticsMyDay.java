@@ -48,8 +48,12 @@ public class StatisticsMyDay {
         this.rankCount = rankCount;
     }
 
-    public void changeRankCount(int rank) {
-        this.rankCount = rank;
+    public int changeRankPrice(int rank) {
+        return this.rankPrice = rank;
+    }
+
+    public int changeRankCount(int rank) {
+        return this.rankCount = rank;
     }
 
     @Getter

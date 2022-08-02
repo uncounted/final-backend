@@ -14,7 +14,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,8 +41,8 @@ public class StatisticsMyDayService {
         // savedItem 일별 리스트를 구해오기
         List<SavedItemForStatisticsDto> savedItemList = statisticsMyDayRepository.findByDate(startDateTime, endDateTime);
 
-        // 받아온 savedItem 의 순서대로 price 랭킹을 매겨 List 에 저장
-        List<StatisticsMyDay> statisticsMyDayList = savedItemList.stream()
+        // 받아온 savedItem 의 순서대로 price 랭킹을 매겨 userId별로 List 에 저장
+        Map<Long, List<StatisticsMyDay>> statisticsMyDayMap = savedItemList.stream()
                 .map(savedItem -> StatisticsMyDay.builder()
                         .userId(savedItem.getUserId())
                         .categoryId(savedItem.getCategoryId())
@@ -46,28 +50,31 @@ public class StatisticsMyDayService {
                         .itemName(savedItem.getItemName())
                         .totalPrice(savedItem.getTotalPrice())
                         .totalCount(savedItem.getTotalCount())
-                        .rankPrice(savedItemList.indexOf(savedItem)+1)
+                        .rankPrice(0)
+                        .rankCount(0)
                         .build())
-                .limit(5)
-                .collect(Collectors.toList());
+                .collect(Collectors.groupingBy(StatisticsMyDay::getUserId));
 
-        // 받아온 savedItem 을 count 기준으로 정렬하여 List 에 추가
-        List<SavedItemForStatisticsDto> savedItemListOrderedByCount = savedItemList.stream().sorted(Comparator.comparing(SavedItemForStatisticsDto::getTotalCount).reversed())
-                .limit(5)
-                .collect(Collectors.toList());
-        for(SavedItemForStatisticsDto savedItemDto : savedItemListOrderedByCount) {
-            for(StatisticsMyDay savedItemStatistics : statisticsMyDayList) {
-                if (savedItemDto.getItemName().equals(savedItemStatistics.getItemName())) {
-                    savedItemStatistics.changeRankCount(savedItemListOrderedByCount.indexOf(savedItemDto)+1);
-                    System.out.println(savedItemStatistics.getRankCount()+" "+savedItemStatistics.getRankPrice()+" "+savedItemStatistics.getItemName());
-                }
-            }
-        }
+        // 유저별로 rankPrice 매기기
+        statisticsMyDayMap.forEach((key, value) -> value.stream()
+                .map(savedItem -> savedItem.changeRankPrice(value.indexOf(savedItem)+1))
+                .collect(Collectors.toList()));
+
+        // 유저별로 count 기준으로 정렬하기
+        statisticsMyDayMap.forEach((key, value) -> value.stream()
+                .sorted(Comparator.comparing(StatisticsMyDay::getTotalCount).reversed())
+                .map(savedItemCount -> savedItemCount.changeRankCount(value.indexOf(savedItemCount)+1))
+                .collect(Collectors.toList()));
+
+        statisticsMyDayMap.entrySet().stream()
+                .forEach(savedMap -> savedMap.getValue().stream()
+                        .forEach(savedItem -> System.out.println(savedItem.getUserId()+" "+savedItem.getItemName()+" "+savedItem.getRankPrice()+" "+savedItem.getRankCount())));
+
 
         // List 를 DB에 추가
-        for(StatisticsMyDay savedItemStatistics : statisticsMyDayList) {
-            statisticsMyDayRepository.saveStatisticsMyDay(savedItemStatistics);
-        }
+        statisticsMyDayMap.forEach((key, value) -> value.forEach(
+                statisticsMyDayRepository::saveStatisticsMyDay
+        ));
     }
 
     // 나의 일일 가격순 코드 불러오기
