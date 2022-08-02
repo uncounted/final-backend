@@ -26,13 +26,14 @@ public class MyProfileService {
     }
 
     public Message getProfile() {
+        User user = userRepository.findById(getUser().getId()).orElseThrow();
         User.ResponseProfile responseProfile = new User.ResponseProfile();
-        responseProfile.setUsername(getUser().getUsername());
-        responseProfile.setNickname(getUser().getNickname());
-        responseProfile.setProfileImg(getUser().getProfileImg());
-        responseProfile.setIntroDesc(getUser().getIntroDesc());
-        responseProfile.setEmail(getUser().getEmail());
-        responseProfile.setNickname(getUser().getNickname());
+        responseProfile.setUsername(user.getUsername());
+        responseProfile.setNickname(user.getNickname());
+        responseProfile.setProfileImg(user.getProfileImg());
+        responseProfile.setIntroDesc(user.getIntroDesc());
+        responseProfile.setEmail(user.getEmail());
+        responseProfile.setNickname(user.getNickname());
         return new Message(true, "조회에 성공했습니다", responseProfile);
     }
 
@@ -41,14 +42,16 @@ public class MyProfileService {
     public Message updateProfile(User.RequestProfile changeInfo, MultipartFile profileImg) throws IOException {
         String imgUrl;
         try {
-            checkStrLengthIsValid(changeInfo.getNickname(), 12, false);
-            checkStrLengthIsValid(changeInfo.getIntroDesc(), 100, true);
-            checkStrLengthIsValid(changeInfo.getEmail(), 100, false);
-            if (profileImg != null) {
-                imgUrl = s3Uploader.upload(profileImg, "static");
-                getUser().updateProfile(changeInfo, imgUrl);
-            } else {
-                getUser().updateProfile(changeInfo);
+            if (changeInfo.getNickname().equals(getUser().getNickname())) {
+                checkStrLengthIsValid(changeInfo.getNickname(), 12, false);
+                checkStrLengthIsValid(changeInfo.getIntroDesc(), 100, true);
+                checkStrLengthIsValid(changeInfo.getEmail(), 100, false);
+                if (profileImg != null) {
+                    imgUrl = s3Uploader.upload(profileImg, "static");
+                    getUser().updateProfile(changeInfo, imgUrl);
+                } else {
+                    getUser().updateProfile(changeInfo);
+                }
             }
             return new Message(true, "프로필이 변경되었습니다");
         } catch (Exception e) {
