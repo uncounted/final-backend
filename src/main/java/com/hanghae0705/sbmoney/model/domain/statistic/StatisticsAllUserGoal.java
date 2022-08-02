@@ -54,29 +54,29 @@ public class StatisticsAllUserGoal {
 
     @Getter
     public static class GoalByPrice {
-        private Long categoryId;
-        private String itemName;
-        private int rankPrice;
+        private final Long categoryId;
+        private final String itemName;
+        private final int rank;
 
         @Builder
         public GoalByPrice(String itemName, Long categoryId, int rankPrice) {
             this.itemName = itemName;
             this.categoryId = categoryId;
-            this.rankPrice = rankPrice;
+            this.rank = rankPrice;
         }
     }
 
     @Getter
     public static class GoalByCount {
-        private Long categoryId;
-        private String itemName;
-        private int rankCount;
+        private final Long categoryId;
+        private final String itemName;
+        private final int rank;
 
         @Builder
         public GoalByCount(String itemName, Long categoryId, int rankCount) {
             this.itemName = itemName;
             this.categoryId = categoryId;
-            this.rankCount = rankCount;
+            this.rank = rankCount;
         }
     }
 }

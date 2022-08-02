@@ -55,31 +55,31 @@ public class StatisticsAllUserDay {
     @Getter
     public static class AllUserDailyByPrice {
 
-        private String itemName;
+        private final String itemName;
         private final Long categoryId;
-        private int rankPrice;
+        private final int rank;
 
         @Builder
         public AllUserDailyByPrice( String itemName, Long categoryId, int rankPrice) {
 
             this.itemName = itemName;
             this.categoryId = categoryId;
-            this.rankPrice = rankPrice;
+            this.rank = rankPrice;
         }
     }
 
     @Getter
     public static class AllUserDailyByCount {
 
-        private String itemName;
+        private final String itemName;
         private final Long categoryId;
-        private int rankCount;
+        private final int rank;
 
         @Builder
         public AllUserDailyByCount( String itemName, Long categoryId, int rankCount) {
             this.itemName = itemName;
             this.categoryId = categoryId;
-            this.rankCount = rankCount;
+            this.rank = rankCount;
         }
     }
 }

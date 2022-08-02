@@ -54,32 +54,32 @@ public class StatisticsMyMonth {
 
     @Getter
     public static class StatisticsMonthByPrice {
-        private Long userId;
-        private String itemName;
-        private int rankPrice;
-        private Long categoryId;
+        private final Long userId;
+        private final String itemName;
+        private final int rank;
+        private final Long categoryId;
 
         @Builder
         public StatisticsMonthByPrice(Long userId, String itemName, int rankPrice, Long categoryId) {
             this.userId = userId;
             this.itemName = itemName;
-            this.rankPrice = rankPrice;
+            this.rank = rankPrice;
             this.categoryId = categoryId;
         }
     }
 
     @Getter
     public static class StatisticsMonthByCnt {
-        private Long userId;
-        private String itemName;
-        private int rankCnt;
-        private Long categoryId;
+        private final Long userId;
+        private final String itemName;
+        private final int rank;
+        private final Long categoryId;
 
         @Builder
         public StatisticsMonthByCnt(Long userId, String itemName, int rankCnt, Long categoryId) {
             this.userId = userId;
             this.itemName = itemName;
-            this.rankCnt = rankCnt;
+            this.rank = rankCnt;
             this.categoryId = categoryId;
         }
     }
