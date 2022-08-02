@@ -63,6 +63,12 @@ public class ItemValidator {
         }
     }
 
+    public void isValidPrice(int price) throws ItemException {
+        if(price < 0) {
+            throw new ItemException(Constants.ExceptionClass.ITEM, HttpStatus.BAD_REQUEST, "가격은 0원 미만이 될 수 없습니다.");
+        }
+    }
+
     public void isReachedGoalItem(double goalPercent) throws ItemException {
         if(goalPercent >= 100.0){
             throw new ItemException(Constants.ExceptionClass.SAVED_ITEM, HttpStatus.BAD_REQUEST, "달성율을 초과한 태산입니다.");

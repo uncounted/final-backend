@@ -28,13 +28,15 @@ public class ItemService {
     private final CategoryRepository categoryRepository;
     private final SavedItemService savedItemService;
     private final GoalItemService goalItemService;
+
     public Message postNewSavedItem(Item.savedItemRequest itemRequest, User user) throws ItemException {
         itemValidator.isExistItem(itemRequest.getItemName());
+        itemValidator.isValidPrice(itemRequest.getDefaultPrice());
         Category category = categoryRepository.findById(itemRequest.getCategoryId()).orElseThrow(
                 () -> new ItemException(Constants.ExceptionClass.CATEGORY, HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
         );
         Item item = itemRepository.save(new Item(itemRequest, category));
-        
+
         //아이템 등록 후 티끌 등록
         SavedItem.Request savedItemRequest = new SavedItem.Request(item.getId(), itemRequest.getGoalItemId(), item.getDefaultPrice());
         return savedItemService.postSavedItem(savedItemRequest, user);
@@ -42,6 +44,7 @@ public class ItemService {
 
     public Message postNewGoalItem(Item.goalItemRequest itemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
         itemValidator.isExistItem(itemRequest.getItemName());
+        itemValidator.isValidPrice(itemRequest.getDefaultPrice());
         Category category = categoryRepository.findById(itemRequest.getCategoryId()).orElseThrow(
                 () -> new ItemException(Constants.ExceptionClass.CATEGORY, HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
         );
@@ -54,6 +57,7 @@ public class ItemService {
 
     public Message updateNewGoalItem(Long goalItemId, Item.goalItemRequest itemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
         itemValidator.isExistItem(itemRequest.getItemName());
+        itemValidator.isValidPrice(itemRequest.getDefaultPrice());
         Category category = categoryRepository.findById(itemRequest.getCategoryId()).orElseThrow(
                 () -> new ItemException(Constants.ExceptionClass.CATEGORY, HttpStatus.BAD_REQUEST, "존재하지 않는 카테고리입니다.")
         );
@@ -67,8 +71,8 @@ public class ItemService {
     public Message getItems() {
         List<Item> items = itemRepository.findAll();
         List<Item.Response> itemResponses = new ArrayList<>();
-        for(Item item : items){
-            if(item.getId() != -1L || item.getCategory().getId() != -1L){
+        for (Item item : items) {
+            if (item.getId() != -1L || item.getCategory().getId() != -1L) {
                 Item.Response itemResponse = new Item.Response(item);
                 itemResponses.add(itemResponse);
             }
