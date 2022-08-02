@@ -65,7 +65,12 @@ public class GoalItemController {
                                                   @RequestPart(value = "image",required = false) MultipartFile multipartFile,
                                                   @RequestPart(value = "goalItem") GoalItem.Request goalItemRequest) throws ItemException, IOException {
         User user = commonService.getUser();
-        Message message = goalItemService.updateGoalItem(goalItemId, goalItemRequest, multipartFile, user);
+        Message message = null;
+        if(multipartFile == null) {
+            message = goalItemService.updateGoalItem(goalItemId, goalItemRequest, user);
+        } else {
+            message = goalItemService.updateGoalItem(goalItemId, goalItemRequest, multipartFile, user);
+        }
         return ResponseEntity.ok(message);
     }
 

@@ -85,7 +85,6 @@ public class GoalItemService {
     @Transactional
     public Message postGoalItem(GoalItem.Request goalItemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
         GoalItem goalItem = saveGoalItem(goalItemRequest, user);
-
         String url = s3Uploader.upload(multipartFile, "static");
         goalItem.setImage(url);
 
@@ -93,9 +92,10 @@ public class GoalItemService {
     }
 
     @Transactional
-    public Message postGoalItem(GoalItem.Request goalItemRequest, User user) throws ItemException, IOException {
+    public Message postGoalItem(GoalItem.Request goalItemRequest, User user) throws ItemException {
         GoalItem goalItem = saveGoalItem(goalItemRequest, user);
         goalItem.setImage(goalItem.getItem().getCategory().getIconImg());
+
         return new Message(true, "목표 항목을 등록하였습니다.", goalItem);
     }
 
@@ -127,6 +127,23 @@ public class GoalItemService {
 
     @Transactional
     public Message updateGoalItem(Long goalItemId, GoalItem.Request goalItemRequest, MultipartFile multipartFile, User user) throws ItemException, IOException {
+        GoalItem goalItem = changeGoalItem(goalItemId, goalItemRequest, user);
+        String url = s3Uploader.upload(multipartFile, "static");
+        goalItem.setImage(url);
+
+        return new Message(true, "목표 항목을 수정하였습니다.", new GoalItem.Response(goalItem));
+    }
+
+    @Transactional
+    public Message updateGoalItem(Long goalItemId, GoalItem.Request goalItemRequest, User user) throws ItemException, IOException {
+        GoalItem goalItem = changeGoalItem(goalItemId, goalItemRequest, user);
+        goalItem.setImage(goalItem.getItem().getCategory().getIconImg());
+
+        return new Message(true, "목표 항목을 수정하였습니다.", new GoalItem.Response(goalItem));
+    }
+
+    @Transactional
+    public GoalItem changeGoalItem(Long goalItemId, GoalItem.Request goalItemRequest, User user) throws ItemException, IOException {
         GoalItem goalItem = itemValidator.isValidGoalItem(goalItemId, user);
 
         // 목표 품목을 변경할 때
@@ -148,11 +165,6 @@ public class GoalItemService {
 
             double decimal = (double) savedItemTotal / total;
             goalPercent = MathFloor.PercentTenths(decimal);
-
-            if (!multipartFile.isEmpty()) {
-                String url = s3Uploader.upload(multipartFile, "static");
-                goalItem.setImage(url);
-            }
 
             if (savedItemTotal >= total) { // 변경한 품목이 달성률 100%를 넘은 지점
                 LocalDateTime reachedAt = LocalDateTime.now();
@@ -179,13 +191,8 @@ public class GoalItemService {
             double decimal = (double) savedItemTotal / total;
             double goalPercent = MathFloor.PercentTenths(decimal);
             goalItem.updateGoalItem(count, total, goalPercent);
-
-            if (!multipartFile.isEmpty()) {
-                String url = s3Uploader.upload(multipartFile, "static");
-                goalItem.setImage(url);
-            }
         }
-        return new Message(true, "목표 항목을 수정하였습니다.");
+        return goalItem;
     }
 
     @Transactional
@@ -209,12 +216,14 @@ public class GoalItemService {
         GoalItem goalItem = itemValidator.isValidGoalItem(goalItemId, user);
         LocalDateTime reachedAt = LocalDateTime.now();
         goalItem.setCheckReached(true, reachedAt);
-        GoalItem noGoalItem = createNoGoalItem(user);
+        createNoGoalItem(user);
+
         return new Message(true, "목표 항목을 달성하였습니다.");
     }
 
     public GoalItem createNoGoalItem(User user) throws ItemException {
         Item item = itemValidator.isValidItem(-1L); // 목표 없음 카테고리
+
         return new GoalItem(user, 0, 0, item);
     }
 
