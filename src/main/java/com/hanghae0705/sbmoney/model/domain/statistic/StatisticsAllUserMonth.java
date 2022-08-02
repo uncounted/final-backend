@@ -53,13 +53,13 @@ public class StatisticsAllUserMonth {
 
     @Getter
     public static class AllMonthlyByPrice {
-        private final int rankPrice;
+        private final int rank;
         private final Long categoryId;
         private final String itemName;
 
         @Builder
         public AllMonthlyByPrice(int rankPrice, Long categoryId, String itemName) {
-            this.rankPrice = rankPrice;
+            this.rank = rankPrice;
             this.categoryId = categoryId;
             this.itemName = itemName;
         }
@@ -67,13 +67,13 @@ public class StatisticsAllUserMonth {
 
     @Getter
     public static class AllMonthlyByCount {
-        private final int rankCount;
+        private final int rank;
         private final Long categoryId;
         private final String itemName;
 
         @Builder
         public AllMonthlyByCount(int rankCount, Long categoryId, String itemName) {
-            this.rankCount = rankCount;
+            this.rank = rankCount;
             this.categoryId = categoryId;
             this.itemName = itemName;
         }

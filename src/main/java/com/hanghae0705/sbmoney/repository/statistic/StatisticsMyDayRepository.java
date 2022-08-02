@@ -71,6 +71,7 @@ public class StatisticsMyDayRepository {
 
         List<StatisticsMyDay> result = queryFactory.select(Projections.fields(StatisticsMyDay.class,
                         myDayPrice.standardDate,
+                        myDayPrice.categoryId,
                         myDayPrice.rankPrice,
                         myDayPrice.itemName,
                         myDayPrice.totalPrice,
@@ -85,6 +86,7 @@ public class StatisticsMyDayRepository {
         //log
         result.forEach(StatisticsMyDay -> {
             log.info(StatisticsMyDay.getStandardDate() + " | "
+                    + StatisticsMyDay.getCategoryId() + " | "
                     + StatisticsMyDay.getRankPrice() + " | "
                     + StatisticsMyDay.getItemName() + " | "
                     + StatisticsMyDay.getTotalPrice() + " | "
@@ -99,6 +101,7 @@ public class StatisticsMyDayRepository {
 
         List<StatisticsMyDay> result = queryFactory.select(Projections.fields(StatisticsMyDay.class,
                         myDayCount.standardDate,
+                        myDayCount.categoryId,
                         myDayCount.rankCount,
                         myDayCount.itemName,
                         myDayCount.totalCount,
@@ -113,6 +116,7 @@ public class StatisticsMyDayRepository {
         //log
         result.forEach(StatisticsMyDay -> {
             log.info(StatisticsMyDay.getStandardDate() + " | "
+                    + StatisticsMyDay.getCategoryId() + " | "
                     + StatisticsMyDay.getRankCount() + " | "
                     + StatisticsMyDay.getItemName() + " | "
                     + StatisticsMyDay.getRankCount() + " | "

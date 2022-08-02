@@ -144,7 +144,8 @@ public class BoardService {
             board.changeImage(url);
         }
         boardRepository.save(board);
-        return new Message(true, "게시글을 등록하였습니다");
+        Long boardId = board.getId();
+        return new Message(true, "게시글을 등록하였습니다",boardId);
     }
 
     @Transactional
