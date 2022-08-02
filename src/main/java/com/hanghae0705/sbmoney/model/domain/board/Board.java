@@ -183,6 +183,7 @@ public class Board extends BaseEntity {
     public static class SaveItemResponse {
         private Long boardId;
         private String userId;
+        private String nickname;
         private int price;
         private int totalPrice;
         private LocalDateTime createdAt;
@@ -192,6 +193,7 @@ public class Board extends BaseEntity {
 
         public SaveItemResponse(Board board, List<Board.SaveItem> saveItemList, int savedItemTotalPrice) {
             this.boardId = board.getId();
+            this.nickname = board.getUser().getNickname();
             this.userId = board.getUser().getUsername();
             this.totalPrice = board.goalItemPrice * board.goalItemCount;
             this.price = board.goalItemPrice;
