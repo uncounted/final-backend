@@ -86,4 +86,10 @@ public class ChatRoomController {
     public ResponseEntity<MessageChat> getAllList() {
         return ResponseEntity.ok(chatService.getAllList());
     }
+
+    // 채팅방 일괄 조회 무한 스크롤
+    @GetMapping("/api/chat/allRooms")
+    public ResponseEntity<MessageChat> getAlChatRoom(@RequestParam Long chatRoomId, @RequestParam int size) {
+        return ResponseEntity.ok(chatService.getAlChatRoom(chatRoomId, size));
+    }
 }

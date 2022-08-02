@@ -16,6 +16,8 @@ import com.hanghae0705.sbmoney.repository.chat.RedisChatRoomRepository;
 import com.hanghae0705.sbmoney.validator.ChatRoomValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -31,7 +33,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 public class ChatService {
-
+    private static final int DEFAULT_PAGE_NUM = 0;
     private final ChannelTopic channelTopic;
     private final RedisTemplate<String, Object> redisTemplate;
     private final RedisTemplate<String, ChatMessage> redisChatMessageTemplate;
@@ -316,6 +318,53 @@ public class ChatService {
         List<ChatRoom.Response> openChatRoomList = new ArrayList<>();
         List<ChatRoom.ClosedResponse> closedChatRoomList = new ArrayList<>();
         List<ChatRoom.Response> topRoomList = new ArrayList<>();
+
+        //채팅방 목록
+        for (ChatRoom chatRoom : chatRoomList) {
+            // 남은 시간 계산하여 저장
+            long leftTime = getLeftTime(chatRoom);
+            Long userCount = redisChatRoomRepository.getUserCount(chatRoom.getRoomId());
+            List<ChatRoomProsCons> chatRoomProsConsList = chatRoom.getChatRoomProsConsList();
+            int checkProsCons = 0;
+
+            if (chatRoom.getProceeding()) {
+                checkProsCons = getCheckProsCons(userId, checkProsCons, chatRoomProsConsList);
+                openChatRoomList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
+                topRoomList.add(new ChatRoom.Response(chatRoom, checkProsCons, userCount, leftTime));
+            } else {
+                closedChatRoomList.add(new ChatRoom.ClosedResponse(chatRoom));
+            }
+
+            if (chatRoom.getUser() == null) {
+                chatRoom.changeUser(User.builder()
+                        .nickname("탈퇴회원")
+                        .profileImg("https://s3.ap-northeast-2.amazonaws.com/tikkeeul.com/KakaoTalk_Image_2022-07-29-17-35-29.png")
+                        .build());
+            }
+        }
+
+        //top5 구하기
+        List<ChatRoom.Response> top5RoomList = topRoomList.stream()
+                .sorted(Comparator.comparing(ChatRoom.Response::getUserCount).reversed())
+                .limit(5)
+                .collect(Collectors.toList());
+
+        return MessageChat.builder()
+                .result(true)
+                .respMsg("top5, 진행중 채팅방, 종료 채팅방 조회에 성공했습니다.")
+                .top5(top5RoomList)
+                .chatRooms(openChatRoomList)
+                .closedChatRooms(closedChatRoomList)
+                .build();
+    }
+
+    public MessageChat getAlChatRoom(Long lastChatRoomId, int size) {
+            Long userId = commonService.getUserId();
+            PageRequest pageRequest = PageRequest.of(DEFAULT_PAGE_NUM, size);
+            Page<ChatRoom> chatRoomList = chatRoomRepository.findByIdLessThanOrderByIdDesc(lastChatRoomId, pageRequest);
+            List<ChatRoom.Response> openChatRoomList = new ArrayList<>();
+            List<ChatRoom.ClosedResponse> closedChatRoomList = new ArrayList<>();
+            List<ChatRoom.Response> topRoomList = new ArrayList<>();
 
         //채팅방 목록
         for (ChatRoom chatRoom : chatRoomList) {
