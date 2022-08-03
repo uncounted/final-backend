@@ -42,6 +42,7 @@ public class SavedItemService {
         for (SavedItem savedItem : goalItem.getSavedItems()) {
             savedItemTotal += savedItem.getPrice();
         }
+        itemValidator.isValidNum(savedItemRequest.getPrice());
         int updatePrice = savedItemTotal + price;
 
         if (goalItem.getItem().getId() != -1L && updatePrice >= goalItem.getTotal()) { // GoalItem이 목표 금액을 달성했을 때
@@ -88,6 +89,7 @@ public class SavedItemService {
         for (SavedItem tempSavedItem : goalItem.getSavedItems()) {
             savedItemTotal += tempSavedItem.getPrice();
         }
+        itemValidator.isValidNum(price.getPrice());
         int updatePrice = savedItemTotal + price.getPrice();
 
         double decimal = ((double) updatePrice / goalItem.getTotal());

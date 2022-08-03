@@ -63,9 +63,9 @@ public class ItemValidator {
         }
     }
 
-    public void isValidPrice(int price) throws ItemException {
-        if(price < 0) {
-            throw new ItemException(Constants.ExceptionClass.ITEM, HttpStatus.BAD_REQUEST, "가격은 0원 미만이 될 수 없습니다.");
+    public void isValidNum(int num) throws ItemException {
+        if(num < 0) {
+            throw new ItemException(Constants.ExceptionClass.ITEM, HttpStatus.BAD_REQUEST, "잘못된 값이 입력되었습니다.");
         }
     }
 

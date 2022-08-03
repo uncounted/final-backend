@@ -120,8 +120,9 @@ public class GoalItemService {
         Item item = itemValidator.isValidCategoryAndItem(categoryId, itemId);
         int count = goalItemRequest.getGoalItemCount();
         int price = goalItemRequest.getPrice();
+        itemValidator.isValidNum(price);
+        itemValidator.isValidNum(count);
         int total = (price == 0) ? item.getDefaultPrice() * count : goalItemRequest.getPrice() * count;
-
         return goalItemRepository.save(new GoalItem(user, count, total, item));
     }
 
@@ -130,7 +131,6 @@ public class GoalItemService {
         GoalItem goalItem = changeGoalItem(goalItemId, goalItemRequest, user);
         String url = s3Uploader.upload(multipartFile, "static");
         goalItem.setImage(url);
-
         return new Message(true, "목표 항목을 수정하였습니다.", new GoalItem.Response(goalItem));
     }
 
@@ -138,7 +138,6 @@ public class GoalItemService {
     public Message updateGoalItem(Long goalItemId, GoalItem.Request goalItemRequest, User user) throws ItemException, IOException {
         GoalItem goalItem = changeGoalItem(goalItemId, goalItemRequest, user);
         goalItem.setImage(goalItem.getItem().getCategory().getIconImg());
-
         return new Message(true, "목표 항목을 수정하였습니다.", new GoalItem.Response(goalItem));
     }
 
@@ -153,6 +152,8 @@ public class GoalItemService {
             Item item = itemValidator.isValidCategoryAndItem(categoryId, itemId);
             int count = goalItemRequest.getGoalItemCount();
             int price = goalItemRequest.getPrice();
+            itemValidator.isValidNum(price);
+            itemValidator.isValidNum(count);
             int total = (price == 0) ? item.getDefaultPrice() * count : goalItemRequest.getPrice() * count;
             int savedItemTotal = 0;
             double goalPercent = 1.0;
@@ -177,6 +178,8 @@ public class GoalItemService {
             int itemDefaultPrice = goalItem.getItem().getDefaultPrice();
             int count = goalItemRequest.getGoalItemCount();
             int price = goalItemRequest.getPrice();
+            itemValidator.isValidNum(price);
+            itemValidator.isValidNum(count);
             int total = (price == 0) ? itemDefaultPrice * count : goalItemRequest.getPrice() * count;
             int savedItemTotal = 0;
 
