@@ -37,7 +37,7 @@
 - **Back-end** : [Back-end repo](https://github.com/uncounted/final-backend)
 
     - 최호양 [Github](https://github.com/uncounted)
-    - 김민지 [Github](https://github.com/junsu0121)
+    - 김민지 [Github](https://github.com/Java-kokyu)
     - 신제민 [Github](https://github.com/shinjemin)
     - 홍예준 [Github](https://github.com/WalGoo)
   
@@ -66,7 +66,7 @@
 <br/>
 
 **2. 데일리 티끌 등록 API 요청**
-![image](https://user-images.githubusercontent.com/85613861/182803421-363525f7-6f5c-4942-93af-d20377ebad37.png)
+![image](https://user-images.githubusercontent.com/85613861/182804489-385151b4-403e-49be-8479-427a3ac1f10d.png)
 
 
 ## 🕹기술스택
