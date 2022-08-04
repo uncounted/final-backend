@@ -28,9 +28,9 @@
 
 - **Front-end**
 
-    - 이보람 [Github](https://github.com/Choiji92)
-    - 김은진 [Github](https://github.com/junsu0121)
-    - 이재엽 [Github](https://github.com/junsu0121)
+    - 이보람 [Github](https://github.com/epppo)
+    - 김은진 [Github](https://github.com/Eunjin09)
+    - 이재엽 [Github](https://github.com/yupja)
       <br/>
       <br/>
 
@@ -59,6 +59,15 @@
 | 내가 아낀 거 자랑하고 싶으니까!     |      커뮤니티 게시판      |   티끌 자랑 |
 | 충동적인 지금! 누군가 말려줘야 하니까! |       찬반 채팅방       |  쓸까?말까? |
 | 얼마나 아꼈는지 궁금하니까!        | 일별/월별 & 횟수별/금액별 랭킹 |      랭킹 |
+
+## 📈부하 테스트
+**1. 채팅방 API 요청**
+![image](https://user-images.githubusercontent.com/85613861/182802971-4172c44e-e5aa-4e98-a778-c88afac8c6ad.png)
+<br/>
+
+**2. 데일리 티끌 등록 API 요청**
+![image](https://user-images.githubusercontent.com/85613861/182803421-363525f7-6f5c-4942-93af-d20377ebad37.png)
+
 
 ## 🕹기술스택
 |   Part   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Tech⚒️                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
