@@ -99,4 +99,4 @@
 
 ## 고객 피드백 및 대응
 
-<img width="984" alt="image" src="https://user-images.githubusercontent.com/19637185/183239261-adbd60a7-4506-4aad-a711-4823c0bebd61.png">
+<img width="1728" alt="image" src="https://user-images.githubusercontent.com/19637185/183239323-03c0dd60-151c-4d15-a3b6-5b26772031d3.png">
