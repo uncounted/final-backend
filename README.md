@@ -21,6 +21,9 @@
 ## 🛠 서비스 아키텍처
 ![img_1](https://user-images.githubusercontent.com/85613861/182782799-9a580349-a764-4dce-adf0-b07144d002f2.png)
 
+## 🗃 ERD 설계
+<img width="1634" alt="image-20220625-081827" src="https://user-images.githubusercontent.com/85613861/183277869-99617586-3f6f-40f7-827c-383b7b0f045d.png">
+
 ## 🎥 최종 발표영상
 [티끌 최종 발표영상 보러가기](https://www.youtube.com/watch?v=ynoW_pirnYM)
 
@@ -60,7 +63,48 @@
 | 충동적인 지금! 누군가 말려줘야 하니까! |       찬반 채팅방       |  쓸까?말까? |
 | 얼마나 아꼈는지 궁금하니까!        | 일별/월별 & 횟수별/금액별 랭킹 |      랭킹 |
 
+## 💸티끌 시연 영상
+
+<table>
+  <tr>
+    <td align="center"><strong>태산</strong></td>
+    <td align="center"><strong>티끌</strong></td>
+    <td align="center"><strong>랭킹</strong></td>
+  <tr>
+    <td align="center"><img src="https://user-images.githubusercontent.com/93433413/183251005-23ebbfd2-5255-4658-876e-91f4c12825c1.gif" width="200px"/></td>
+    <td align="center"><img src="https://user-images.githubusercontent.com/93433413/183251115-8af021d8-485b-4631-86ff-c4f4b8b19e4c.gif" width="200px" /></td>
+    <td align="center"><img src="https://user-images.githubusercontent.com/93433413/183250901-4f516c17-1b48-4e01-9ed6-62fd76490bbe.gif" width="200px"></a></td>
+  </tr>
+  <tr>
+      <td align="center"><b>커뮤니티</b></td>
+      <td align="center"><b>타이머 채팅방 만들기</b></td>
+      <td align="center"><b>실시간 채팅방</b></td>
+  <tr>
+    <td align="center"><img src="https://user-images.githubusercontent.com/93433413/183251006-fc81981c-4f81-44ca-95a0-ba0fe4810002.gif" width="200px"/></a></td>
+    <td align="center"><img src="https://user-images.githubusercontent.com/93433413/183250931-3b9e616e-6c94-4740-97c1-c15520245242.gif" width="200px" /></a></td>
+    <td align="center"><img src="https://user-images.githubusercontent.com/93433413/183250926-196c2bc6-ab2e-4c6c-acbe-668e0193fca8.gif" width="200px"></a></td>
+  </tr>
+  <tr>
+      <td align="center"><b>종료된 채팅방</b></td>
+      <td align="center"><b>마이페이지</b></td>
+      <td align="center"><b></b></td>
+  <tr>
+    <td align="center"><img src="https://user-images.githubusercontent.com/93433413/183250917-c33e6bca-b13d-4a94-8a92-8c2c6c843276.png" width="200px"/></a></td>
+    <td align="center"><img src="https://user-images.githubusercontent.com/93433413/183250903-adc4e6c3-c8dd-4c8f-b32a-5220b8190234.gif" width="200px"/></a></td>
+  </tr>
+
+</table>
+
+
+<br>
+
 ## 📈부하 테스트
+
+
+- 한 페이지를 로딩하는데 2-3가지 API를 호출하는 페이지를 기준으로 응답속도를 비교 후, 응답 속도가 느린 순으로 정리 후 개선하고자 함.
+- 
+
+
 **1. 채팅방 API 요청**
 ![image](https://user-images.githubusercontent.com/85613861/182802971-4172c44e-e5aa-4e98-a778-c88afac8c6ad.png)
 <br/>
@@ -71,7 +115,7 @@
 
 ## 🕹기술스택
 
-**1. 기술스택
+**1. 기술스택**
 
 |   Part   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        Tech⚒️                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 |:--------:|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
@@ -81,7 +125,7 @@
 |  🐍AWS   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               <img src="https://img.shields.io/badge/AwsEC2-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white"/><img src="https://img.shields.io/badge/AwsRDS-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white"/><img src="https://img.shields.io/badge/AwsS3-232F3E?style=for-the-badge&logo=AmazonS3&logoColor=white"/><img src="https://img.shields.io/badge/AwsRoute53-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white"/><img src="https://img.shields.io/badge/AwsAmplify-232F3E?style=for-the-badge&logo=AwsAmplify&logoColor=white"/>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 |   🐧OS   |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     <img src="https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white"/><img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=white"/>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |  
 
-**2. 기술적 의사결정
+**2. 기술적 의사결정**
 
 | 사용기술 | 기술설명 |
 |:-----------------------|:------------------------------------------------------------:|
